@@ -105,6 +105,7 @@ For example, this `XB` setting can be used to describe a group of beam detectors
       QUANTITY='PATH OBSCURATION', SETPOINT=0.33 , FYI='Two detectors' /
 &DEVC ID='Beam detectors_1', XB=1.217,-1.271,0.043,1.307,2.500,2.500,
       QUANTITY='PATH OBSCURATION', SETPOINT=0.33 , FYI='Two detectors' /
+...
 }}}
 
 == Exported geometry: `XYZ` parameter ==
@@ -131,6 +132,7 @@ For example, this `XYZ` setting can be used to describe a group of thermocouples
 &DEVC ID='Thermocouple serie_3', XYZ=-0.000,0.000,1.000, QUANTITY='THERMOCOUPLE' /
 &DEVC ID='Thermocouple serie_4', XYZ=-0.000,0.000,1.300, QUANTITY='THERMOCOUPLE' /
 &DEVC ID='Thermocouple serie_5', XYZ=-0.000,0.000,1.600, QUANTITY='THERMOCOUPLE' /
+...
 }}}
 
 === `XYZ` set to `Center` ===
@@ -158,7 +160,9 @@ Of course. it is much more clean and less prone to errors to model "straight" `f
 For example, this `PB*` setting can be used to input several `SLCFs` that share the same parameters: the user creates an `object` made of separate `faces` distributed inside the building, and obtains a series of `SLCFs`:
 
 {{{
-???
+&SLCF QUANTITY='TEMPERATURE', VECTOR=.TRUE., PBX=0.000 /
+&SLCF QUANTITY='TEMPERATURE', VECTOR=.TRUE., PBY=0.600 /
+...
 }}}
 
 
