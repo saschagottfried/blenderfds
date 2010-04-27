@@ -12,24 +12,28 @@ The user should build the architectural model splitting the elements in homogene
 
 === `ID` parameter ===
 
+??? Not all namelist groups, we are working on that.
+
 === `FYI` parameter ===
 
-=== `IJK` parameter ===
+=== `SURF_ID` parameter ===
 
-Adapt voxel button
-
-[http://lh6.ggpht.com/_iTIkwVoSUm0/S9XxUYGnmAI/AAAAAAAAARc/MDbsCFdii0w/objpanel_MESH.png]
-
-=== 'SURF_ID` parameter ===
+??? Only if a material is referenced
 
 [http://lh4.ggpht.com/_iTIkwVoSUm0/S9XxU0f7LZI/AAAAAAAAARo/cs-z464nQMg/objpanel_VENT.png]
 
-=== 'SAWTOOTH` parameter ===
+=== `SAWTOOTH` parameter ===
 
 [http://lh5.ggpht.com/_iTIkwVoSUm0/S9XxUhW97wI/AAAAAAAAARg/eK0h5tXIJ38/objpanel_OBST.png]
 
 === `Custom parameters` ===
 
+
+=== `IJK` parameter ===
+
+??? Adapt voxel button
+
+[http://lh6.ggpht.com/_iTIkwVoSUm0/S9XxUYGnmAI/AAAAAAAAARc/MDbsCFdii0w/objpanel_MESH.png]
 
 
 == Exporting the geometry ==
@@ -194,3 +198,7 @@ The user creates an `object` made of separate `faces` distributed inside the bui
 &SLCF QUANTITY='TEMPERATURE', VECTOR=.TRUE., PBY=0.600 /
 ...
 }}}
+
+== `XB, XYZ, PB*` at the same time ==
+
+??? Why, limitations, errors
