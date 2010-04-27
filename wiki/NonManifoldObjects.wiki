@@ -24,7 +24,7 @@ The cube shown in the following picture lacks the upper face, and is thus non-ma
 
 [http://lh3.ggpht.com/_iTIkwVoSUm0/S9XxeMT1ntI/AAAAAAAAARs/3qsCQn_LuDs/s912/objpanel_OBST_notmanifold1.png]
 
-Trying to fix it, the user switches Blender from `object mode` to `edit mode`. The object mesh is now editable.
+While trying to fix it, the user switches Blender from `object mode` to `edit mode`. The object mesh is now editable.
 
 [http://lh3.ggpht.com/_iTIkwVoSUm0/S9XxeChJdxI/AAAAAAAAARw/J3RffnzVoyI/s912/objpanel_OBST_notmanifold2.png]
 
