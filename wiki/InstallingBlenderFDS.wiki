@@ -1,0 +1,37 @@
+#summary Installing BlenderFDS
+
+As BlenderFDS is built upon the new Blender 2.5x platform, first install Blender 2.5 alpha 2, then install BlenderFDS add-on.
+
+Beware that BlenderFDS _does not work_ with older Blender versions.
+
+<wiki:toc max_depth="2" />
+
+----
+
+== First, install Blender 2.5 alpha 2 ==
+
+Blender is an integrated application that allows the creation of a broad range of 2D and 3D content. Blender provides a broad spectrum of modeling, texturing, lighting, animation and video post-processing functionality in one package. Through its open architecture, Blender provides cross-platform interoperability, extensibility, an incredibly small footprint, and a tightly integrated workflow. Blender is one of the most popular open source and free 3D graphics applications in the world. The main source for information about Blender is its main site http://www.blender.org/
+
+Between 2008 and 2010, Blender has been entirely re-coded to improve its functions, work-flow and interface. The result of this work produced the version of the software known as Blender 2.5x, currently in alpha testing.
+
+To install Blender, download the appropriate package for your platform from http://www.blender.org/download/get-25-alpha/ to your computer.
+
+Currently BlenderFDS works well with _Blender 2.5 alpha 2_. BlenderFDS _does not work_ with older Blender versions. Future newer versions will require some minor modification to BlenderFDS code, that we are already testing with bleeding edge Blender versions. 
+
+The Windows version comes with an optional self-extracting installer. For other operating systems you can unpack the compressed file to the location of your choice. Provided the Blender binary is in the original extracted directory, Blender will run straight out of the box. No system libraries or system preferences are altered.
+
+After installing, launch the Blender executable.
+
+== Then, install BlenderFDS add-on into Blender ==
+
+Add-ons is the general term for any optional script that extends Blender's functionality. They are found in the `File > User Preferences` window in the `Add-Ons` panel. This tab allows you to install an add-on and enable or disable it.
+
+[http://lh6.ggpht.com/_iTIkwVoSUm0/S9HGu7tVZuI/AAAAAAAAAOw/02k6d3QL5LE/install%20Add-On.png]
+
+For a script to show up in the `Add-ons` panel it will first have to be installed. For this you can use the `Install Add-On` button in the `Add-Ons` panel: simply click the button and locate the `blenderfds_X.Y.zip` compressed file you downloaded. Blender extracts the scripts and copies them in the `../.blender/scripts/addons` folder, where `..` is your Blender installation location.
+
+Once installed, the script will show up in the panel and can be activated by clicking on the `Enable Add-on` button.
+
+== Removing BlenderFDS ==
+
+To remove BlenderFDS from your Blender install, simply disable the BlenderFDS add-on in the `Add-Ons` panel of the `File > User Preferences` window. Then close the Blender executable and delete blenderfds directory from the `../.blender/scripts/addons` folder, where `..` is your Blender installation location.
