@@ -5,5 +5,7 @@
  * [LearningBlender Learning Blender]
  * [TheIdeaBehindBlenderFDS The idea behind BlenderFDS]
  * [BlenderFDS_UI BlenderFDS user interface]
- * [UsingBlenderFDS Using BlenderFDS]
+ * [BlenderObjectsToFDSNamelistGroups Blender objects to FDS namelist groups]
  * [NonManifoldObjects Dealing with non-manifold objects]
+ * [BlenderMaterialsToFDSSURF Blender materials to FDS SURF boundary conditions]
+ * [BlenderScenesToFDSCases Blender scenes to FDS cases]
