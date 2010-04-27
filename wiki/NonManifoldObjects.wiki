@@ -14,7 +14,7 @@ We share this problem with people working in 3D printing processes. This is the 
 
 The suggested operations can be performed directly inside Blender (they use Blender, too!).
 
-When desperate there is another powerful but somewhat more complex tool: [http://meshlab.sourceforge.net/ MeshLab]. You need to export your `object mesh` from Blender in an STL format, fix it in MeshLab, and import it back in Blender: a procedure not meant for the faint of hearth...
+When desperate there is another powerful but somewhat more complex tool: [http://meshlab.sourceforge.net/ MeshLab]. You need to export your `object mesh` from Blender in STL format, fix it in MeshLab, and import it back into Blender: a procedure not meant for the faint of hearth...
 
 Remember that it is often quicker to remodel the problematic `object` from scratch.
 
