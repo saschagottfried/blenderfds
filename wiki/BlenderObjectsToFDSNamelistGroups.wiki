@@ -56,7 +56,7 @@ No `XB` parameter is added to the exported namelist group.
 
 === `XB` set to `Voxels` ===
 
-The Blender `object` is treated by a voxelization algorithm that approximates its geometry as if it was a [http://www.lego.com Lego building]. The building brick is named _voxel_, and its size is specified by the user in the `scene properties panel`.
+The Blender `object` is treated by a voxelization algorithm that approximates its geometry as if it was a [http://www.lego.com Lego building]. The building brick is named _voxel_, and its size is specified by the user in the `scene properties panel` (See [BlenderScenesToFDSCases#Voxel_Size]).
 
 [http://lh5.ggpht.com/_iTIkwVoSUm0/S9dLEyo67MI/AAAAAAAAASc/yvSFrr20JEI/lego_building.jpg] 
 
@@ -66,7 +66,7 @@ When possible, BlenderFDS joins the voxels together in larger _boxes_ to minimiz
 
 The voxelization algorithm treats only _manifold objects_. This means that the `object mesh` should be water-tight and well-formed so that BlenderFDS can decide which portion of space is solid and which is instead void. If the `object` is not manifold, an error message is displayed and `XB` is set to `BBox`.
 
-There is a specific page that explain how to deal with this problem: [NonManifoldObject Dealing with non-manifold objects].
+There is a specific page that explain how to deal with this problem: [NonManifoldObjects Dealing with non-manifold objects].
 
 The overall shape of the `object` is conserved as much as possible:
 
