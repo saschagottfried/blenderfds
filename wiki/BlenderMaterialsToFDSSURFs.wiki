@@ -1,4 +1,4 @@
-#summary Blender materials to FDS SURFs
+#summary Blender materials to FDS SURF namelist groups
 
 ???
 
@@ -6,7 +6,7 @@
 
 ----
 
-== Blender materials to FDS SURF namelist groups ==
+??? Materials exported only if used
 
 Material panel:
 
