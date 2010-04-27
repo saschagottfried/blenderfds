@@ -54,14 +54,14 @@ BlenderFDS provides several specific `panels` depending on the activated `contex
 
 When opening a new Blender file, the BlenderFDS `panels` are listed as the last ones at the bottom of the `properties editor` and can be hidden under the pile of the other default `panels`. The user can easily reorder the pile by dragging them to the top, if needed.
 
-The `Scene context button` provides the following BlenderFDS `panel`:
+The `scene context button` provides the following BlenderFDS `panel`, that will be called for short `scene properties panel`:
 
 [http://lh3.ggpht.com/_iTIkwVoSUm0/S9XrlsYrUQI/AAAAAAAAARU/QPfwEsWw07E/scenepanel.png]
 
-The BlenderFDS `panel` in `Object context` changes the displayed properties depending on the associated namelist group. When the user enters a `VENT` namelist, the `Object context button` provides the following BlenderFDS `panel`:
+The BlenderFDS `panel` in `object context` changes the displayed properties depending on the associated namelist group. For simplicity, we will call it `object properties panel`. When the user enters a `VENT` namelist, the `object properties panel` becomes like this:
 
 [http://lh4.ggpht.com/_iTIkwVoSUm0/S9XrlUfdvqI/AAAAAAAAARQ/cN-g1UTC1WM/objpanel.png]
 
-The `Material context button` provides the following BlenderFDS `panel`:
+The `material context button` provides the following BlenderFDS `panel`, called for short `material properties panel`:
 
 [http://lh5.ggpht.com/_iTIkwVoSUm0/S9XrlclevJI/AAAAAAAAARM/FQQtjRFOKdQ/s512/matpanel.png]
