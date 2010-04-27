@@ -1,0 +1,119 @@
+#summary UsingBlenderFDS
+
+???
+
+<wiki:toc max_depth="2" />
+
+----
+
+== Blender `scenes` to FDS cases ==
+
+When exported, each Blender `scene` becomes an FDS case, that is an .fds text input file.
+
+In general, the user needs to simulate several scenarios with similar geometries and thermo-physical parameters. Only a small number of parameters are to be modified.
+The user builds the geometry into a Blender scene. Then duplicates the objects in several new scenes:
+ * the objects that do not change should be linked between the scenes to share exactly the same geometrical mesh and FDS parameters. If the user decides to modify the common geometry or the common thermo-physical parameters, all the linked objects from all scenes are modified accordingly.
+ * depending on the scenarios, some objects from specific scenes should have their own geometry and thermo-physical parameters. Then the user unlinks them from the common properties and they become independent.
+
+Each `scene` requires the user to enter several parameters in its `Scene panel`:
+
+[http://lh3.ggpht.com/_iTIkwVoSUm0/S9XrlsYrUQI/AAAAAAAAARU/QPfwEsWw07E/scenepanel.png]
+
+Let's explain each parameter of the `Scene panel`:
+
+ * *CHID* and *TITLE*: the CHID value is used as the default value for the exported FDS input file name. The CHID and TITLE values are also used to insert an appropriate `HEAD` namelist group. For Example:
+
+{{{
+&HEAD CHID='test 1', TITLE='This is a test fire, case 1' /
+}}}
+
+ * *Case Dir* is the default directory where the FDS input file is exported. Each `scene` can be exported to an FDS input file in its specified directory. FDS simulation results for each case will be stored in the appropriate directory.
+ 
+ * *Header* and *Header File*: if `Auto` is chosen, a default header file is automatically included in the FDS input file. If `File` is chosen, BlenderFDS includes the specified `Header file` verbatim in the FDS input file. The header file is a text file used to specify the non-geometrical FDS namelist groups, commonly edited with the user-preferred text editor. BlenderFDS performs no check to the header syntax. A tipical header file is the following:
+
+{{{
+&TIME T_END=900.0 /
+
+&REAC ID='polyurethane', SOOT_YIELD=0.1875, CO_YIELD=0.02775,
+      C=1.0, H=1.75, O=0.25, N=0.065,
+      HEAT_OF_COMBUSTION=25300., IDEAL=.TRUE. /
+      Gas phase reaction: polyurethane flexible foam (means) from
+      Tewarson SFPE Handbook 3rd ed,
+      SFPE handbook table 3-4.14, p. 3-112.
+
+&MATL ID='Gypsum plaster', CONDUCTIVITY=0.48,
+      SPECIFIC_HEAT=0.84, DENSITY=1440. /
+      Thermo-physical properties of gypsum plaster.
+
+&PROP ID='acme smoke detector', QUANTITY='CHAMBER OBSCURATION',
+      LENGTH=1.8, ACTIVATION_OBSCURATION=3.28 /
+      
+&ISOF QUANTITY='TEMPERATURE', VALUE(1)=60. /
+&ISOF QUANTITY='VISIBILITY', VALUE(1)=10. /
+&BNDF QUANTITY='ADIABATIC SURFACE TEMPERATURE' /
+}}}
+
+ * *Voxel Size* represents the dimension of the voxel employed to transform some of the Blender objects geometries in FDS boxes (See voxel parameter???). To obtain a reliable geometry description for the subsequent CFD simulation, the user should enter a voxel size that is at least half the smallest expected FDS mesh cell size.  
+
+== Export current Blender `scene` to an FDS input file ==
+
+Eventually the Blender `scene` is ready, the building geometry is modeled, the boundary conditions is assigned, the header file is prepared.
+
+The user selects the `File > Export > FDS Case (.fds)` menu and exports the current Blender `scene` to an FDS input file. The input file receives the default name entered in the `CHID` field of the `Scene panel`, and is saved in the default `Case dir` directory.
+
+[http://lh4.ggpht.com/_iTIkwVoSUm0/S9XoybN9T7I/AAAAAAAAAQ0/zdxvweS7V0E/s720/test_exportmenu_scenepanel.png]
+
+In the file browser window, the user can specify if he prefers to export visible objects only. This can be useful while debugging the exported geometry in Smokeview.
+
+== Blender object to one or more FDS namelist group ==
+
+Object panel:
+
+[http://lh4.ggpht.com/_iTIkwVoSUm0/S9XrlUfdvqI/AAAAAAAAARQ/cN-g1UTC1WM/objpanel.png]
+
+[http://lh4.ggpht.com/_iTIkwVoSUm0/S9XxUBWuJpI/AAAAAAAAARY/4lCVgLIjjH0/objpanel_DEVC.png]
+
+[http://lh6.ggpht.com/_iTIkwVoSUm0/S9XxUYGnmAI/AAAAAAAAARc/MDbsCFdii0w/objpanel_MESH.png]
+
+[http://lh5.ggpht.com/_iTIkwVoSUm0/S9XxUhW97wI/AAAAAAAAARg/eK0h5tXIJ38/objpanel_OBST.png]
+
+[http://lh5.ggpht.com/_iTIkwVoSUm0/S9XxUzmgUbI/AAAAAAAAARk/jyQDwkkxAA4/objpanel_SLCF.png]
+
+[http://lh4.ggpht.com/_iTIkwVoSUm0/S9XxU0f7LZI/AAAAAAAAARo/cs-z464nQMg/objpanel_VENT.png]
+
+Object not manifold:
+
+[http://lh3.ggpht.com/_iTIkwVoSUm0/S9XxeMT1ntI/AAAAAAAAARs/3qsCQn_LuDs/s800/objpanel_OBST_notmanifold1.png]
+
+[http://lh3.ggpht.com/_iTIkwVoSUm0/S9XxeChJdxI/AAAAAAAAARw/J3RffnzVoyI/s800/objpanel_OBST_notmanifold2.png]
+
+[http://lh5.ggpht.com/_iTIkwVoSUm0/S9Xxef42jrI/AAAAAAAAAR0/fLTILr3RH8w/s800/objpanel_OBST_notmanifold3.png]
+
+[http://lh4.ggpht.com/_iTIkwVoSUm0/S9XxeadBqsI/AAAAAAAAAR4/PHqujAQJDCs/s800/objpanel_OBST_notmanifold4.png]
+
+=== ID parameter ===
+
+=== XB parameter ===
+
+=== XYZ parameter ===
+
+=== PBX, PBY, PBZ parameter ===
+
+=== IJK parameter ===
+
+=== Custom parameters ===
+
+=== FYI parameter ===
+
+
+== Blender materials to FDS SURF namelist groups ==
+
+Material panel:
+
+[http://lh5.ggpht.com/_iTIkwVoSUm0/S9XrlclevJI/AAAAAAAAARM/FQQtjRFOKdQ/s512/matpanel.png]
+
+=== RGB and TRANSPARENCY parameters ===
+
+=== Custom parameters ===
+
+=== FYI parameter ===
