@@ -1,0 +1,151 @@
+#summary The idea behind BlenderFDS
+
+Here we talk about the idea behind BlenderFDS.
+
+<wiki:toc max_depth="2" />
+
+----
+
+== Blender files have a hierarchical structure ==
+
+Each Blender file contains a database. This database contains all `scenes`, `objects`, `meshes`, `materials`, `textures` etc. that are in the file. A file can contain multiple `scenes` and each `scene` can contain multiple `objects`. `Objects` are composed by `meshes` and can contain multiple `materials` which can contain many `textures`.
+
+The following outliner panel shows an example of this kind of data organization:
+
+[http://lh6.ggpht.com/_iTIkwVoSUm0/S9RHEMD992I/AAAAAAAAAPk/fzhQ1VVeJUs/outliner.png]
+
+=== Blender entities: `scenes`, `objects`, `meshes`, `materials` ===
+
+A Blender `scene` is a collection of `objects`.
+
+Each Blender `object` groups the `mesh`, that is the shape of the object, its `material` (color, transparency...) and the `texture` applied to its `material`. `Object` properties are manipulated in `Blender Object mode`.
+
+A Blender `mesh` is a collection of faces, edges, and vertices which can be modeled and manipulated in `Blender Edit Mode`. The Blender `mesh` is not to be confused with an FDS `MESH`. A Blender `mesh` is only a volume or a surface defined by vertices, edges and faces: it is a geometrical entity.
+
+A `vertex` is a 3-dimensional coordinate, representing a point in space. An `edge` is a straight, wire-like line representing the boundary of 2 adjacent vertices. A `face` is a planar connection of edges representing a boundary, field, or solid surface. Faces are always flat. Edges are always straight. An edge is formed by the intersection of 2 faces. Vertices are formed by the intersection of 3 or more faces. A cube has 6 faces, 12 edges and 8 vertices.
+
+=== Every Blender entity can be duplicated and linked to several parents ===
+
+It is also possible to create links between different entities, so that they share some information. For example, if you had a car `mesh`, you could use that car `mesh` for six cars in a parking lot scene. If you modify the car `mesh` all the six cars of the parking lot would inherit the modification.
+
+[http://lh6.ggpht.com/_iTIkwVoSUm0/S9RNwYe0iII/AAAAAAAAAPs/mweIZYjcnI4/faces_edges_vertices.gif]
+
+== FDS input file ==
+
+FDS input is a single text file. Input data is specified by namelist groups:
+
+[http://lh6.ggpht.com/_iTIkwVoSUm0/S9RcMDcpN_I/AAAAAAAAAP0/FGLcylEoDrQ/commented_command.png]
+
+Namelist groups are used to describe every aspect of the fire simulation: simulation name, duration, computational domain, geometry, boundary conditions, materials...
+
+=== Namelist groups that extend their action to geometric entities ===
+
+Many namelist groups extend their action to volumes, faces, segments, points, or planes:
+
+[http://lh4.ggpht.com/_iTIkwVoSUm0/S9RtI8r4qPI/AAAAAAAAAP8/AJ_dejUmFwk/geometric_entities.png]
+
+The simulated-ambient geometric description is entered line by line; the geometric entities are defined in each namelist group by the `XB, XYZ, PB* (PBX, PBY, PBZ)` parameters.
+
+FDS uses an unique global reference coordinate system, that conforms to the right hand rule. By default, the z axis is considered the vertical .FDS employs the units of measurement from the International System (SI). Lengths are expressed in _m_.
+
+A *volume* is always represented by a single right parallelepiped with edges parallel to the axis. Its position and dimensions are described by the coordinates of two opposite vertexes: if point A=(xA, yA, zA) and point B=(xB, yB, zB) are the opposite vertexes, its coordinates are entered as xA, xB, yA, yB, zA, zB. For example,
+
+{{{
+&OBST XB=0.5,1.5,2.0,3.5,-2.0,0., SURF_ID='wall' /
+}}}
+
+uses the parameter `XB` to define a solid obstacle that spans the volume starting at the origin (0.5,2.0,-2.0) and extending 1 m in the positive x direction, 1.5 m in the positive y direction, and 2 m in the positive z direction.
+
+A *face* is represented by a right plane face with edges parallel to the axis. Its position and dimensions are described by the coordinates of two opposite vertices, that must lie on the same plane. For example:
+
+{{{
+&VENT XB=0.5,1.1,2.0,3.1,-2.0,-2.0, SURF_ID='fire' /`
+}}}
+
+uses the parameter `XB` to define a flat face perpendicular to the z axis imposing a particular boundary condition over a solid. Two of the six coordinates are the same, denoting a flat face as opposed to a solid.
+
+A segment is bounded by two end points. If point A=(xA, yA, zA) and point B=(xB, yB, zB) are the end points, its coordinates are entered following the same convection valid for volumes. For example,
+
+{{{
+&DEVC XB=0.5,1.5,2.0,3.5,-2.0,0., QUANTITY='PATH OBSCURATION', ID='beam1', SETPOINT=0.33 /
+}}}
+
+is a beam smoke detector between (0.5,2.0,-2.0) and (1.5,3.5,0.) end points.
+
+A *point* is simply identified by its 3 coordinates. For example, the line:
+
+{{{
+&DEVC XYZ=2.,3.,4., QUANTITY='THERMOCOUPLE', ID='termo1' /
+}}}
+
+uses the parameter `XYZ` to insert a thermocouple at the point of coordinates (2.,3.,4.).
+
+A *plane* is represented by a right plane perpendicular to one of the reference axis. For example, these lines:
+
+{{{
+&SLCF PBX=0.5, QUANTITY='TEMPERATURE' /
+}}}
+
+is a plane perpendicular to the x axis and intersecting its point (.5,0.,0.).
+
+{{{
+&SLCF PBY=1.5, QUANTITY='TEMPERATURE' /
+}}}
+
+is a plane perpendicular to the y axis and intersecting its point (0.,1.5,0.).
+
+{{{
+&SLCF PBZ=-.5, QUANTITY='TEMPERATURE' /
+}}}
+
+is a plane perpendicular to the z axis and intersecting its point (0.,0.,-.5).
+
+All use the parameters `PBX, PBY, PBZ` to specify the coordinate in the direction of the perpendicular axis.
+
+== BlenderFDS links Blender entities to FDS namelist groups ==
+
+|| *Blender* || *FDS* ||
+|| Each file  || One or more FDS input files ||
+|| Each `scene`  || A case (one FDS input file) ||
+|| Each `object` || One or more namelist groups (`OBST, DEVC, VENT, HOLE, SLCF`...)||
+|| Each `material` || One `SURF` namelist group ||
+
+=== Each Blender `scene` is an FDS case ===
+
+Each Blender `scene` becomes an .fds text input file. So a single Blender file can contain several FDS cases. For example, the same parking lot can be duplicated in several scenes. The geometrical meshes and thermo-physical parameters of the cars could be inherited by all the scenes, the position of the cars could be varied according to the scenario.
+
+=== Each Blender `object` and its `material` are exported as one or more FDS namelist groups ===
+
+Each Blender `object` is linked to one or more FDS namelist groups, that extend their action to the geometry covered by the object `mesh` in Blender.
+
+For example:
+
+[http://lh6.ggpht.com/_iTIkwVoSUm0/S9R7_ruTD_I/AAAAAAAAAQE/E_oWFHJSzTk/testcase_obj2obst.png]
+
+That yellow Blender *Wall* `object` is exported as many `OBST` namelist groups that describe the round and carved geometry of the wall.
+
+The corresponding Blender material is yellow and named: `Gypsum wall`. That Blender entity is exported as an FDS `SURF` namelist containing all the user entered parameters:
+
+[http://lh4.ggpht.com/_iTIkwVoSUm0/S9R7_q6tBJI/AAAAAAAAAQI/tOy0t1Wc7DA/testcase_obj2surf.png]
+
+In particular, these Blender entities are exported to FDS as:
+
+{{{
+&SURF ID='Gypsum wall', RGB=204,199,56, MATL_ID='Gypsum plaster', THICKNESS=0.03 /
+
+&OBST ID='Wall', XB=-1.575,-1.375,-1.375,-0.475,-0.025,1.975, SURF_ID='Gypsum wall',
+      SAWTOOTH=.False., FYI='Voxelized walls' /
+&OBST ID='Wall_1', XB=-1.575,-1.375,-1.375,1.375,1.975,3.025, SURF_ID='Gypsum wall',
+      SAWTOOTH=.False., FYI='Voxelized walls' /
+&OBST ID='Wall_2', XB=-1.575,-1.375,0.475,1.375,-0.025,1.975, SURF_ID='Gypsum wall',
+      SAWTOOTH=.False., FYI='Voxelized walls' /
+&OBST ID='Wall_3', XB=-1.575,-0.675,-1.575,-1.525,-0.025,3.025, SURF_ID='Gypsum wall',
+      SAWTOOTH=.False., FYI='Voxelized walls' /
+&OBST ID='Wall_4', XB=-1.575,0.625,-1.525,-1.475,-0.025,3.025, SURF_ID='Gypsum wall',
+      SAWTOOTH=.False., FYI='Voxelized walls' /
+...
+}}}
+
+and visualized in Smokeview as a yellow round obstacle:
+
+[http://lh4.ggpht.com/_iTIkwVoSUm0/S9R_xKCnf3I/AAAAAAAAAQo/XU0L6qWHEMI/test_case_s0000.png]
