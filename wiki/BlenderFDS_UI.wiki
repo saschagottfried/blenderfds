@@ -42,7 +42,7 @@ The following picture shows the `3D view editor` in `edit mode`. At left there i
 
 == The `outliner editor` ==
 
-The `outliner editor` is a hierarchical diagram displaying a list of Blender entities and its dependencies. It is used for easily navigating a complex scene.
+The `outliner editor` is a hierarchical diagram displaying a list of Blender entities and its dependencies. It is used for easily navigating a complex `scene`.
 
 [http://lh6.ggpht.com/_iTIkwVoSUm0/S9RHEMD992I/AAAAAAAAAPk/fzhQ1VVeJUs/outliner.png]
 
