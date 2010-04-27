@@ -1,0 +1,17 @@
+#summary Dealing with non manifold objects
+
+???
+
+<wiki:toc max_depth="2" />
+
+----
+
+== ??? ==
+
+[http://lh3.ggpht.com/_iTIkwVoSUm0/S9XxeMT1ntI/AAAAAAAAARs/3qsCQn_LuDs/s912/objpanel_OBST_notmanifold1.png]
+
+[http://lh3.ggpht.com/_iTIkwVoSUm0/S9XxeChJdxI/AAAAAAAAARw/J3RffnzVoyI/s912/objpanel_OBST_notmanifold2.png]
+
+[http://lh5.ggpht.com/_iTIkwVoSUm0/S9Xxef42jrI/AAAAAAAAAR0/fLTILr3RH8w/s912/objpanel_OBST_notmanifold3.png]
+
+[http://lh4.ggpht.com/_iTIkwVoSUm0/S9XxeadBqsI/AAAAAAAAAR4/PHqujAQJDCs/s912/objpanel_OBST_notmanifold4.png]
