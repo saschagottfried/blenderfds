@@ -1,0 +1,19 @@
+#summary Blender materials to FDS SURFs
+
+???
+
+<wiki:toc max_depth="2" />
+
+----
+
+== Blender materials to FDS SURF namelist groups ==
+
+Material panel:
+
+[http://lh5.ggpht.com/_iTIkwVoSUm0/S9XrlclevJI/AAAAAAAAARM/FQQtjRFOKdQ/s512/matpanel.png]
+
+=== RGB and TRANSPARENCY parameters ===
+
+=== Custom parameters ===
+
+=== FYI parameter ===
