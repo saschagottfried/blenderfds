@@ -7,5 +7,5 @@
  * [BlenderFDS_UI BlenderFDS user interface]
  * [BlenderObjectsToFDSNamelistGroups Blender objects to FDS namelist groups]
  * [NonManifoldObjects Dealing with non-manifold objects]
- * [BlenderMaterialsToFDSSURF Blender materials to FDS SURF boundary conditions]
+ * [BlenderMaterialsToFDSSURF Blender materials to FDS SURFs]
  * [BlenderScenesToFDSCases Blender scenes to FDS cases]
