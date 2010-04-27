@@ -2,7 +2,7 @@
 
 Each Blender `object` is exported as one or more FDS namelist groups sharing the same parameters. The FDS parameters assigned to each `object` are specified in the `object properties panel`. Some of the displayed properties change depending on the associated namelist group.
 
-The architectural model should be ???
+The user should build the architectural model splitting the elements in homogeneous parts from the thermo-physical point of view: each `object` can only have one set of FDS parameters assigned.
 
 <wiki:toc max_depth="2" />
 
@@ -10,27 +10,32 @@ The architectural model should be ???
 
 == FDS Namelist group parameters ==
 
-Object panel:
+=== `ID` parameter ===
 
-[http://lh4.ggpht.com/_iTIkwVoSUm0/S9XrlUfdvqI/AAAAAAAAARQ/cN-g1UTC1WM/objpanel.png]
+=== `FYI` parameter ===
 
-[http://lh4.ggpht.com/_iTIkwVoSUm0/S9XxUBWuJpI/AAAAAAAAARY/4lCVgLIjjH0/objpanel_DEVC.png]
+=== `IJK` parameter ===
+
+Adapt voxel button
 
 [http://lh6.ggpht.com/_iTIkwVoSUm0/S9XxUYGnmAI/AAAAAAAAARc/MDbsCFdii0w/objpanel_MESH.png]
 
+=== 'SAWTOOTH` parameter ===
+
 [http://lh5.ggpht.com/_iTIkwVoSUm0/S9XxUhW97wI/AAAAAAAAARg/eK0h5tXIJ38/objpanel_OBST.png]
 
-[http://lh5.ggpht.com/_iTIkwVoSUm0/S9XxUzmgUbI/AAAAAAAAARk/jyQDwkkxAA4/objpanel_SLCF.png]
+=== `Custom parameters` ===
+
+
+Object panel:
+
+
+
+
+
 
 [http://lh4.ggpht.com/_iTIkwVoSUm0/S9XxU0f7LZI/AAAAAAAAARo/cs-z464nQMg/objpanel_VENT.png]
 
-=== ID parameter ===
-
-=== IJK parameter ===
-
-=== Custom parameters ===
-
-=== FYI parameter ===
 
 
 == Exporting the geometry ==
@@ -146,7 +151,11 @@ No `XYZ` parameter is added to the exported namelist group.
 
 BlenderFDS calculates the global coordinates of the Blender `object` `vertices`. The resulting coordinates are exported as `XYZ` parameters of many FDS namelist group, one for each `vertex`.
 
-For example, this `XYZ` setting can be used to describe a group of thermocouples, sharing the same parameters. The user creates an `object` made of independent `vertices` distributed inside the building, and obtains a series like this:
+For example, this `XYZ` setting can be used to describe a group of thermocouples, sharing the same parameters:
+
+[http://lh4.ggpht.com/_iTIkwVoSUm0/S9XxUBWuJpI/AAAAAAAAARY/4lCVgLIjjH0/objpanel_DEVC.png]
+
+The user creates an `object` made of independent `vertices` distributed inside the building, and obtains a series like this:
 
 {{{
 &DEVC ID='Thermocouple serie', XYZ=-0.000,0.000,0.100, QUANTITY='THERMOCOUPLE' /
@@ -180,7 +189,11 @@ BlenderFDS calculates the bounding box in global coordinates of the Blender `obj
 
 Of course. it is much more clean and less prone to errors to model "straight" `faces`, acceptable by FDS as planes without transformation.
 
-For example, this `PB*` setting can be used to input several `SLCFs` that share the same parameters: the user creates an `object` made of separate `faces` distributed inside the building, and obtains a series of `SLCFs`:
+For example, this `PB*` setting can be used to input several `SLCFs` that share the same parameters:
+
+[http://lh5.ggpht.com/_iTIkwVoSUm0/S9XxUzmgUbI/AAAAAAAAARk/jyQDwkkxAA4/objpanel_SLCF.png]
+
+The user creates an `object` made of separate `faces` distributed inside the building, and obtains a series of `SLCFs`:
 
 {{{
 &SLCF QUANTITY='TEMPERATURE', VECTOR=.TRUE., PBX=0.000 /
