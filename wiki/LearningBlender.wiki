@@ -1,0 +1,43 @@
+#summary Learning Blender
+
+The Blender windowing system is a treat. It looks like some sort of space-ship control panel and you have never seen anything like it. The learning curve can be steep, and new users can be discouraged at first.
+
+Once you learn it, however, you'll wish all your programs worked this way.
+
+The following is a short list of educational resources for Blender. Many of these resources are for _Blender 2.49_, and are now being transitioned to _Blender 2.5x series_. So, please, be patient.
+
+<wiki:toc max_depth="2" />
+
+----
+
+== Two starting points ==
+
+Here are two blog entries from Yorik van Havre blog. These are general but step-by-step introduction to quick architecture modelling with Blender.
+
+ * [http://yorik.uncreated.net/tutorials/architecture-blender.html]
+ * [http://yorik.uncreated.net/tutorials/precisionmodelling-blender.html]
+
+== Good books ==
+
+ * [https://www.packtpub.com/create-3d-architecture-buildings-scenery-with-blender/book Allan Brito, "Blender 3D Architecture, Buildings, and Scenery", Packt Publishing]
+ * [http://en.wikibooks.org/wiki/Blender_3D] Free wikibooks
+ * [http://www.cdschools.org/54223045235521/blank/browse.asp?A=383&BMDRN=2000&BCOB=0&C=55205 Free course book from Central Dauphin High School]
+
+[http://lh5.ggpht.com/_iTIkwVoSUm0/S9Qz8l16FUI/AAAAAAAAAPY/euyK4I6s0uU/Allan%20Brito%20book.png]
+
+== General web resources ==
+
+ * [http://www.blender.org/education-help/] Blender official support page (manual, tutorials...)
+ * [http://blenderartists.org/] Independent support forum
+ * [http://www.blendercookie.com]
+ * [http://www.blenderguru.com/] 
+
+== Blender for architecture modeling ==
+
+ * [http://www.blender3darchitect.com/]
+ * [http://blender-archi.tuxfamily.org/]
+
+== News sites ==
+
+  * [http://www.blendernation.com/] Blender Nation, fresh Blender news, every day
+  * [http://blenderart.org/] Blender Art magazine
