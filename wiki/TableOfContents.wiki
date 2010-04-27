@@ -6,3 +6,4 @@
  * [TheIdeaBehindBlenderFDS The idea behind BlenderFDS]
  * [BlenderFDS_UI BlenderFDS user interface]
  * [UsingBlenderFDS Using BlenderFDS]
+ * [NonManifoldObjects Dealing with non-manifold objects]
