@@ -6,7 +6,7 @@
 
 ----
 
-== Manifold what? ==
+== Non-manifold, what? ==
 
 Before you begin modeling, always remember that when you are modeling an object that needs to be _voxelized_, you should create a volume that make sense in a physical world: _water-tight_ and _well-formed_ so that BlenderFDS can decide which portion of space is solid and which is instead void.
 
