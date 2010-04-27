@@ -20,21 +20,15 @@ Adapt voxel button
 
 [http://lh6.ggpht.com/_iTIkwVoSUm0/S9XxUYGnmAI/AAAAAAAAARc/MDbsCFdii0w/objpanel_MESH.png]
 
+=== 'SURF_ID` parameter ===
+
+[http://lh4.ggpht.com/_iTIkwVoSUm0/S9XxU0f7LZI/AAAAAAAAARo/cs-z464nQMg/objpanel_VENT.png]
+
 === 'SAWTOOTH` parameter ===
 
 [http://lh5.ggpht.com/_iTIkwVoSUm0/S9XxUhW97wI/AAAAAAAAARg/eK0h5tXIJ38/objpanel_OBST.png]
 
 === `Custom parameters` ===
-
-
-Object panel:
-
-
-
-
-
-
-[http://lh4.ggpht.com/_iTIkwVoSUm0/S9XxU0f7LZI/AAAAAAAAARo/cs-z464nQMg/objpanel_VENT.png]
 
 
 
@@ -153,8 +147,6 @@ BlenderFDS calculates the global coordinates of the Blender `object` `vertices`.
 
 For example, this `XYZ` setting can be used to describe a group of thermocouples, sharing the same parameters:
 
-[http://lh4.ggpht.com/_iTIkwVoSUm0/S9XxUBWuJpI/AAAAAAAAARY/4lCVgLIjjH0/objpanel_DEVC.png]
-
 The user creates an `object` made of independent `vertices` distributed inside the building, and obtains a series like this:
 
 {{{
@@ -171,7 +163,9 @@ The user creates an `object` made of independent `vertices` distributed inside t
 
 BlenderFDS calculates the global coordinates of the Blender `object` `center`. The resulting coordinates are exported as `XYZ` parameter of one only FDS namelist group.
 
-The `object` `center` is the small dot that appears when the Blender `object` is selected in `object mode`. It is the `object` local reference system origin.
+The `object` `center` is the small dot that appears when the Blender `object` is selected in `object mode`. It is the `object` local reference system origin:
+
+[http://lh4.ggpht.com/_iTIkwVoSUm0/S9XxUBWuJpI/AAAAAAAAARY/4lCVgLIjjH0/objpanel_DEVC.png]
 
 == `PB*` parameter ==
 
