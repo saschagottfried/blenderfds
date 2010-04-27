@@ -125,10 +125,12 @@ BlenderFDS calculates the global coordinates of the Blender `object` `vertices`.
 For example, this `XYZ` setting can be used to describe a group of thermocouples, sharing the same parameters. The user creates an `object` made of independent `vertices` distributed inside the building, and obtains a series like this:
 
 {{{
-&DEVC ID='Beam detectors', XB=0.029,-1.271,-1.235,1.307,2.500,2.500,
-      QUANTITY='PATH OBSCURATION', SETPOINT=0.33 , FYI='Two detectors' /
-&DEVC ID='Beam detectors_1', XB=1.217,-1.271,0.043,1.307,2.500,2.500,
-      QUANTITY='PATH OBSCURATION', SETPOINT=0.33 , FYI='Two detectors' /
+&DEVC ID='Thermocouple serie', XYZ=-0.000,0.000,0.100, QUANTITY='THERMOCOUPLE' /
+&DEVC ID='Thermocouple serie_1', XYZ=-0.000,0.000,0.400, QUANTITY='THERMOCOUPLE' /
+&DEVC ID='Thermocouple serie_2', XYZ=-0.000,0.000,0.700, QUANTITY='THERMOCOUPLE' /
+&DEVC ID='Thermocouple serie_3', XYZ=-0.000,0.000,1.000, QUANTITY='THERMOCOUPLE' /
+&DEVC ID='Thermocouple serie_4', XYZ=-0.000,0.000,1.300, QUANTITY='THERMOCOUPLE' /
+&DEVC ID='Thermocouple serie_5', XYZ=-0.000,0.000,1.600, QUANTITY='THERMOCOUPLE' /
 }}}
 
 
