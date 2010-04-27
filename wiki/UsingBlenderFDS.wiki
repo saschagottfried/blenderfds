@@ -6,6 +6,83 @@
 
 ----
 
+The architectural model should be
+
+Each Blender `object` is exported as one or more FDS namelist groups sharing the same parameters. The FDS parameters assigned to each `object` are specified in the `object properties panel`. Some of the displayed properties change depending on the associated namelist group.
+
+== Exported geometry ==
+
+A Blender `object` is transformed into one or more FDS namelist groups depending on the complexity of its geometry and on the user requirements.
+
+=== `XB` ===
+
+|| *XB* || *Exported as* ||
+|| None || Nothing ||
+|| Voxels || Voxelized solid ||
+|| BBox || Bounding box ||
+|| Faces || Faces, one for each face of the Blender `object` ||
+|| Edges || Segments, one for each edge of the Blender `object` ||
+
+When `XB` is set to `None`, no `XB` parameter is added to the namelist group.
+
+When `XB` is set to `Voxels` the Blender 'object' is treated by a voxelization algorithm that approximates its geometry as if it was a [http://www.lego.com Lego building].
+The building brick is named _voxel_, and its size is specified by the user in the `scene properties panel`.
+
+[http://lh5.ggpht.com/_iTIkwVoSUm0/S9dLEyo67MI/AAAAAAAAASc/yvSFrr20JEI/lego_building.jpg] 
+
+When possible, BlenderFDS melts the voxels together in larger _boxes_ to minimize the number of lines of the FDS input file. The boxes sides are always aligned with the global reference system axis, as required by FDS.
+
+[http://lh6.ggpht.com/_iTIkwVoSUm0/S9dRqlKwESI/AAAAAAAAASo/uu5-xDqgHe8/voxelization.png]
+
+
+
+== Blender object to one or more FDS namelist groups ==
+
+
+
+Object panel:
+
+[http://lh4.ggpht.com/_iTIkwVoSUm0/S9XrlUfdvqI/AAAAAAAAARQ/cN-g1UTC1WM/objpanel.png]
+
+[http://lh4.ggpht.com/_iTIkwVoSUm0/S9XxUBWuJpI/AAAAAAAAARY/4lCVgLIjjH0/objpanel_DEVC.png]
+
+[http://lh6.ggpht.com/_iTIkwVoSUm0/S9XxUYGnmAI/AAAAAAAAARc/MDbsCFdii0w/objpanel_MESH.png]
+
+[http://lh5.ggpht.com/_iTIkwVoSUm0/S9XxUhW97wI/AAAAAAAAARg/eK0h5tXIJ38/objpanel_OBST.png]
+
+[http://lh5.ggpht.com/_iTIkwVoSUm0/S9XxUzmgUbI/AAAAAAAAARk/jyQDwkkxAA4/objpanel_SLCF.png]
+
+[http://lh4.ggpht.com/_iTIkwVoSUm0/S9XxU0f7LZI/AAAAAAAAARo/cs-z464nQMg/objpanel_VENT.png]
+
+=== ID parameter ===
+
+=== XB parameter ===
+
+=== XYZ parameter ===
+
+=== PBX, PBY, PBZ parameter ===
+
+=== IJK parameter ===
+
+=== Custom parameters ===
+
+=== FYI parameter ===
+
+
+== Blender materials to FDS SURF namelist groups ==
+
+Material panel:
+
+[http://lh5.ggpht.com/_iTIkwVoSUm0/S9XrlclevJI/AAAAAAAAARM/FQQtjRFOKdQ/s512/matpanel.png]
+
+=== RGB and TRANSPARENCY parameters ===
+
+=== Custom parameters ===
+
+=== FYI parameter ===
+
+
+
 == Blender `scenes` to FDS cases ==
 
 When exported, each Blender `scene` becomes an FDS case, that is an .fds text input file.
@@ -64,56 +141,3 @@ The user selects the `File > Export > FDS Case (.fds)` menu and exports the curr
 [http://lh4.ggpht.com/_iTIkwVoSUm0/S9XoybN9T7I/AAAAAAAAAQ0/zdxvweS7V0E/s720/test_exportmenu_scenepanel.png]
 
 In the file browser window, the user can specify if he prefers to export visible objects only. This can be useful while debugging the exported geometry in Smokeview.
-
-== Blender object to one or more FDS namelist groups ==
-
-Object panel:
-
-[http://lh4.ggpht.com/_iTIkwVoSUm0/S9XrlUfdvqI/AAAAAAAAARQ/cN-g1UTC1WM/objpanel.png]
-
-[http://lh4.ggpht.com/_iTIkwVoSUm0/S9XxUBWuJpI/AAAAAAAAARY/4lCVgLIjjH0/objpanel_DEVC.png]
-
-[http://lh6.ggpht.com/_iTIkwVoSUm0/S9XxUYGnmAI/AAAAAAAAARc/MDbsCFdii0w/objpanel_MESH.png]
-
-[http://lh5.ggpht.com/_iTIkwVoSUm0/S9XxUhW97wI/AAAAAAAAARg/eK0h5tXIJ38/objpanel_OBST.png]
-
-[http://lh5.ggpht.com/_iTIkwVoSUm0/S9XxUzmgUbI/AAAAAAAAARk/jyQDwkkxAA4/objpanel_SLCF.png]
-
-[http://lh4.ggpht.com/_iTIkwVoSUm0/S9XxU0f7LZI/AAAAAAAAARo/cs-z464nQMg/objpanel_VENT.png]
-
-Object not manifold:
-
-[http://lh3.ggpht.com/_iTIkwVoSUm0/S9XxeMT1ntI/AAAAAAAAARs/3qsCQn_LuDs/s800/objpanel_OBST_notmanifold1.png]
-
-[http://lh3.ggpht.com/_iTIkwVoSUm0/S9XxeChJdxI/AAAAAAAAARw/J3RffnzVoyI/s800/objpanel_OBST_notmanifold2.png]
-
-[http://lh5.ggpht.com/_iTIkwVoSUm0/S9Xxef42jrI/AAAAAAAAAR0/fLTILr3RH8w/s800/objpanel_OBST_notmanifold3.png]
-
-[http://lh4.ggpht.com/_iTIkwVoSUm0/S9XxeadBqsI/AAAAAAAAAR4/PHqujAQJDCs/s800/objpanel_OBST_notmanifold4.png]
-
-=== ID parameter ===
-
-=== XB parameter ===
-
-=== XYZ parameter ===
-
-=== PBX, PBY, PBZ parameter ===
-
-=== IJK parameter ===
-
-=== Custom parameters ===
-
-=== FYI parameter ===
-
-
-== Blender materials to FDS SURF namelist groups ==
-
-Material panel:
-
-[http://lh5.ggpht.com/_iTIkwVoSUm0/S9XrlclevJI/AAAAAAAAARM/FQQtjRFOKdQ/s512/matpanel.png]
-
-=== RGB and TRANSPARENCY parameters ===
-
-=== Custom parameters ===
-
-=== FYI parameter ===
