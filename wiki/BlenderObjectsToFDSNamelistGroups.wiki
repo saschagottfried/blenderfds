@@ -37,7 +37,7 @@ Object panel:
 
 A Blender `object` is transformed into one or more FDS namelist groups depending on the complexity of its geometry and on the user requirements. The exported geometry is set using the `XB`, `XYZ`, and `PB*` (`PBX, PBY, PBZ`) `object` parameters.
 
-== The `XB` parameter ==
+== `XB` parameter ==
 
 || *Blender `object` `XB` set to* || *Exported as* || *Number of FDS namelist groups* ||
 || None || Nothing || None ||
@@ -131,7 +131,7 @@ For example, this `XB` setting can be used to describe a group of beam detectors
 ...
 }}}
 
-== The `XYZ` parameter ==
+== `XYZ` parameter ==
 
 || *Blender `object` `XYZ` set to* || *Exported as* || *Number of FDS namelist groups* ||
 || None || Nothing || None ||
@@ -164,7 +164,7 @@ BlenderFDS calculates the global coordinates of the Blender `object` `center`. T
 
 The `object` `center` is the small dot that appears when the Blender `object` is selected in `object mode`. It is the `object` local reference system origin.
 
-== The `PB*` parameter ==
+== `PB*` parameter ==
 
 || *Blender `object` `PB*` set to* || *Exported as* || *Number of FDS namelist groups* ||
 || None || Nothing || None ||
