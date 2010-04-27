@@ -56,7 +56,7 @@ No `XB` parameter is added to the exported namelist group.
 
 === `XB` set to `Voxels` ===
 
-The Blender `object` is treated by a voxelization algorithm that approximates its geometry as if it was a [http://www.lego.com Lego building]. The building brick is named _voxel_, and its size is specified by the user in the `scene properties panel` (See [BlenderScenesToFDSCases#Voxel_Size]).
+The Blender `object` is treated by a voxelization algorithm that approximates its geometry as if it was a [http://www.lego.com Lego building]. The building brick is named _voxel_, and its size is specified by the user in the `scene properties panel` (See [BlenderScenesToFDSCases]).
 
 [http://lh5.ggpht.com/_iTIkwVoSUm0/S9dLEyo67MI/AAAAAAAAASc/yvSFrr20JEI/lego_building.jpg] 
 
