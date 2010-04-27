@@ -10,11 +10,13 @@ The architectural model should be
 
 Each Blender `object` is exported as one or more FDS namelist groups sharing the same parameters. The FDS parameters assigned to each `object` are specified in the `object properties panel`. Some of the displayed properties change depending on the associated namelist group.
 
-== Exported geometry ==
+== Blender object to FDS namelist groups ==
+
+== Exporting the geometry ==
 
 A Blender `object` is transformed into one or more FDS namelist groups depending on the complexity of its geometry and on the user requirements. The exported geometry is set using the `XB`, `XYZ`, and `PB*` (`PBX, PBY, PBZ`) `object` parameters.
 
-== Exported geometry: `XB` parameter ==
+== The `XB` parameter ==
 
 || *Blender `object` `XB` set to* || *Exported as* || *Number of FDS namelist groups* ||
 || None || Nothing || None ||
@@ -108,7 +110,7 @@ For example, this `XB` setting can be used to describe a group of beam detectors
 ...
 }}}
 
-== Exported geometry: `XYZ` parameter ==
+== The `XYZ` parameter ==
 
 || *Blender `object` `XYZ` set to* || *Exported as* || *Number of FDS namelist groups* ||
 || None || Nothing || None ||
@@ -141,7 +143,7 @@ BlenderFDS calculates the global coordinates of the Blender `object` `center`. T
 
 The `object` `center` is the small dot that appears when the Blender `object` is selected in `object mode`. It is the `object` local reference system origin.
 
-== Exported geometry: `PB*` parameter ==
+== The `PB*` parameter ==
 
 || *Blender `object` `PB*` set to* || *Exported as* || *Number of FDS namelist groups* ||
 || None || Nothing || None ||
@@ -168,7 +170,7 @@ For example, this `PB*` setting can be used to input several `SLCFs` that share 
 
 
 
-== Blender object to one or more FDS namelist groups ==
+== Blender object to FDS namelist groups ==
 
 
 
@@ -188,11 +190,7 @@ Object panel:
 
 === ID parameter ===
 
-=== XB parameter ===
 
-=== XYZ parameter ===
-
-=== PBX, PBY, PBZ parameter ===
 
 === IJK parameter ===
 
