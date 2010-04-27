@@ -39,9 +39,25 @@ The voxelization algorithm needs a _manifold object_. This means that the `objec
 
 There is a specific page that explain how to deal with this problem: [NonManifoldObject Dealing with non-manifold objects].
 
-The overall shape of the object is conserved as much as possible:
+The overall shape of the `object` is conserved as much as possible:
 
 [http://lh6.ggpht.com/_iTIkwVoSUm0/S9dgyoPwZrI/AAAAAAAAAS0/Lp5CL2daR5c/voxels_shape.png]
+
+The Blender `object` is exported to many FDS namelist groups sharing the same parameters, for example:
+
+{{{
+&OBST ID='Wall', XB=-1.575,-1.375,-1.375,-0.475,-0.025,1.975, SURF_ID='Gypsum wall',
+      SAWTOOTH=.False., FYI='Voxelized walls' /
+&OBST ID='Wall_1', XB=-1.575,-1.375,-1.375,1.375,1.975,3.025, SURF_ID='Gypsum wall',
+      SAWTOOTH=.False., FYI='Voxelized walls' /
+&OBST ID='Wall_2', XB=-1.575,-1.375,0.475,1.375,-0.025,1.975, SURF_ID='Gypsum wall',
+      SAWTOOTH=.False., FYI='Voxelized walls' /
+&OBST ID='Wall_3', XB=-1.575,-0.675,-1.575,-1.525,-0.025,3.025, SURF_ID='Gypsum wall',
+      SAWTOOTH=.False., FYI='Voxelized walls' /
+&OBST ID='Wall_4', XB=-1.575,0.625,-1.525,-1.475,-0.025,3.025, SURF_ID='Gypsum wall',
+      SAWTOOTH=.False., FYI='Voxelized walls' /
+...
+}}}
 
 === `XB` set to `BBox` ===
 
@@ -50,6 +66,13 @@ BlenderFDS calculates the bounding box in global coordinates of the `object`. Th
 The overall shape of the object is not conserved:
 
 [http://lh6.ggpht.com/_iTIkwVoSUm0/S9dgyfvZf5I/AAAAAAAAASw/mbMTAOg73MU/bbox_shape.png]
+
+The Blender `object` is exported to one only FDS namelist group, for example:
+
+{{{
+&OBST ID='Wall', XB=0.123,2.233,0.123,2.233,0.123,2.233, SURF_ID='Gypsum wall',
+      FYI='BBox wall' /
+}}}
 
 == Blender object to one or more FDS namelist groups ==
 
