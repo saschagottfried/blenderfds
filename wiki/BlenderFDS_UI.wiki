@@ -17,10 +17,10 @@ The `editors` are non-overlapping parts of the UI that divide the Blender applic
 [http://lh5.ggpht.com/_iTIkwVoSUm0/S9Q9XPLQ0sI/AAAAAAAAAPc/htwJl2k8C3A/650px-Ui-organization.jpg]
 
 The previous figure shows the following `editors`:
- * `3D view editor`, on the top left, that show a 3D view of the `scene`.
- * `outliner editor`, on the top right, that lists the created Blender entities and their relations.
- * `properties editor`, on the bottom right, that groups options and properties of Blender entities.
- * `timeline editor`, on the bottom left, that is of no use for BlenderFDS and can be closed.
+ * `3D view editor` at the upper left side, that show a 3D view of the `scene`.
+ * `outliner editor` at the upper right side, that lists the created Blender entities and their relations.
+ * `properties editor` at the bottom right side, that groups options and properties of Blender entities.
+ * `timeline editor` at the bottom left side, that is of no use for BlenderFDS and can be closed.
 
 == Split and combine `editors` ==
 
@@ -28,13 +28,17 @@ In the upper right hand corner of an editor is the `editor splitter widget`. It 
 
 == Fold and unfold `headers` ==
 
-To hide an `header`, just drag the header down till it folds. To unhide it, click on the small `plus` icon at the bottom.
+To hide an `header`, just drag the header down till it folds. To unhide it, click on the small white `plus` icon.
 
 == The `3D view editor` ==
 
-The `3D view editor` is used for viewing and editing `scenes`. The `tool shelf` and the `properties` of the `3D view editor` can be unfolded by typing the T and N key.
+The `3D view editor` is used for viewing and editing `scenes`. The `tool shelf` and the `properties` of the `3D view editor` can be unfolded by clicking on the small white `plus` icon at the upper left and upper right corners of the `editor`.
 
-BlenderFDS proposes some specific tools for dealing with non-manifold meshes at the bottom of the `tool shelf` in `Edit mode`.
+BlenderFDS proposes some specific tools for [http://code.google.com/p/blenderfds/wiki/NonManifoldObjects dealing with non-manifold objects] at the bottom of the `tool shelf` in `Edit mode`.
+
+The following picture shows the `3D view editor` in `edit mode`. At left there is the `tool shelf` with its `FDS Tools panel`. At right the `properties panel` is unfolded.
+
+[http://lh5.ggpht.com/_iTIkwVoSUm0/S9Xxef42jrI/AAAAAAAAAR0/fLTILr3RH8w/s912/objpanel_OBST_notmanifold3.png]
 
 == The `outliner editor` ==
 
