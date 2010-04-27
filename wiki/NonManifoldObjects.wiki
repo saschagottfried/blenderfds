@@ -1,4 +1,4 @@
-#summary Dealing with non manifold objects
+#summary Dealing with non-manifold objects
 
 ???
 
