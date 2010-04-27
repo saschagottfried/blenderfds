@@ -65,7 +65,7 @@ The user selects the `File > Export > FDS Case (.fds)` menu and exports the curr
 
 In the file browser window, the user can specify if he prefers to export visible objects only. This can be useful while debugging the exported geometry in Smokeview.
 
-== Blender object to one or more FDS namelist group ==
+== Blender object to one or more FDS namelist groups ==
 
 Object panel:
 
