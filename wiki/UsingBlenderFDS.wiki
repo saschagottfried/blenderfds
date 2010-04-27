@@ -43,7 +43,7 @@ The overall shape of the `object` is conserved as much as possible:
 
 [http://lh6.ggpht.com/_iTIkwVoSUm0/S9dgyoPwZrI/AAAAAAAAAS0/Lp5CL2daR5c/voxels_shape.png]
 
-The Blender `object` is exported to many FDS namelist groups sharing the same parameters, for example:
+The Blender `object` is exported to many FDS namelist groups sharing the same parameters, and covering the same geometry. For example:
 
 {{{
 &OBST ID='Wall', XB=-1.575,-1.375,-1.375,-0.475,-0.025,1.975, SURF_ID='Gypsum wall',
@@ -61,9 +61,9 @@ The Blender `object` is exported to many FDS namelist groups sharing the same pa
 
 === `XB` set to `BBox` ===
 
-BlenderFDS calculates the bounding box in global coordinates of the `object`. The resulting box coordinates are the exported as an `XB` parameter of one FDS namelist group.
+BlenderFDS calculates the bounding box in global coordinates of the `object`. The resulting box coordinates are exported as `XB` parameter of one FDS namelist group.
 
-The overall shape of the object is not conserved:
+The overall shape of the `object` is not conserved:
 
 [http://lh6.ggpht.com/_iTIkwVoSUm0/S9dgyfvZf5I/AAAAAAAAASw/mbMTAOg73MU/bbox_shape.png]
 
@@ -73,6 +73,37 @@ The Blender `object` is exported to one only FDS namelist group, for example:
 &OBST ID='Wall', XB=0.123,2.233,0.123,2.233,0.123,2.233, SURF_ID='Gypsum wall',
       FYI='BBox wall' /
 }}}
+
+=== `XB` set to `Faces` ===
+
+BlenderFDS calculates the bounding box in global coordinates of the Blender `object` `faces`. Each `face` is then flattened, and its edges straightened. The result is a group of right plane faces with edges parallel to the global axis, as required by FDS.  The resulting coordinates are exported as `XB` parameters of many FDS namelist group, one for each face.
+
+Of course. it is much more clean and less prone to errors to model faces that are already "straight".
+
+For example, this `XB` setting can be profitably employed to describe several `VENTs` that share the same parameters: the user creates an `object` made of separate `faces` distributed inside the building, and obtains a series of homogeneous `VENTs`:
+
+{{{
+&VENT ID='Fan', XB=5.000,6.000,0.000,1.000,7.134,7.134, SURF_ID='Supply',
+      DEVC_ID='Sd1' /
+&VENT ID='Fan_1', XB=5.000,6.000,11.000,12.000,7.134,7.134, SURF_ID='Supply', 
+      DEVC_ID='Sd1' /
+&VENT ID='Fan_2', XB=5.000,6.000,32.000,33.000,7.134,7.134, SURF_ID='Supply',
+      DEVC_ID='Sd1' /
+...
+}}}
+
+=== `XB` set to `Edges` ===
+
+BlenderFDS calculates the end points global coordinates of the Blender `object` `edges`. The resulting coordinates are exported as `XB` parameters of many FDS namelist group, one for each edge.
+
+For example, this `XB` setting can be used to describe a group of beam detectors: the user creates an `object` made of indipendent `edges` distributed inside the building, and obtains such a series:
+
+{{{
+???
+}}}
+
+
+
 
 == Blender object to one or more FDS namelist groups ==
 
