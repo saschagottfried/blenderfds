@@ -16,12 +16,12 @@ A Blender `object` is transformed into one or more FDS namelist groups depending
 
 == Exported geometry: `XB` parameter ==
 
-|| *Blender `object` `XB` set to* || *Exported as* || *Number of FDS namelist groups* || Possible problems ||
-|| None || Nothing || None || None ||
-|| Voxels || Voxelized solid || Many || `Object` non-manifold ||
-|| BBox || Bounding box || Only one || None ||
-|| Faces || Faces, one for each face of the Blender `object` || Number of Blender `mesh` faces || No faces ||
-|| Edges || Segments, one for each edge of the Blender `object` || Number of Blender `mesh` edges || No edges ||
+|| *Blender `object` `XB` set to* || *Exported as* || *Number of FDS namelist groups* ||
+|| None || Nothing || None ||
+|| Voxels || Voxelized solid || Many ||
+|| BBox || Bounding box || Only one ||
+|| Faces || Faces, one for each face of the Blender `object` || Number of `object mesh faces` ||
+|| Edges || Segments, one for each edge of the Blender `object` || Number of `object mesh edges` ||
 
 === `XB` set to `None` ===
 
@@ -33,11 +33,11 @@ The Blender `object` is treated by a voxelization algorithm that approximates it
 
 [http://lh5.ggpht.com/_iTIkwVoSUm0/S9dLEyo67MI/AAAAAAAAASc/yvSFrr20JEI/lego_building.jpg] 
 
-When possible, BlenderFDS melts the voxels together in larger _boxes_ to minimize the number of lines of the FDS input file. The boxes sides are always aligned with the global reference system axis, as required by FDS:
+When possible, BlenderFDS joins the voxels together in larger _boxes_ to minimize the number of lines of the FDS input file. The boxes sides are always aligned with the global reference system axis, as required by FDS:
 
 [http://lh6.ggpht.com/_iTIkwVoSUm0/S9dRqlKwESI/AAAAAAAAASo/uu5-xDqgHe8/voxelization.png]
 
-The voxelization algorithm needs a _manifold object_. This means that the `object mesh` should be water-tight and well-formed so that BlenderFDS can decide which portion of space is solid and which is instead void. If the object is not manifold, an error message is displayed and `XB` is set to `BBox`.
+The voxelization algorithm treats only _manifold objects_. This means that the `object mesh` should be water-tight and well-formed so that BlenderFDS can decide which portion of space is solid and which is instead void. If the `object` is not manifold, an error message is displayed and `XB` is set to `BBox`.
 
 There is a specific page that explain how to deal with this problem: [NonManifoldObject Dealing with non-manifold objects].
 
@@ -80,9 +80,9 @@ The Blender `object` is exported to one only FDS namelist group, for example:
 
 BlenderFDS calculates the bounding box in global coordinates of the Blender `object` `faces`. Each `face` is then flattened, and its edges straightened. The result is a group of right plane faces with edges parallel to the global axis, as required by FDS.  The resulting coordinates are exported as `XB` parameters of many FDS namelist group, one for each `face`.
 
-Of course. it is much more clean and less prone to errors to model faces that are already "straight" and acceptable by FDS.
+Of course. it is much more clean and less prone to errors to model "straight" `faces`, acceptable by FDS without transformation.
 
-For example, this `XB` setting can be profitably employed to describe several `VENTs` that share the same parameters: the user creates an `object` made of separate `faces` distributed inside the building, and obtains a series of homogeneous `VENTs`:
+For example, this `XB` setting can be profitably employed to describe several `VENTs` that share the same parameters: the user creates an `object` made of separate `faces` distributed inside the building, and obtains a series of `VENTs`:
 
 {{{
 &VENT ID='Fan', XB=5.000,6.000,0.000,1.000,7.134,7.134, SURF_ID='Supply',
@@ -98,7 +98,7 @@ For example, this `XB` setting can be profitably employed to describe several `V
 
 BlenderFDS calculates the end points global coordinates of the Blender `object` `edges`. The resulting coordinates are exported as `XB` parameters of many FDS namelist group, one for each `edge`.
 
-For example, this `XB` setting can be used to describe a group of beam detectors, sharing the same parameters. The user creates an `object` made of independent `edges` distributed inside the building, and obtains such a series:
+For example, this `XB` setting can be used to describe a group of beam detectors, sharing the same parameters. The user creates an `object` made of independent `edges` distributed inside the building, and obtains a series of `DEVCs`:
 
 {{{
 &DEVC ID='Beam detectors', XB=0.029,-1.271,-1.235,1.307,2.500,2.500,
@@ -109,10 +109,10 @@ For example, this `XB` setting can be used to describe a group of beam detectors
 
 == Exported geometry: `XYZ` parameter ==
 
-|| *Blender `object` `XYZ` set to* || *Exported as* || *Number of FDS namelist groups* || Possible problems ||
-|| None || Nothing || None || None ||
-|| Verts || Vertices || Many || Vertices, one for each vertex of the Blender `object` ||
-|| Center || Center || Only one || None ||
+|| *Blender `object` `XYZ` set to* || *Exported as* || *Number of FDS namelist groups* ||
+|| None || Nothing || None ||
+|| Verts || Vertices || Vertices, one for each vertex of the Blender `object` ||
+|| Center || Center || Only one ||
 
 === `XYZ` set to `None` ===
 
@@ -133,8 +133,35 @@ For example, this `XYZ` setting can be used to describe a group of thermocouples
 &DEVC ID='Thermocouple serie_5', XYZ=-0.000,0.000,1.600, QUANTITY='THERMOCOUPLE' /
 }}}
 
-
 === `XYZ` set to `Center` ===
+
+BlenderFDS calculates the global coordinates of the Blender `object` `center`. The resulting coordinates are exported as `XYZ` parameter of one only FDS namelist group.
+
+The `object` `center` is the small dot that appears when the Blender `object` is selected in `object mode`. It is the `object` local reference system origin.
+
+== Exported geometry: `PB*` parameter ==
+
+|| *Blender `object` `PB*` set to* || *Exported as* || *Number of FDS namelist groups* ||
+|| None || Nothing || None ||
+|| Faces || Planes || Planes, one for each `face` of the Blender `object` ||
+
+=== `PB*` set to `None` ===
+
+No `PBX, PBY, PBZ` parameter is added to the exported namelist group.
+
+=== `PB*` set to `Faces` ===
+
+BlenderFDS calculates the bounding box in global coordinates of the Blender `object` `faces`. Each `face` is then flattened, and its edges straightened. The result is a group of right plane faces with edges parallel to the global axis. Each `face` is then replaced by a plane perpendicular to one global axis, as required by FDS. The resulting coordinates are exported as `PBX, PBY, PBZ` parameters of many FDS namelist group, one for each `face`.
+
+Of course. it is much more clean and less prone to errors to model "straight" `faces`, acceptable by FDS as planes without transformation.
+
+For example, this `PB*` setting can be used to input several `SLCFs` that share the same parameters: the user creates an `object` made of separate `faces` distributed inside the building, and obtains a series of `SLCFs`:
+
+{{{
+???
+}}}
+
+
 
 
 == Blender object to one or more FDS namelist groups ==
