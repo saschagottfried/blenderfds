@@ -12,29 +12,44 @@ Each Blender `object` is exported as one or more FDS namelist groups sharing the
 
 == Exported geometry ==
 
-A Blender `object` is transformed into one or more FDS namelist groups depending on the complexity of its geometry and on the user requirements.
+A Blender `object` is transformed into one or more FDS namelist groups depending on the complexity of its geometry and on the user requirements. The exported geometry is set using the `XB`, `XYZ`, and `PB*` (`PBX, PBY, PBZ`) `object` parameters.
 
-=== `XB` ===
+|| *Blender `object` `XB` set to* || *Exported as* || *Number of FDS namelist groups* || Possible problems ||
+|| None || Nothing || None || None ||
+|| Voxels || Voxelized solid || Many || `Object` non-manifold ||
+|| BBox || Bounding box || Only one || None ||
+|| Faces || Faces, one for each face of the Blender `object` || Number of Blender `mesh` faces || No faces ||
+|| Edges || Segments, one for each edge of the Blender `object` || Number of Blender `mesh` edges || No edges ||
 
-|| *XB* || *Exported as* ||
-|| None || Nothing ||
-|| Voxels || Voxelized solid ||
-|| BBox || Bounding box ||
-|| Faces || Faces, one for each face of the Blender `object` ||
-|| Edges || Segments, one for each edge of the Blender `object` ||
+=== `XB` set to `None` ===
 
-When `XB` is set to `None`, no `XB` parameter is added to the namelist group.
+No `XB` parameter is added to the exported namelist group.
 
-When `XB` is set to `Voxels` the Blender 'object' is treated by a voxelization algorithm that approximates its geometry as if it was a [http://www.lego.com Lego building].
-The building brick is named _voxel_, and its size is specified by the user in the `scene properties panel`.
+=== `XB` set to `Voxels` ===
+
+The Blender `object` is treated by a voxelization algorithm that approximates its geometry as if it was a [http://www.lego.com Lego building]. The building brick is named _voxel_, and its size is specified by the user in the `scene properties panel`.
 
 [http://lh5.ggpht.com/_iTIkwVoSUm0/S9dLEyo67MI/AAAAAAAAASc/yvSFrr20JEI/lego_building.jpg] 
 
-When possible, BlenderFDS melts the voxels together in larger _boxes_ to minimize the number of lines of the FDS input file. The boxes sides are always aligned with the global reference system axis, as required by FDS.
+When possible, BlenderFDS melts the voxels together in larger _boxes_ to minimize the number of lines of the FDS input file. The boxes sides are always aligned with the global reference system axis, as required by FDS:
 
 [http://lh6.ggpht.com/_iTIkwVoSUm0/S9dRqlKwESI/AAAAAAAAASo/uu5-xDqgHe8/voxelization.png]
 
+The voxelization algorithm needs a _manifold object_. This means that the `object mesh` should be water-tight and well-formed so that BlenderFDS can decide which portion of space is solid and which is instead void. If the object is not manifold, an error message is displayed and `XB` is set to `BBox`.
 
+There is a specific page that explain how to deal with this problem: [NonManifoldObject Dealing with non-manifold objects].
+
+The overall shape of the object is conserved as much as possible:
+
+[http://lh6.ggpht.com/_iTIkwVoSUm0/S9dgyoPwZrI/AAAAAAAAAS0/Lp5CL2daR5c/voxels_shape.png]
+
+=== `XB` set to `BBox` ===
+
+BlenderFDS calculates the bounding box in global coordinates of the `object`. The resulting box coordinates are the exported as an `XB` parameter of one FDS namelist group.
+
+The overall shape of the object is not conserved:
+
+[http://lh6.ggpht.com/_iTIkwVoSUm0/S9dgyfvZf5I/AAAAAAAAASw/mbMTAOg73MU/bbox_shape.png]
 
 == Blender object to one or more FDS namelist groups ==
 
