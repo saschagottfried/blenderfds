@@ -99,7 +99,10 @@ BlenderFDS calculates the end points global coordinates of the Blender `object` 
 For example, this `XB` setting can be used to describe a group of beam detectors: the user creates an `object` made of indipendent `edges` distributed inside the building, and obtains such a series:
 
 {{{
-???
+&DEVC ID='Beam detectors', XB=0.029,-1.271,-1.235,1.307,2.500,2.500,
+      QUANTITY='PATH OBSCURATION', SETPOINT=0.33 , FYI='Two detectors' /
+&DEVC ID='Beam detectors_1', XB=1.217,-1.271,0.043,1.307,2.500,2.500,
+      QUANTITY='PATH OBSCURATION', SETPOINT=0.33 , FYI='Two detectors' /
 }}}
 
 
