@@ -1,6 +1,6 @@
 #summary Dealing with non-manifold objects
 
-Before you begin modeling, always remember that when you are modeling an object that needs to be _voxelized_, you should create a volume that make sense in a physical world: _water-tight_ and _well-formed_ so that BlenderFDS can decide which portion of space is solid and which is instead void.
+Before you begin modeling, always remember that when you are modeling a Blender `object` that needs to be _voxelized_, you should create a volume that make sense in a physical world: _water-tight_ and _well-formed_ so that BlenderFDS can decide which portion of space is solid and which is instead void.
 
 The easiest way to do this is to work by extruding existing volume, and using boolean operations to combine volumes. It is often difficult to retrofit existing models, so it is best to start from scratch and with each step keep the goal in mind. Models made for visualization are often not good for voxelization.
 
@@ -12,9 +12,9 @@ The easiest way to do this is to work by extruding existing volume, and using bo
 
 We share this problem with people working in 3D printing processes. This is the reason why one of the best and detailed explications of the problem and how to fix it is found on Shapeways site: [http://www.shapeways.com/tutorials/fixing-non-manifold-models Fixing non-manifold models]
 
-The suggested operations can be performed directly inside Blender (as they use Blender, too!).
+The suggested operations can be performed directly inside Blender (they use Blender, too!).
 
-When desperate there is another useful but somewhat more complex tool: [http://meshlab.sourceforge.net/ MeshLab]. You need to export your `object mesh` from Blender in an STL format, fix it in MeshLab, and import it back in Blender: a procedure not meant for the faint of hearth...
+When desperate there is another powerful but somewhat more complex tool: [http://meshlab.sourceforge.net/ MeshLab]. You need to export your `object mesh` from Blender in an STL format, fix it in MeshLab, and import it back in Blender: a procedure not meant for the faint of hearth...
 
 Remember that it is often quicker to remodel the problematic `object` from scratch.
 
