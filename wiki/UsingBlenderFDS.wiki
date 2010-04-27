@@ -14,6 +14,8 @@ Each Blender `object` is exported as one or more FDS namelist groups sharing the
 
 A Blender `object` is transformed into one or more FDS namelist groups depending on the complexity of its geometry and on the user requirements. The exported geometry is set using the `XB`, `XYZ`, and `PB*` (`PBX, PBY, PBZ`) `object` parameters.
 
+== Exported geometry: `XB` parameter ==
+
 || *Blender `object` `XB` set to* || *Exported as* || *Number of FDS namelist groups* || Possible problems ||
 || None || Nothing || None || None ||
 || Voxels || Voxelized solid || Many || `Object` non-manifold ||
@@ -76,9 +78,9 @@ The Blender `object` is exported to one only FDS namelist group, for example:
 
 === `XB` set to `Faces` ===
 
-BlenderFDS calculates the bounding box in global coordinates of the Blender `object` `faces`. Each `face` is then flattened, and its edges straightened. The result is a group of right plane faces with edges parallel to the global axis, as required by FDS.  The resulting coordinates are exported as `XB` parameters of many FDS namelist group, one for each face.
+BlenderFDS calculates the bounding box in global coordinates of the Blender `object` `faces`. Each `face` is then flattened, and its edges straightened. The result is a group of right plane faces with edges parallel to the global axis, as required by FDS.  The resulting coordinates are exported as `XB` parameters of many FDS namelist group, one for each `face`.
 
-Of course. it is much more clean and less prone to errors to model faces that are already "straight".
+Of course. it is much more clean and less prone to errors to model faces that are already "straight" and acceptable by FDS.
 
 For example, this `XB` setting can be profitably employed to describe several `VENTs` that share the same parameters: the user creates an `object` made of separate `faces` distributed inside the building, and obtains a series of homogeneous `VENTs`:
 
@@ -94,9 +96,33 @@ For example, this `XB` setting can be profitably employed to describe several `V
 
 === `XB` set to `Edges` ===
 
-BlenderFDS calculates the end points global coordinates of the Blender `object` `edges`. The resulting coordinates are exported as `XB` parameters of many FDS namelist group, one for each edge.
+BlenderFDS calculates the end points global coordinates of the Blender `object` `edges`. The resulting coordinates are exported as `XB` parameters of many FDS namelist group, one for each `edge`.
 
-For example, this `XB` setting can be used to describe a group of beam detectors: the user creates an `object` made of indipendent `edges` distributed inside the building, and obtains such a series:
+For example, this `XB` setting can be used to describe a group of beam detectors, sharing the same parameters. The user creates an `object` made of independent `edges` distributed inside the building, and obtains such a series:
+
+{{{
+&DEVC ID='Beam detectors', XB=0.029,-1.271,-1.235,1.307,2.500,2.500,
+      QUANTITY='PATH OBSCURATION', SETPOINT=0.33 , FYI='Two detectors' /
+&DEVC ID='Beam detectors_1', XB=1.217,-1.271,0.043,1.307,2.500,2.500,
+      QUANTITY='PATH OBSCURATION', SETPOINT=0.33 , FYI='Two detectors' /
+}}}
+
+== Exported geometry: `XYZ` parameter ==
+
+|| *Blender `object` `XYZ` set to* || *Exported as* || *Number of FDS namelist groups* || Possible problems ||
+|| None || Nothing || None || None ||
+|| Verts || Vertices || Many || Vertices, one for each vertex of the Blender `object` ||
+|| Center || Center || Only one || None ||
+
+=== `XYZ` set to `None` ===
+
+No `XYZ` parameter is added to the exported namelist group.
+
+=== `XYZ` set to `Verts` ===
+
+BlenderFDS calculates the global coordinates of the Blender `object` `vertices`. The resulting coordinates are exported as `XYZ` parameters of many FDS namelist group, one for each `vertex`.
+
+For example, this `XYZ` setting can be used to describe a group of thermocouples, sharing the same parameters. The user creates an `object` made of independent `vertices` distributed inside the building, and obtains a series like this:
 
 {{{
 &DEVC ID='Beam detectors', XB=0.029,-1.271,-1.235,1.307,2.500,2.500,
@@ -106,6 +132,7 @@ For example, this `XB` setting can be used to describe a group of beam detectors
 }}}
 
 
+=== `XYZ` set to `Center` ===
 
 
 == Blender object to one or more FDS namelist groups ==
