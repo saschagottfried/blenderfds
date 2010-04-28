@@ -6,7 +6,7 @@ When exported, each Blender `scene` becomes an FDS case, that is an `.fds` text 
 
 ----
 
-== Blender file can contain several FDS cases ==
+== Blender file contains several FDS cases ==
 
 In general, the user needs to simulate several scenarios with similar geometries and thermo-physical parameters. Only a small number of parameters are to be modified.
 The user builds the geometry into a Blender scene. Then duplicates the objects in several new scenes:
@@ -59,7 +59,7 @@ If `Auto Header` is chosen, a default header file is automatically included in t
 
 The `Voxel Size` represents the dimension of the voxel employed to transform some of the Blender objects geometries in FDS boxes. To obtain a reliable geometry description for the subsequent CFD simulation, the user should enter a voxel size that is at least half of the smallest expected FDS mesh cell size.  
 
-== Export current Blender `scene` to an FDS input file ==
+== Exporting current Blender `scene` to an FDS input file ==
 
 Eventually the Blender `scene` is ready, the building geometry is modeled, the boundary conditions is assigned, the header file is prepared.
 
