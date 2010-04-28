@@ -7,7 +7,7 @@
 
 ----
 
-= WorkInProgress =
+= !WorkInProgress =
 
 ??? Materials exported only if used
 
