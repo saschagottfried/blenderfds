@@ -11,35 +11,35 @@ The user should build the architectural model splitting the elements in homogene
 
 = !WorkInProgress =
 
-== FDS Namelist group parameters ==
+= FDS Namelist group parameters =
 
-=== `ID` parameter ===
+== `ID` parameter ==
 
 ??? Not all namelist groups, we are working on that.
 
-=== `FYI` parameter ===
+== `FYI` parameter ==
 
-=== `SURF_ID` parameter ===
+== `SURF_ID` parameter ==
 
 ??? Only if a material is referenced
 
 [http://lh4.ggpht.com/_iTIkwVoSUm0/S9XxU0f7LZI/AAAAAAAAARo/cs-z464nQMg/objpanel_VENT.png]
 
-=== `SAWTOOTH` parameter ===
+== `SAWTOOTH` parameter ==
 
 [http://lh5.ggpht.com/_iTIkwVoSUm0/S9XxUhW97wI/AAAAAAAAARg/eK0h5tXIJ38/objpanel_OBST.png]
 
-=== `Custom parameters` ===
+== `Custom parameters` ==
 
 
-=== `IJK` parameter ===
+== `IJK` parameter ==
 
 ??? Adapt voxel button
 
 [http://lh6.ggpht.com/_iTIkwVoSUm0/S9XxUYGnmAI/AAAAAAAAARc/MDbsCFdii0w/objpanel_MESH.png]
 
 
-== Exporting the geometry ==
+= Exporting the geometry =
 
 A Blender `object` is transformed into one or more FDS namelist groups depending on the complexity of its geometry and on the user requirements. The exported geometry is set using the `XB`, `XYZ`, and `PB*` (`PBX, PBY, PBZ`) `object` parameters.
 
@@ -52,11 +52,11 @@ A Blender `object` is transformed into one or more FDS namelist groups depending
 || Faces || Faces, one for each face of the Blender `object` || Number of `object mesh faces` ||
 || Edges || Segments, one for each edge of the Blender `object` || Number of `object mesh edges` ||
 
-=== `XB` set to `None` ===
+== `XB` set to `None` ==
 
 No `XB` parameter is added to the exported namelist group.
 
-=== `XB` set to `Voxels` ===
+== `XB` set to `Voxels` ==
 
 The Blender `object` is treated by a voxelization algorithm that approximates its geometry as if it was a [http://www.lego.com Lego building]. The building brick is named _voxel_, and its size is specified by the user in the `scene properties panel` (See [BlenderScenesToFDSCases]).
 
@@ -90,7 +90,7 @@ The Blender `object` is exported to many FDS namelist groups sharing the same pa
 ...
 }}}
 
-=== `XB` set to `BBox` ===
+== `XB` set to `BBox` ==
 
 BlenderFDS calculates the bounding box in global coordinates of the `object`. The resulting box coordinates are exported as `XB` parameter of one FDS namelist group.
 
@@ -105,7 +105,7 @@ The Blender `object` is exported to one only FDS namelist group, for example:
       FYI='BBox wall' /
 }}}
 
-=== `XB` set to `Faces` ===
+== `XB` set to `Faces` ==
 
 BlenderFDS calculates the bounding box in global coordinates of the Blender `object` `faces`. Each `face` is then flattened, and its edges straightened. The result is a group of right plane faces with edges parallel to the global axis, as required by FDS.  The resulting coordinates are exported as `XB` parameters of many FDS namelist group, one for each `face`:
 
@@ -125,7 +125,7 @@ For example, this `XB` setting can be profitably employed to describe several `V
 ...
 }}}
 
-=== `XB` set to `Edges` ===
+== `XB` set to `Edges` ==
 
 BlenderFDS calculates the end points global coordinates of the Blender `object` `edges`. The resulting coordinates are exported as `XB` parameters of many FDS namelist group, one for each `edge`.
 
@@ -146,11 +146,11 @@ For example, this `XB` setting can be used to describe a group of beam detectors
 || Verts || Vertices || Vertices, one for each vertex of the Blender `object` ||
 || Center || Center || Only one ||
 
-=== `XYZ` set to `None` ===
+== `XYZ` set to `None` ==
 
 No `XYZ` parameter is added to the exported namelist group.
 
-=== `XYZ` set to `Verts` ===
+== `XYZ` set to `Verts` ==
 
 BlenderFDS calculates the global coordinates of the Blender `object` `vertices`. The resulting coordinates are exported as `XYZ` parameters of many FDS namelist group, one for each `vertex`.
 
@@ -168,7 +168,7 @@ The user creates an `object` made of independent `vertices` distributed inside t
 ...
 }}}
 
-=== `XYZ` set to `Center` ===
+== `XYZ` set to `Center` ==
 
 BlenderFDS calculates the global coordinates of the Blender `object` `center`. The resulting coordinates are exported as `XYZ` parameter of one only FDS namelist group.
 
@@ -182,11 +182,11 @@ The `object` `center` is the small dot that appears when the Blender `object` is
 || None || Nothing || None ||
 || Faces || Planes || Planes, one for each `face` of the Blender `object` ||
 
-=== `PB*` set to `None` ===
+== `PB*` set to `None` ==
 
 No `PBX, PBY, PBZ` parameter is added to the exported namelist group.
 
-=== `PB*` set to `Faces` ===
+== `PB*` set to `Faces` ==
 
 BlenderFDS calculates the bounding box in global coordinates of the Blender `object` `faces`. Each `face` is then flattened, and its edges straightened. The result is a group of right plane faces with edges parallel to the global axis. Each `face` is then replaced by a plane perpendicular to one global axis, as required by FDS. The resulting coordinates are exported as `PBX, PBY, PBZ` parameters of many FDS namelist group, one for each `face`.
 
