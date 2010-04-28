@@ -10,12 +10,14 @@ The following is a short list of educational resources for Blender. Many of thes
 
 ----
 
-== Two starting points ==
+= Two starting points =
 
 Here are two blog entries from Yorik van Havre blog. These are general but step-by-step introduction to quick architecture modelling with Blender.
 
  * [http://yorik.uncreated.net/tutorials/architecture-blender.html]
  * [http://yorik.uncreated.net/tutorials/precisionmodelling-blender.html]
+
+= Web resources =
 
 == Good books ==
 
@@ -25,7 +27,7 @@ Here are two blog entries from Yorik van Havre blog. These are general but step-
 
 [http://lh5.ggpht.com/_iTIkwVoSUm0/S9Qz8l16FUI/AAAAAAAAAPY/euyK4I6s0uU/Allan%20Brito%20book.png]
 
-== General web resources ==
+== General ==
 
  * [http://www.blender.org/education-help/] Blender official support page (manual, tutorials...)
  * [http://blenderartists.org/] Independent support forum
