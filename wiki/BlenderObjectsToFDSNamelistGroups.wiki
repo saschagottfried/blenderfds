@@ -3,7 +3,7 @@
 
 Each Blender `object` is exported as one or more FDS namelist groups sharing the same parameters. The FDS parameters assigned to each `object` are specified in the `object properties panel`. Some of the displayed properties change depending on the associated namelist group.
 
-The user should build the architectural model splitting the elements in homogeneous parts from the thermo-physical point of view: each `object` can only have one set of FDS parameters assigned.
+The user should build the architectural model splitting the elements in homogeneous parts from the thermo-physical point of view: each Blender `object` can only have one set of FDS parameters assigned.
 
 <wiki:toc max_depth="2" />
 
@@ -12,6 +12,15 @@ The user should build the architectural model splitting the elements in homogene
 = !WorkInProgress =
 
 = FDS Namelist group parameters =
+
+
+== `& Name` parameter ==
+
+The first and most important parameter of the `object properties panel` is the namelist group name `& Name`. If BlenderFDS recognizes the type of namelist, the `panel` is adapted accordingly, and shows the relevant parameters.
+
+The same `panel` label is updated to host the verbose description of the namelist.
+
+There is a small bug in the current version of Blender: in same remote cases the label is updated immediately, but bleeding edge Blender versions solve the issue.
 
 == `ID` parameter ==
 
@@ -37,7 +46,6 @@ The user should build the architectural model splitting the elements in homogene
 ??? Adapt voxel button
 
 [http://lh6.ggpht.com/_iTIkwVoSUm0/S9XxUYGnmAI/AAAAAAAAARc/MDbsCFdii0w/objpanel_MESH.png]
-
 
 = Exporting the geometry =
 
