@@ -23,7 +23,7 @@ There is a small bug in the current version of Blender: in same remote cases the
 
 == `ID` parameter ==
 
-The `ID` parameter is preconfigured, based on the Blender `object` name. The user can choose whether to include or the `ID` parameter in the exported namelist group or not.
+The `ID` parameter is preconfigured, based on the Blender `object` name. The user can choose whether to include or the `ID` parameter in the exported namelist group or not:
 
 {{{
 ID='Wall'
@@ -41,7 +41,7 @@ FYI='This is a comment.'
 
 == `SURF_ID` parameter ==
 
-When the Blender 'object' has a suitable namelist group name (OBST, VENT...) and references a Blender material, BlenderFDS configures and shows the `SURF_ID` parameter. The user can choose whether to insert the parameter in the namelist group or not.
+When the Blender `object` has a suitable namelist group name (`OBST, VENT`...) and references a Blender material, BlenderFDS configures and shows the `SURF_ID` parameter. The user can choose whether to insert the parameter in the namelist group or not.
 
 The following figure shows a `VENT object` with the relevant `SURF_ID` parameter:
 
@@ -50,9 +50,8 @@ The following figure shows a `VENT object` with the relevant `SURF_ID` parameter
 == `SAWTOOTH` parameter ==
 
 If there is an `OBST object`, the user can insert the `SAWTOOTH=.FALSE.` parameter:
- 
-[http://lh5.ggpht.com/_iTIkwVoSUm0/S9XxUhW97wI/AAAAAAAAARg/eK0h5tXIJ38/objpanel_OBST.png]
 
+[http://lh5.ggpht.com/_iTIkwVoSUm0/S9XxUhW97wI/AAAAAAAAARg/eK0h5tXIJ38/objpanel_OBST.png]
 
 == `IJK` parameter ==
 
