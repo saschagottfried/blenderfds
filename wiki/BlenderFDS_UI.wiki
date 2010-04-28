@@ -8,7 +8,7 @@ Before starting the detailed description of BlenderFDS UI, let's give a quick lo
 
 ----
 
-== General organization ==
+= General organization =
 
 The Blender UI is composed of `editors`, `headers`, `context buttons`, `panels`, and `controls`.
 
@@ -22,15 +22,15 @@ The previous figure shows the following `editors`:
  * `properties editor` at the bottom right side, that groups options and properties of Blender entities.
  * `timeline editor` at the bottom left side, that is of no use for BlenderFDS and can be closed.
 
-== Split and combine `editors` ==
+= Split and combine `editors` =
 
 In the upper right hand corner of an editor is the `editor splitter widget`. It looks like a little ridged thumb grip. When you hover over it, your cursor will change to a cross. Left-click and drag it to split and combine `editors`.
 
-== Fold and unfold `headers` ==
+= Fold and unfold `headers` =
 
 To hide an `header`, just drag the header down till it folds. To unhide it, click on the small white `plus` icon.
 
-== The `3D view editor` ==
+= The `3D view editor` =
 
 The `3D view editor` is used for viewing and editing `scenes`. The `tool shelf` and the `properties` of the `3D view editor` can be unfolded by clicking on the small white `plus` icon at the upper left and upper right corners of the `editor`.
 
@@ -40,13 +40,13 @@ The following picture shows the `3D view editor` in `edit mode`. At left there i
 
 [http://lh5.ggpht.com/_iTIkwVoSUm0/S9Xxef42jrI/AAAAAAAAAR0/fLTILr3RH8w/s912/objpanel_OBST_notmanifold3.png]
 
-== The `outliner editor` ==
+= The `outliner editor` =
 
 The `outliner editor` is a hierarchical diagram displaying a list of Blender entities and its dependencies. It is used for easily navigating a complex `scene`.
 
 [http://lh6.ggpht.com/_iTIkwVoSUm0/S9RHEMD992I/AAAAAAAAAPk/fzhQ1VVeJUs/outliner.png]
 
-== The `properties editor` ==
+= The `properties editor` =
 
 The `properties editor` display options and properties of Blender entities, grouped in homogeneous `panels`. The `context buttons` at the top let the user select the `panels` that are to be shown depending on the desired context. Every `Panel` contains `controls`, that let the user modify options and properties.
 
