@@ -12,6 +12,7 @@
 = Materials to FDS SURFs =
 
 ??? Materials exported only if used
+??? Predefined materials OPEN, INERT, MIRROR
 
 Material panel:
 
