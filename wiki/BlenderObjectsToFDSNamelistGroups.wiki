@@ -107,7 +107,7 @@ The Blender `object` is exported to one only FDS namelist group, for example:
 
 BlenderFDS calculates the bounding box in global coordinates of the Blender `object` `faces`. Each `face` is then flattened, and its edges straightened. The result is a group of right plane faces with edges parallel to the global axis, as required by FDS.  The resulting coordinates are exported as `XB` parameters of many FDS namelist group, one for each `face`:
 
-[http://lh4.ggpht.com/_iTIkwVoSUm0/S9d7GeTrJwI/AAAAAAAAAS8/gRl3cFbu1fk/s128/face_shape.png]
+[http://lh4.ggpht.com/_iTIkwVoSUm0/S9d7GeTrJwI/AAAAAAAAAS8/gRl3cFbu1fk/face_shape.png]
 
 Of course. it is much more clean and less prone to errors to model "straight" `faces`, acceptable by FDS without transformation.
 
