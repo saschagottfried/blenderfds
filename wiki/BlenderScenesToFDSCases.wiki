@@ -13,7 +13,7 @@ The user builds the geometry into a Blender scene. Then duplicates the objects i
  * the objects that do not change should be linked between the scenes to share exactly the same geometrical mesh and FDS parameters. If the user decides to modify the common geometry or the common thermo-physical parameters, all the linked objects from all scenes are modified accordingly.
  * depending on the scenarios, some objects from specific scenes should have their own geometry and thermo-physical parameters. Then the user unlinks them from the common properties and they become independent.
 
-Each `scene` requires the user to enter several parameters in its `Scene panel`:
+Each `scene` requires the user to enter several parameters in its `scene panel`:
 
 [http://lh3.ggpht.com/_iTIkwVoSUm0/S9XrlsYrUQI/AAAAAAAAARU/QPfwEsWw07E/scenepanel.png]
 
