@@ -1,5 +1,4 @@
 #summary Blender materials to FDS SURF namelist groups
-#labels Featured
 
 Blender `materials` are exported to `SURFs` namelist groups only if they are referenced by other `objects`. 
 
