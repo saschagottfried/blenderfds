@@ -230,4 +230,6 @@ The user creates an `object` made of separate `faces` distributed inside the bui
 
 == Setting `XB, XYZ, PB*` at the same time ==
 
-??? Why, limitations, errors
+The user can set both `XB, XYZ, PB*` at the same time: the affected namelist group receives both parameters.
+
+However some combinations are not allowed. The user interface shows an error message, and the conflicting setting is restored to a safe value. The conflicting settings are those that require multiple namelist groups more than once. For example, `XB` set to `Voxels` and `XYZ` set to `Verts`. Conversely `XB` set to `Voxels` and `XYZ` set to `Center` are compatible settings.
