@@ -9,11 +9,9 @@ The user should build the architectural model splitting the elements in homogene
 
 ----
 
-= !WorkInProgress =
-
 = FDS Namelist group parameters =
 
-BlenderFDS cleans all the string user inputs from bad characters, as quotation marks and non-ASCII chars.
+BlenderFDS cleans all the user input strings from bad characters, as quotation marks and non-ASCII chars.
 
 == `& Name` parameter ==
 
@@ -55,15 +53,15 @@ In case of an `OBST object`, the user can insert the `SAWTOOTH=.FALSE.` paramete
 
 == `IJK` parameter ==
 
-When the user enters a `MESH object`, the `panel` is updated to show the `IJK` parameter. The `IJK` number of FDS `MESH` cells are calculated using the `Cell Size` specified by the user. BlenderFDS updates user entered values as required by FDS to keep into account the requirements of the Poisson solver along y and z axis. 
+When the user enters a `MESH object`, the `panel` is updated to show the `IJK` parameter. The `IJK` number of FDS `MESH` cells are calculated using the `Cell Size` specified by the user. BlenderFDS updates user entered values to keep into account the requirements of the Poisson solver along y and z axis, as required by FDS.
  
-The `Adapt voxel button` updates ???
+The `Adapt voxel button` sets the `Voxel Size` to half the FDS `MESH` cell size (See [BlenderScenesToFDSCases Blender scenes to FDS cases]).
 
 [http://lh6.ggpht.com/_iTIkwVoSUm0/S9XxUYGnmAI/AAAAAAAAARc/MDbsCFdii0w/objpanel_MESH.png]
 
-
 == `Custom parameters` ==
 
+`Custom parameters` field is used to include other FDS parameters to the namelist group. BlenderFDS inserts the `Custom parameters` value as it is, verbatim, and does not perform any check on its validity. The user interface just replaces all the double quotes (") with single quotes (').
 
 = Exporting the geometry =
 
