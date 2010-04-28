@@ -8,7 +8,7 @@ The easiest way to do this is to work by extruding existing volume, and using bo
 
 ----
 
-== Fixing non-manifold models ==
+= Fixing non-manifold models =
 
 We share this problem with people working in 3D printing processes. This is the reason why one of the best and detailed explications of the problem and how to fix it is found on Shapeways site: [http://www.shapeways.com/tutorials/fixing-non-manifold-models Fixing non-manifold models]
 
@@ -18,7 +18,7 @@ When desperate there is another powerful but somewhat more complex tool: [http:/
 
 Remember that it is often quicker to remodel the problematic `object` from scratch.
 
-== An example ==
+= An example =
 
 The cube shown in the following picture lacks the upper face, and is thus non-manifold. If the user tries to set `XB` to `Voxels`, an error message appears in the `object properties panel` and `XB` is automatically set back to `BBox`.
 
