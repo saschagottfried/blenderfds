@@ -1,25 +1,36 @@
 #summary Blender materials to FDS SURF namelist groups
-#labels WorkInProgress
+#labels Featured
 
-???
+Blender `materials` are exported to `SURFs` namelist groups only if they are referenced by other `objects`. 
 
 <wiki:toc max_depth="2" />
 
 ----
 
-= !WorkInProgress =
-
-= Materials to FDS SURFs =
-
-??? Materials exported only if used
-??? Predefined materials OPEN, INERT, MIRROR
-
-Material panel:
-
-[http://lh5.ggpht.com/_iTIkwVoSUm0/S9XrlclevJI/AAAAAAAAARM/FQQtjRFOKdQ/s512/matpanel.png]
+= FDS `SURF` parameters =
 
 == `RGB` and `TRANSPARENCY` parameters ==
 
+These parameters set the color and the alpha of the FDS `SURF` namelist group.
+
+{{{
+RGB=12,34,35, TRANSPARENCY=.3
+}}}
+
+[http://lh5.ggpht.com/_iTIkwVoSUm0/S9XrlclevJI/AAAAAAAAARM/FQQtjRFOKdQ/s512/matpanel.png]
+
 == `Custom parameters` ==
 
+`Custom parameters` field is used to include other FDS parameters to the `SURF` namelist group. BlenderFDS inserts the `Custom parameters` value as it is, verbatim, and does not perform any check on its validity. The user interface just replaces all the double quotes (") with single quotes (').
+
 == `FYI` parameter ==
+
+The `FYI` parameter contains user's comments and informations and is inserted in namelist groups when not empty:
+
+{{{
+FYI='This is a comment.'
+}}}
+
+== FDS predefined materials: `OPEN, INERT, MIRROR` ==
+
+When entered as Blender `materials`, the FDS predefined materials (`OPEN, INERT, MIRROR`) are not exported to the FDS input file.
