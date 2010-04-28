@@ -17,9 +17,9 @@ BlenderFDS cleans all the string user inputs from bad characters, as quotation m
 
 == `& Name` parameter ==
 
-The first and most important parameter of the `object properties panel` is the namelist group name `& Name`. If BlenderFDS recognizes the type of namelist, the `panel` is adapted accordingly to only show relevant parameters. The same `panel` label is updated to host the verbose description of the namelist.
+The first and most important parameter of the `object properties panel` is the namelist group name `& Name`. If BlenderFDS recognizes the type of namelist, the `panel` is udapted accordingly to only show relevant parameters. The same `panel` label is updated to host the verbose description of the namelist.
 
-There is a small bug in the current version of Blender: in same remote cases the label is updated immediately, but bleeding edge Blender versions solve the issue.
+There is a small bug in the current version of Blender: in same remote cases the label is not updated immediately, but bleeding edge Blender versions solve the issue.
 
 == `ID` parameter ==
 
