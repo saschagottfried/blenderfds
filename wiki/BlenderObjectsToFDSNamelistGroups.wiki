@@ -14,7 +14,12 @@ BlenderFDS cleans all the user input strings from bad characters, as quotation m
 
 == `& Name` parameter ==
 
-The first and most important parameter of the `object properties panel` is the namelist group name `& Name`. If BlenderFDS recognizes the type of namelist, the `panel` is udapted accordingly to only show relevant parameters. The same `panel` label is updated to host the verbose description of the namelist.
+The first and most important parameter of the `object properties panel` is the namelist group name `& Name`. If BlenderFDS recognizes the type of namelist, the `panel` is udapted accordingly to only show relevant parameters. The same `panel` label is updated to host the verbose description of the namelist:
+
+{{{
+&SLCF /
+}}}
+
 
 There is a small bug in the current version of Blender: in same remote cases the label is not updated immediately, but bleeding edge Blender versions solve the issue.
 
@@ -38,7 +43,11 @@ FYI='This is a comment.'
 
 == `SURF_ID` parameter ==
 
-When the Blender `object` has a suitable namelist group name (`OBST, VENT`...) and references a Blender material, BlenderFDS configures and shows the `SURF_ID` parameter. The user can choose whether to insert the parameter in the namelist group or not.
+When the Blender `object` has a suitable namelist group name (`OBST, VENT`...) and references a Blender material, BlenderFDS configures and shows the `SURF_ID` parameter. The user can choose whether to insert the parameter in the namelist group or not:
+
+{{{
+SURF_ID='Brick wall'
+}}}
 
 The following figure shows a `VENT object` with the relevant `SURF_ID` parameter:
 
@@ -52,8 +61,12 @@ In case of an `OBST object`, the user can insert the `SAWTOOTH=.FALSE.` paramete
 
 == `IJK` parameter ==
 
-When the user enters a `MESH object`, the `panel` is updated to show the `IJK` parameter. The `IJK` number of FDS `MESH` cells are calculated using the `Cell Size` specified by the user. BlenderFDS updates user entered values to keep into account the requirements of the Poisson solver along y and z axis, as required by FDS.
- 
+When the user enters a `MESH object`, the `panel` is updated to show the `IJK` parameter. The `IJK` number of FDS `MESH` cells are calculated using the `Cell Size` specified by the user. BlenderFDS updates user entered values to keep into account the requirements of the Poisson solver along y and z axis, as required by FDS:
+
+{{{
+IJK=12,50,50
+}}}
+
 The `Adapt voxel button` sets the `Voxel Size` to half the FDS `MESH` cell size (See [BlenderScenesToFDSCases Blender scenes to FDS cases]).
 
 [http://lh6.ggpht.com/_iTIkwVoSUm0/S9XxUYGnmAI/AAAAAAAAARc/MDbsCFdii0w/objpanel_MESH.png]
