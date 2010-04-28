@@ -13,32 +13,45 @@ The user should build the architectural model splitting the elements in homogene
 
 = FDS Namelist group parameters =
 
+BlenderFDS cleans all the string user inputs from bad characters, as quotation marks and non-ASCII chars.
 
 == `& Name` parameter ==
 
-The first and most important parameter of the `object properties panel` is the namelist group name `& Name`. If BlenderFDS recognizes the type of namelist, the `panel` is adapted accordingly, and shows the relevant parameters.
-
-The same `panel` label is updated to host the verbose description of the namelist.
+The first and most important parameter of the `object properties panel` is the namelist group name `& Name`. If BlenderFDS recognizes the type of namelist, the `panel` is adapted accordingly to only show relevant parameters. The same `panel` label is updated to host the verbose description of the namelist.
 
 There is a small bug in the current version of Blender: in same remote cases the label is updated immediately, but bleeding edge Blender versions solve the issue.
 
 == `ID` parameter ==
 
-??? Not all namelist groups, we are working on that.
+The `ID` parameter is preconfigured, based on the Blender `object` name. The user can choose whether to include or the `ID` parameter in the exported namelist group or not.
+
+{{{
+ID='Wall'
+}}}
+
+Some namelist groups do not allow the insertion of the `ID` parameter. We reported the issue to FDS developers, as the presence of an `ID` in all namelists could ease debugging of the FDS file. See [http://code.google.com/p/fds-smv/issues/detail?id=887&can=1&q=reporter%3Aemanuele.gissi FDS Issue 887].
 
 == `FYI` parameter ==
 
+The `FYI` parameter contains user's comments and informations and is inserted in namelist groups when not empty:
+
+{{{
+FYI='This is a comment.'
+}}}
+
 == `SURF_ID` parameter ==
 
-??? Only if a material is referenced
+When the Blender 'object' has a suitable namelist group name (OBST, VENT...) and references a Blender material, BlenderFDS configures and shows the `SURF_ID` parameter. The user can choose whether to insert the parameter in the namelist group or not.
+
+The following figure shows a `VENT object` with the relevant `SURF_ID` parameter:
 
 [http://lh4.ggpht.com/_iTIkwVoSUm0/S9XxU0f7LZI/AAAAAAAAARo/cs-z464nQMg/objpanel_VENT.png]
 
 == `SAWTOOTH` parameter ==
 
+If there is an `OBST object`, the user can insert the `SAWTOOTH=.FALSE.` parameter:
+ 
 [http://lh5.ggpht.com/_iTIkwVoSUm0/S9XxUhW97wI/AAAAAAAAARg/eK0h5tXIJ38/objpanel_OBST.png]
-
-== `Custom parameters` ==
 
 
 == `IJK` parameter ==
@@ -46,6 +59,10 @@ There is a small bug in the current version of Blender: in same remote cases the
 ??? Adapt voxel button
 
 [http://lh6.ggpht.com/_iTIkwVoSUm0/S9XxUYGnmAI/AAAAAAAAARc/MDbsCFdii0w/objpanel_MESH.png]
+
+
+== `Custom parameters` ==
+
 
 = Exporting the geometry =
 
