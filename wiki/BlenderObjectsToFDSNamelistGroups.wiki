@@ -49,13 +49,15 @@ The following figure shows a `VENT object` with the relevant `SURF_ID` parameter
 
 == `SAWTOOTH` parameter ==
 
-If there is an `OBST object`, the user can insert the `SAWTOOTH=.FALSE.` parameter:
+In case of an `OBST object`, the user can insert the `SAWTOOTH=.FALSE.` parameter:
 
 [http://lh5.ggpht.com/_iTIkwVoSUm0/S9XxUhW97wI/AAAAAAAAARg/eK0h5tXIJ38/objpanel_OBST.png]
 
 == `IJK` parameter ==
 
-??? Adapt voxel button
+When the user enters a `MESH object`, the `panel` is updated to show the `IJK` parameter. The `IJK` number of FDS `MESH` cells are calculated using the `Cell Size` specified by the user. BlenderFDS updates user entered values as required by FDS to keep into account the requirements of the Poisson solver along y and z axis. 
+ 
+The `Adapt voxel button` updates ???
 
 [http://lh6.ggpht.com/_iTIkwVoSUm0/S9XxUYGnmAI/AAAAAAAAARc/MDbsCFdii0w/objpanel_MESH.png]
 
