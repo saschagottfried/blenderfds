@@ -67,4 +67,4 @@ The user selects the `File > Export > FDS Case (.fds)` menu and exports the curr
 
 [http://lh4.ggpht.com/_iTIkwVoSUm0/S9XoybN9T7I/AAAAAAAAAQ0/zdxvweS7V0E/s720/test_exportmenu_scenepanel.png]
 
-In the file browser window, the user can specify if he prefers to export visible objects only. This can be useful while debugging the exported geometry in Smokeview.
+In the file browser window, the user can specify if he prefers to `export visible objects` only. This can be useful while debugging the exported geometry in Smokeview.
