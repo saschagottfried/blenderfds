@@ -6,7 +6,7 @@ Here we talk about the idea behind BlenderFDS.
 
 ----
 
-== Blender files have a hierarchical structure ==
+= Blender files have a hierarchical structure =
 
 Each Blender file contains a database. This database contains all `scenes`, `objects`, `meshes`, `materials`, `textures` etc. that are in the file. A file can contain multiple `scenes` and each `scene` can contain multiple `objects`. `Objects` are composed by `meshes` and can contain multiple `materials` which can contain many `textures`.
 
@@ -14,7 +14,7 @@ The following outliner panel shows an example of this kind of data organization:
 
 [http://lh6.ggpht.com/_iTIkwVoSUm0/S9RHEMD992I/AAAAAAAAAPk/fzhQ1VVeJUs/outliner.png]
 
-=== Blender entities: `scenes`, `objects`, `meshes`, `materials` ===
+== Blender entities: `scenes`, `objects`, `meshes`, `materials` ==
 
 A Blender `scene` is a collection of `objects`.
 
@@ -24,13 +24,13 @@ A Blender `mesh` is a collection of faces, edges, and vertices which can be mode
 
 A `vertex` is a 3-dimensional coordinate, representing a point in space. An `edge` is a straight, wire-like line representing the boundary of 2 adjacent vertices. A `face` is a planar connection of edges representing a boundary, field, or solid surface. Faces are always flat. Edges are always straight. An edge is formed by the intersection of 2 faces. Vertices are formed by the intersection of 3 or more faces. A cube has 6 faces, 12 edges and 8 vertices.
 
-=== Every Blender entity can be duplicated and linked to several parents ===
+== Every Blender entity can be duplicated and linked to several parents ==
 
 It is also possible to create links between different entities, so that they share some information. For example, if you had a car `mesh`, you could use that car `mesh` for six cars in a parking lot scene. If you modify the car `mesh` all the six cars of the parking lot would inherit the modification.
 
 [http://lh6.ggpht.com/_iTIkwVoSUm0/S9RNwYe0iII/AAAAAAAAAPs/mweIZYjcnI4/faces_edges_vertices.gif]
 
-== FDS input file ==
+= FDS input file =
 
 FDS input is a single text file. Input data is specified by namelist groups:
 
@@ -38,7 +38,7 @@ FDS input is a single text file. Input data is specified by namelist groups:
 
 Namelist groups are used to describe every aspect of the fire simulation: simulation name, duration, computational domain, geometry, boundary conditions, materials...
 
-=== Namelist groups that extend their action to geometric entities ===
+== Namelist groups that extend their action to geometric entities ==
 
 Many namelist groups extend their action to volumes, faces, segments, points, or planes:
 
@@ -102,7 +102,7 @@ is a plane perpendicular to the z axis and intersecting its point (0.,0.,-.5).
 
 All use the parameters `PBX, PBY, PBZ` to specify the coordinate in the direction of the perpendicular axis.
 
-== BlenderFDS links Blender entities to FDS namelist groups ==
+= BlenderFDS links Blender entities to FDS namelist groups =
 
 || *Blender* || *FDS* ||
 || Each file  || One or more FDS input files ||
@@ -110,11 +110,11 @@ All use the parameters `PBX, PBY, PBZ` to specify the coordinate in the directio
 || Each `object` || One or more namelist groups (`OBST, DEVC, VENT, HOLE, SLCF`...)||
 || Each `material` || One `SURF` namelist group ||
 
-=== Each Blender `scene` is an FDS case ===
+== Each Blender `scene` is an FDS case ==
 
 Each Blender `scene` becomes an .fds text input file. So a single Blender file can contain several FDS cases. For example, the same parking lot can be duplicated in several scenes. The geometrical meshes and thermo-physical parameters of the cars could be inherited by all the scenes, the position of the cars could be varied according to the scenario.
 
-=== Each Blender `object` and its `material` are exported as one or more FDS namelist groups ===
+== Each Blender `object` and its `material` are exported as one or more FDS namelist groups ==
 
 Each Blender `object` is linked to one or more FDS namelist groups, that extend their action to the geometry covered by the object `mesh` in Blender.
 
