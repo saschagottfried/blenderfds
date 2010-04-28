@@ -9,14 +9,16 @@
 
 = !WorkInProgress =
 
+= Materials to FDS SURFs =
+
 ??? Materials exported only if used
 
 Material panel:
 
 [http://lh5.ggpht.com/_iTIkwVoSUm0/S9XrlclevJI/AAAAAAAAARM/FQQtjRFOKdQ/s512/matpanel.png]
 
-=== `RGB` and `TRANSPARENCY` parameters ===
+== `RGB` and `TRANSPARENCY` parameters ==
 
-=== `Custom parameters` ===
+== `Custom parameters` ==
 
-=== `FYI` parameter ===
+== `FYI` parameter ==
