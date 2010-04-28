@@ -20,17 +20,25 @@ Currently BlenderFDS works well with _Blender 2.5 alpha 2_. BlenderFDS _does not
 
 The Windows version comes with an optional self-extracting installer. For other operating systems you can unpack the compressed file to the location of your choice. Provided the Blender binary is in the original extracted directory, Blender will run straight out of the box. No system libraries or system preferences are altered.
 
-After installing, launch the Blender executable.
-
 = Then, install BlenderFDS add-on into Blender =
 
-Add-ons is the general term for any optional script that extends Blender's functionality. They are found in the `File > User Preferences` window in the `Add-Ons` panel. This tab allows you to install an add-on and enable or disable it.
+Download the BlenderFDS distribution from [http://code.google.com/p/blenderfds/downloads] and unzip it in your computer.
+
+Launch the Blender executable.
+
+Add-ons is the general term for any optional script that extends Blender's functionality. They are found in the `File > User Preferences` window in the `Add-Ons` panel. The following tab allows you to install an add-on and enable it.
 
 [http://lh6.ggpht.com/_iTIkwVoSUm0/S9HGu7tVZuI/AAAAAAAAAOw/02k6d3QL5LE/install%20Add-On.png]
 
-For a script to show up in the `Add-ons` panel it will first have to be installed. For this you can use the `Install Add-On` button in the `Add-Ons` panel: simply click the button and locate the `blenderfds_X.Y.zip` compressed file you downloaded. Blender extracts the scripts and copies them in the `../.blender/scripts/addons` folder, where `..` is your Blender installation location.
+For a script to show up in the `Add-ons` panel it will first have to be installed. For this you can use the `Install Add-On` button in the `Add-Ons` panel: simply click the button and locate the `blenderfds.zip` file inside the BlenderFDS distribution. Blender extracts the add-on and copies it in the `../.blender/scripts/addons` folder, where `..` is your Blender installation location.
 
-Once installed, the script will show up in the panel and can be activated by clicking on the `Enable Add-on` button.
+Once installed, the add-on will show up in the panel and can be activated by clicking on the `Enable Add-on` button.
+
+Now BlenderFDS is ready.
+
+= Updating BlenderFDS =
+
+???
 
 = Removing BlenderFDS =
 
