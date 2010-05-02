@@ -60,13 +60,15 @@ When opening a new Blender file, the BlenderFDS `panels` are listed as the last 
 
 == The `properties editor` in `scene context` ==
 
-The `scene context button` provides the following BlenderFDS `panel`, that will be called for short `scene properties panel`:
+The `scene context button` provides the following BlenderFDS `panel`, that we call `scene properties panel` for shortness:
 
 [http://lh3.ggpht.com/_iTIkwVoSUm0/S9XrlsYrUQI/AAAAAAAAARU/QPfwEsWw07E/scenepanel.png]
 
 == The `properties editor` in `object context` ==
 
-The BlenderFDS `panel` in `object context` changes the displayed properties depending on the associated namelist group. For simplicity, we will call it `object properties panel`. When the user enters a `VENT` namelist, the `object properties panel` becomes like this:
+For simplicity, we call `object properties panel` the BlenderFDS `panel` in `object context`.
+
+Options and properties, displayed in the FDS-specific `object properties panel`, change depending on the associated namelist group. When the user enters a `VENT` namelist in the appropriate field, the `object properties panel` becomes like this:
 
 [http://lh4.ggpht.com/_iTIkwVoSUm0/S9XrlUfdvqI/AAAAAAAAARQ/cN-g1UTC1WM/objpanel.png]
 
