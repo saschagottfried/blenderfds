@@ -8,9 +8,11 @@ Blender `materials` are exported to `SURFs` namelist groups only if they are ref
 
 = FDS `SURF` parameters =
 
+The FDS `SURF` parameters are completely described in the BlenderFDS `material properties panel`. The following paragraphs list one by one all the parameters managed by the interface.
+
 == `RGB` and `TRANSPARENCY` parameters ==
 
-These parameters set the color and the alpha of the FDS `SURF` namelist group.
+These parameters set the color and the alpha of the FDS `SURF` namelist group, that correspond to the relative rendered properties:
 
 {{{
 RGB=12,34,35, TRANSPARENCY=.3
@@ -20,11 +22,11 @@ RGB=12,34,35, TRANSPARENCY=.3
 
 == `Custom parameters` ==
 
-`Custom parameters` field is used to include other FDS parameters to the `SURF` namelist group. BlenderFDS inserts the `Custom parameters` value as it is, verbatim, and does not perform any check on its validity. The user interface just replaces all the double quotes (") with single quotes (').
+`Custom parameters` field is used to include other FDS parameters to the `SURF` namelist group. BlenderFDS inserts the `Custom parameters` value as it is, verbatim, and does not perform any check on its validity. The user interface just replaces all the double quotes (") with single quotes (') for uniformity with the rest of auto-generated parameters.
 
 == `FYI` parameter ==
 
-The `FYI` parameter contains user's comments and informations and is inserted in namelist groups when not empty:
+The `FYI` parameter contains user's comments and informations and is inserted in namelist groups only when not empty:
 
 {{{
 FYI='This is a comment.'
