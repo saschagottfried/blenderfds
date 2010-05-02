@@ -1,6 +1,6 @@
 #summary BlenderFDS user interface
 
-BlenderFDS is based on Blender. You do not need to be a Blender power user to use BlenderFDS, but it is much better if you are already familiar with its particular interface and able to build simple architectural models. See the list of resources provided in the [LearningBlender Learning Blender] page.
+BlenderFDS is based on Blender. You do not need to be a Blender power user to use BlenderFDS, but it is much better if you are already familiar with its particular interface and you are able to quickly build simple architectural models. See the list of resources provided in the [LearningBlender Learning Blender] page for help.
 
 Before starting the detailed description of BlenderFDS UI, let's give a quick look to the default Blender user interface organization.
 
@@ -12,55 +12,65 @@ Before starting the detailed description of BlenderFDS UI, let's give a quick lo
 
 The Blender UI is composed of `editors`, `headers`, `context buttons`, `panels`, and `controls`.
 
-The `editors` are non-overlapping parts of the UI that divide the Blender application window. There are several types of `editors`, which respond to specific functions. Each editor has its own `header`, a sort of menubar positioned at the top or at the bottom of its `editor`.
+The `editors` are non-overlapping parts of the UI that divide the Blender application window. There are several types of `editors`, which respond to specific functions. Each editor has its own `header`. An `header` is a menubar positioned either at the top or at the bottom of its hosting `editor`.
 
 [http://lh5.ggpht.com/_iTIkwVoSUm0/S9Q9XPLQ0sI/AAAAAAAAAPc/htwJl2k8C3A/650px-Ui-organization.jpg]
 
-The previous figure shows the following `editors`:
- * `3D view editor` at the upper left side, that show a 3D view of the `scene`.
+The previous figure shows a typical Blender application windows divided into the following `editors`:
+ * `3D view editor`, positioned at the upper left side. It shows a 3D view of the `scene`.
  * `outliner editor` at the upper right side, that lists the created Blender entities and their relations.
- * `properties editor` at the bottom right side, that groups options and properties of Blender entities.
- * `timeline editor` at the bottom left side, that is of no use for BlenderFDS and can be closed.
+ * `properties editor` at the bottom right side of the application window. This editor groups options and properties of active Blender entities.
+ * `timeline editor` at the bottom left side of the interface. This is not used for BlenderFDS and can be closed.
 
 == Split and combine `editors` ==
 
-In the upper right hand corner of an editor is the `editor splitter widget`. It looks like a little ridged thumb grip. When you hover over it, your cursor will change to a cross. Left-click and drag it to split and combine `editors`.
+In the upper right hand corner of each editor is the `editor splitter widget`. It looks like a little ridged thumb grip. When you hover over it, your cursor changes to a cross: left-click and drag it to split and combine `editors`.
 
 == Fold and unfold `headers` ==
 
-To hide an `header`, just drag the header down till it folds. To unhide it, click on the small white `plus` icon.
+To hide an `editor header`, just drag the header down till it folds. To unhide it, click on those small white `plus` icon that you see on the sides.
 
 = The `3D view editor` =
 
-The `3D view editor` is used for viewing and editing `scenes`. The `tool shelf` and the `properties` of the `3D view editor` can be unfolded by clicking on the small white `plus` icon at the upper left and upper right corners of the `editor`.
+The `3D view editor` is used for viewing and editing `scenes`.
 
-BlenderFDS proposes some specific tools for [http://code.google.com/p/blenderfds/wiki/NonManifoldObjects dealing with non-manifold objects] at the bottom of the `tool shelf` in `Edit mode`.
+The `tool shelf` and the `properties` of the `3D view editor` can be unfolded by clicking on the small white `plus` icon at the upper left and upper right corners of the `editor`.
 
-The following picture shows the `3D view editor` in `edit mode`. At left there is the `tool shelf` with its `FDS Tools panel`. At right the `properties panel` is unfolded.
+BlenderFDS proposes some specific tools for [NonManifoldObjects dealing with non-manifold objects] at the bottom of the `tool shelf`, when the interface is in `edit mode`. The following picture shows the `3D view editor` in `edit mode`. At the left side is the `tool shelf` with its `FDS Tools panel`. At the right side of the `editor`, the `properties panel` is unfolded:
 
 [http://lh5.ggpht.com/_iTIkwVoSUm0/S9Xxef42jrI/AAAAAAAAAR0/fLTILr3RH8w/s912/objpanel_OBST_notmanifold3.png]
 
 = The `outliner editor` =
 
-The `outliner editor` is a hierarchical diagram displaying a list of Blender entities and its dependencies. It is used for easily navigating a complex `scene`.
+The `outliner editor` is a hierarchical diagram displaying a list of all Blender entities, their parents and progeny. It is used for easily navigating complex `scenes`:
 
 [http://lh6.ggpht.com/_iTIkwVoSUm0/S9RHEMD992I/AAAAAAAAAPk/fzhQ1VVeJUs/outliner.png]
 
 = The `properties editor` =
 
-The `properties editor` display options and properties of Blender entities, grouped in homogeneous `panels`. The `context buttons` at the top let the user select the `panels` that are to be shown depending on the desired context. Every `Panel` contains `controls`, that let the user modify options and properties.
+The `properties editor` displays options and properties of active Blender entities. The properties are grouped in homogeneous `panels`. The `context buttons` at the top of the `editor` let the user select the `panels` that are to be shown depending on the desired context.
 
-BlenderFDS provides several specific `panels` depending on the activated `context buttons` of the `properties editor`.
+Every `Panel` contains `controls`, that let the user handle options and properties.
 
-When opening a new Blender file, the BlenderFDS `panels` are listed as the last ones at the bottom of the `properties editor` and can be hidden under the pile of the other default `panels`. The user can easily reorder the pile by dragging them to the top, if needed.
+== BlenderFDS adds FDS-specific `panels` ==
+
+BlenderFDS adds several FDS-specific `panels` to the `properties editor`.
+
+When opening a new Blender file, the BlenderFDS `panels` are listed as the last ones at the bottom of the `properties editor`, and can be hidden under the pile of the other default `panels`. If needed, the user can easily reorder the pile by dragging the hidden `panels` to the top of the list.
+
+== The `properties editor` in `scene context` ==
 
 The `scene context button` provides the following BlenderFDS `panel`, that will be called for short `scene properties panel`:
 
 [http://lh3.ggpht.com/_iTIkwVoSUm0/S9XrlsYrUQI/AAAAAAAAARU/QPfwEsWw07E/scenepanel.png]
 
+== The `properties editor` in `object context` ==
+
 The BlenderFDS `panel` in `object context` changes the displayed properties depending on the associated namelist group. For simplicity, we will call it `object properties panel`. When the user enters a `VENT` namelist, the `object properties panel` becomes like this:
 
 [http://lh4.ggpht.com/_iTIkwVoSUm0/S9XrlUfdvqI/AAAAAAAAARQ/cN-g1UTC1WM/objpanel.png]
+
+== The `properties editor` in `material context` ==
 
 The `material context button` provides the following BlenderFDS `panel`, called for short `material properties panel`:
 
