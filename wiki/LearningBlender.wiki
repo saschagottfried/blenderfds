@@ -4,7 +4,7 @@ The Blender windowing system is a treat. It looks like some sort of space-ship c
 
 Once you learn it, however, you'll wish all your programs worked this way.
 
-The following is a short list of educational resources for Blender. Many of these resources are for _Blender 2.49_, and are now being transitioned to _Blender 2.5x series_. So, please, be patient.
+The following is a short list of educational resources for Blender. Many of these resources are dedicated to _Blender 2.49_, and are currently being transitioned to the _Blender 2.5x series_. The transition will take some time.
 
 <wiki:toc max_depth="2" />
 
@@ -12,7 +12,7 @@ The following is a short list of educational resources for Blender. Many of thes
 
 = Two starting points =
 
-Here are two blog entries from Yorik van Havre blog. These are general but step-by-step introduction to quick architecture modelling with Blender.
+Here are two blog entries from Yorik van Havre blog. These are general but step-by-step introductions to quick architecture modeling with Blender.
 
  * [http://yorik.uncreated.net/tutorials/architecture-blender.html]
  * [http://yorik.uncreated.net/tutorials/precisionmodelling-blender.html]
@@ -31,8 +31,8 @@ Here are two blog entries from Yorik van Havre blog. These are general but step-
 
  * [http://www.blender.org/education-help/] Blender official support page (manual, tutorials...)
  * [http://blenderartists.org/] Independent support forum
- * [http://www.blendercookie.com]
- * [http://www.blenderguru.com/] 
+ * [http://www.blendercookie.com] Independent support forum
+ * [http://www.blenderguru.com/] Independent support forum
 
 == Blender for architecture modeling ==
 
