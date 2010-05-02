@@ -11,7 +11,7 @@ When exported, each Blender `scene` becomes an FDS case, that is an `.fds` text 
 In general, the user needs to simulate several scenarios with similar geometries and thermo-physical parameters. Only a small number of parameters are to be modified.
 The user builds the geometry into a Blender `scene`. Then duplicates the `objects` in several new `scenes`:
  * the `objects` that do not change should be linked between the `scenes` to share exactly the same geometrical `mesh` and FDS parameters. If the user decides to modify the common geometry or the common thermo-physical parameters, all the linked `objects` from all `scenes` are modified accordingly.
- * depending on the scenarios, some `objects` from specific `scenes` must have their own geometry and thermo-physical parameters. The user unlinks them from the common properties and they become independent.
+ * depending on the scenarios, some `objects` from specific `scenes` must have their own geometry and thermo-physical parameters. The user unlinks them from the common properties and they become independent. Then the user can modify their parameters and geometry. 
 
 Each `scene` requires the user to enter several parameters in its `scene panel`:
 
@@ -19,7 +19,7 @@ Each `scene` requires the user to enter several parameters in its `scene panel`:
 
 == `CHID` and `TITLE` parameters ==
 
-The `CHID` value is used as the default value for the exported FDS input file name. The `CHID` and `TITLE` values are also used to insert an appropriate `HEAD` namelist group. For example:
+The `CHID` value is used as the default file name for the exported FDS input file. The `CHID` and `TITLE` values are also used to insert an appropriate `HEAD` namelist group in that file. For example:
 
 {{{
 &HEAD CHID='test 1', TITLE='This is a test fire, case 1' /
@@ -27,11 +27,13 @@ The `CHID` value is used as the default value for the exported FDS input file na
 
 == `Case Dir` ==
 
-The `Case Dir` is the default directory where the FDS input file is exported. Each `scene` can be exported to an FDS input file in its specified directory. FDS simulation results for each case will be stored in the appropriate directory.
+The `Case Dir` is the default directory where the single FDS input file is exported. Each `scene` can be exported into a different FDS input file in its particular directory. After the FDS simulation each case directory stores the results without mixing.
  
 == `Header` and `Header File` ==
 
-If `Auto Header` is chosen, a default header file is automatically included in the FDS input file. If `File` is chosen, BlenderFDS includes the specified `Header file` verbatim in the FDS input file. The header file is a text file used to specify the non-geometrical FDS namelist groups, commonly edited with the user-preferred text editor. BlenderFDS performs no check to the header syntax. A tipical header file is the following:
+If `Auto Header` is chosen, a default header file is automatically included in the FDS input file. If `File` is chosen, BlenderFDS includes the specified `Header file` verbatim in the FDS input file. The header file is a text file used to specify the non-geometrical FDS namelist groups, commonly edited with the user-preferred text editor. Beware that BlenderFDS performs no check to the header file syntax.
+
+A typical header file may contain the following parameters:
 
 {{{
 &TIME T_END=900.0 /
@@ -57,14 +59,16 @@ If `Auto Header` is chosen, a default header file is automatically included in t
 
 == `Voxel Size` ==
 
-The `Voxel Size` represents the dimension of the voxel employed to transform some of the Blender `objects` geometries in FDS boxes. To obtain a reliable geometry description for the subsequent CFD simulation, the user should enter a voxel size that is at least half of the smallest expected FDS mesh cell size.  
+The `Voxel Size` represents the dimension of the voxel employed to transform some of the Blender `objects` geometries in FDS boxes. To obtain a reliable geometry description for the subsequent CFD simulation, the user should enter a `Voxel Size` that is at least _half_ of the smallest expected FDS mesh cell size.  
 
 = Exporting current Blender `scene` to an FDS input file =
 
-Eventually the Blender `scene` is ready, the building geometry is modeled, the boundary conditions is assigned, the header file is prepared.
+Eventually the Blender `scene` is ready, the building geometry is modeled, the boundary conditions are assigned, the header file is prepared.
 
-The user selects the `File > Export > FDS Case (.fds)` menu and exports the current Blender `scene` to an FDS input file. The input file receives the default name entered in the `CHID` field of the `Scene panel`, and is saved in the default `Case dir` directory.
+The user selects the `File > Export > FDS Case (.fds)` menu and exports the current Blender `scene` to an FDS input file. The input file receives the default name entered in the `CHID` field of the `scene panel`, and is saved in the default `Case dir` directory.
 
 [http://lh4.ggpht.com/_iTIkwVoSUm0/S9XoybN9T7I/AAAAAAAAAQ0/zdxvweS7V0E/s720/test_exportmenu_scenepanel.png]
 
 In the file browser window, the user can specify if he prefers to `export visible objects` only. This can be useful while debugging the exported geometry in Smokeview.
+
+When exporting large files, the Blender user interface could _freeze_ for several seconds while the process advances. This is an issue with current Blender versions that we hope to solve in the near future.
