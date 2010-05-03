@@ -253,7 +253,7 @@ class OBJECT_PT_bf(ObjectButtonsPanel):
             
         # Custom param
         col = layout.column()
-        col.label(text="Custom parameters:")
+        col.label(text="Custom Parameters:")
         col.prop(ob, "bf_custom_param", text="")
 
 # UI: material panel
@@ -296,7 +296,7 @@ class MATERIAL_PT_bf(MaterialButtonsPanel):
         
         # Custom param and FYI
         col = layout.column()
-        col.label(text="Custom parameters:")
+        col.label(text="Custom Parameters:")
         col.prop(ma, "bf_custom_param", text="")
 
 # UI: operators

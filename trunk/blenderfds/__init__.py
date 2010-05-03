@@ -122,7 +122,7 @@ def register():
                                   default="none")
 
     bpy.types.Object.FloatVectorProperty(attr="bf_cell_size",
-                                         name="Cell size",
+                                         name="Cell Size",
                                          description="Cell size",
                                          step=1, precision=3,
                                          subtype="XYZ",
@@ -149,7 +149,7 @@ def register():
                                     description="Set FIY parameter")
     
     bpy.types.Object.StringProperty(attr="bf_custom_param",
-                                    name="Custom parameters",
+                                    name="Custom Parameters",
                                     description="Set custom parameters (exported verbatim)")
     
     bpy.types.Object.StringProperty(attr="bf_msg", name="Msg") # error message
@@ -173,7 +173,7 @@ def register():
                                       description="Set FIY parameter")
                                        
     bpy.types.Material.StringProperty(attr="bf_custom_param",
-                                      name="Custom parameters",
+                                      name="Custom Parameters",
                                       description="Set custom parameters (exported verbatim)")
      
     # panels
