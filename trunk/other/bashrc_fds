@@ -1,0 +1,11 @@
+### FDS5 and Smokeview environment 
+# Actual path to FDS folder
+FDS=/home/egissi
+echo "FDS5 setup ($FDS)"
+# Setting limits
+ulimit -s unlimited 
+ulimit -v unlimited 
+# Setting executable and library paths
+export PATH=$PATH:$FDS/FDS/FDS5/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$FDS/FDS/FDS5/bin/lib32
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$FDS/FDS/FDS5/bin/lib64
