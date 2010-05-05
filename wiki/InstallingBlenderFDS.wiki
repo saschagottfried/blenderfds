@@ -32,8 +32,7 @@ Add-ons is the general term for any optional script that extends Blender's funct
 
 [http://lh6.ggpht.com/_iTIkwVoSUm0/S9HGu7tVZuI/AAAAAAAAAOw/02k6d3QL5LE/install%20Add-On.png]
 
-For a script to show up in the `Add-ons` panel it will first have to be installed. Click `Install Add-On` button and locate the `blenderfds.zip` in the BlenderFDS distribution that you downloaded.
-Note: Filtering is ON by default (`*.py`). Turn OFF filtering (from the toolbar) to show all file types.
+For a script to show up in the `Add-ons` panel it will first have to be installed. Click `Install Add-On` button. As file type filtering is on by default (`*.py`), turn off filtering by clicking the small _funnel_ button in the toolbar to show all file types. Then locate the `blenderfds.zip` in the BlenderFDS distribution that you downloaded. 
 
 Blender extracts the add-on and copies it to the `../.blender/scripts/addons` folder, where `..` is your Blender installation location.
 
