@@ -2,15 +2,17 @@
 
 BlenderFDS is based on Blender. You do not need to be a Blender power user to use BlenderFDS, but it is much better if you are already familiar with its particular interface and you are able to quickly build simple architectural models. See the list of resources provided in the [LearningBlender Learning Blender] page for help.
 
-Before starting the detailed description of BlenderFDS UI, let's give a quick look to the default Blender user interface organization. Please give a look to this screencast:
-
-[http://www.blendercookie.com/getting-started-with-blender-navigation-and-interface/]
+Before starting the detailed description of BlenderFDS UI, let's give a quick look to the default Blender user interface organization.
 
 <wiki:toc max_depth="2" />
 
 ----
 
 = General Blender UI organization =
+
+Before starting, please watch this screencast:
+
+[http://www.blendercookie.com/getting-started-with-blender-navigation-and-interface/]
 
 The Blender UI is composed of `editors`, `headers`, `context buttons`, `panels`, and `controls`.
 
