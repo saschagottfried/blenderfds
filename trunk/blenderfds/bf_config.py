@@ -18,7 +18,7 @@
 "BlenderFDS, an open tool for the NIST Fire Dynamics Simulator."
 
 # Version
-version = "0.43 2010/04/28"
+version = "0.44 2010/05/05"
 
 # Max number of colums for output file
 col_max = 100
