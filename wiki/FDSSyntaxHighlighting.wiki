@@ -1,0 +1,11 @@
+#summary FDSSyntax highlighting
+
+Syntax highlighting is a feature of some text editors that display text in different colors and fonts according to the category of terms. This page lists various sources for FDS syntax highlighting applied to text editors.
+
+<wiki:toc max_depth="2" />
+
+----
+
+= Title =
+
+To be done...
