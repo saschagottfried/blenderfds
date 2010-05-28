@@ -19,3 +19,7 @@ FILE NAME: Smultron_SHxFDS.zip
 
 == How to install ==
 Please read "Readme.rtfd"
+
+
+= gedit Syntax Highlighting Plugin ( for Linux, MAC OSX, Microsoft Windows)=
+Coming soon...
