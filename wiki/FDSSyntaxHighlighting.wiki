@@ -28,10 +28,15 @@ FILE NAME: Smultron_SHxFDS.zip  (Coming soon)
 2) Quit Smultron before start installation process.
 
 3) Finder → Go → Application → Smultron.app ( then right click → explore contained);
+
 4) Open Resource directory;
+
 5) Overwrite "SyntaxDefinitionns.plist";
+
 6) Open "Syntax Definitions" directory;
+
 7) Copy "fds.plist";
+
 
 Now start Smultron and load any .fds file.
 That is all.
