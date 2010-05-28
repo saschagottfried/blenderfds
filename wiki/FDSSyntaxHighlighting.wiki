@@ -8,8 +8,9 @@ Syntax highlighting is a feature of some text editors that display text in diffe
 
 = Smultron Syntax Highlighting Plugin =
 
-This plugin updates the list of Smultron syntax definitions. Using this FREE text editor you can now highlight the FDS keywords ver.5.4.x
-Using "#" at the begin of each row,  you will see the comment in green color. For those who want to have the total control on the .fds files. and love to use CLI (Command Line Interface), that is a cool free solution.
+This plugin updates the list of Smultron syntax definitions. 
+Using this FREE text editor you can now highlight the FDS keywords ver.5.4.x
+For example: using "#" at the begin of each row,  you will see the comment in green color. For those who want to have the total control on the .fds files. and love to use CLI (Command Line Interface), that is a cool free solution.
 Now using "FDS Syntax Definitions" It will be easier way to read the .fds files. 
 TRY IT. IT'S FREE.
 
