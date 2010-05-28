@@ -16,9 +16,12 @@ TRY IT.
 
 FILE NAME: Smultron_SHxFDS.zip  (Coming soon)
 
-== How to install ==
+== More information ==
 Please read "Readme.rtfd"
 
 
 = gedit Syntax Highlighting Plugin ( for Linux, MAC OSX, Microsoft Windows)=
-Coming soon...
+gedit is the official text editor of the GNOME  desktop environment. Available for Linux, Mac OSX, Windows OS.
+You can download at http://projects.gnome.org/gedit/index.html
+
+Plugin coming soon...
