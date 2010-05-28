@@ -20,6 +20,7 @@ FILE NAME: Smultron_SHxFDS.zip  (Coming soon)
 1) Download and install SMULTRON text editor (Freeware).
  You can download the latest version for:
   - Leopard (10.5 and above) from [https://sourceforge.net/projects/smultron/files/smultron/3.5.1/Smultron-3.5.1.zip/download here]
+ 
   - Snow Leopard (10.6.x) there is a special beta version [https://sourceforge.net/projects/smultron/files/smultron/3.6b1/Smultron-3.6b1.zip/download here] 
        	   (which should fix most bugs introduced in Snow Leopard and some others as well as being generally faster. Please note that there are no localizations included)
 
