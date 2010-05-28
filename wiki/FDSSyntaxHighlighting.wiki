@@ -15,9 +15,11 @@ Now using "FDS Syntax Highlighting" it will be easier way to read the .fds files
 TRY IT. 
  
 == Download ==
-FILE NAME: Smultron_SHxFDS.zip  (Coming soon in few days)
+FILE NAME: [http://www.tidestudio.com/DOWNLOAD/Smultron_SHxFDS5.4.x.zip Smultron_SHxFDS5.4.x.zip]
 
-SHA1:
+FILE NAME: Smultron_SHxFDS5.5.x.zip  (Coming soon in few days)
+
+SHA1(Smultron_SHxFDS5.4.x.zip)= 51edd255b19e77a916d116e9901784ea0a025e59
 
 == How to install ==
 1) Download and install SMULTRON text editor (Freeware).
