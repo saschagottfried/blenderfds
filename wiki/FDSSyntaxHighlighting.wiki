@@ -52,7 +52,9 @@ Email: [mailto:parsipal@gmail.com parsipal@gmail.com]
 
 == Copyright and Copyleft ==
 - Smultron_SHxFDS: Plugin is released under the GNU General Public License (GPL).
+
 - Smultron: created, designed and programmed by Peter Borg.  With tabs from Positive Spin Media. With regular expressions from IBM & CocoaICU
+
 - All trademarks and icons are the property of their respective owners.
 
 = gedit Syntax Highlighting Plugin ( for Linux, MAC OSX, Microsoft Windows)=
@@ -69,3 +71,10 @@ To do...
 To do...
 == Contact ==
 Please do not hesitated to contact me to communicate eventual problems or councils.
+
+== Copyright and Copyleft ==
+- gedit_SHxFDS: Plugin is released under the GNU General Public License (GPL).
+
+- gedit: Released under the GNU General Public License (GPL).
+
+- All trademarks and icons are the property of their respective owners.
