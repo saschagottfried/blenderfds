@@ -45,7 +45,7 @@ Now start Smultron and load any .fds file. That is all. Good work
 
 == Contact ==
 Please do not hesitated to contact me to communicate eventual problems or councils.
-email: parsipal@gmail.com
+Email: [mailto:parsipal@gmail.com parsipal@gmail.com]
 
 =.=
 
