@@ -15,7 +15,7 @@ Now using "FDS Syntax Highlighting" it will be easier way to read the .fds files
 TRY IT. 
  
 == Download ==
-FILE NAME: Smultron_SHxFDS.zip  (Coming soon)
+FILE NAME: Smultron_SHxFDS.zip  (Coming soon in few days)
 
 SHA1:
 
@@ -64,7 +64,7 @@ gedit is the official text editor of the GNOME  desktop environment. Available f
 You can download [http://projects.gnome.org/gedit/index.html here]
 
 == Download ==
-FILE NAME:   (Coming soon)
+FILE NAME:   (Coming soon in few days)
 
 SHA1:
 == How to install ==
