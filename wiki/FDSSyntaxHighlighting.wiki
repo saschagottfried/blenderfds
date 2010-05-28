@@ -14,8 +14,7 @@ For example: using "#" at the begin of each row,  you will see the comment in gr
 Now using "FDS Syntax Highlighting" it will be easier way to read the .fds files. 
 TRY IT. 
 
-FILE NAME: Smultron_SHxFDS.zip
-
+FILE NAME: Smultron_SHxFDS.zip  (Coming soon)
 
 == How to install ==
 Please read "Readme.rtfd"
