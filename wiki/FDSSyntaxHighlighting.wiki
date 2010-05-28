@@ -57,6 +57,8 @@ Email: [mailto:parsipal@gmail.com parsipal@gmail.com]
 
 - All trademarks and icons are the property of their respective owners.
 
+
+
 = gedit Syntax Highlighting Plugin ( for Linux, MAC OSX, Microsoft Windows)=
 gedit is the official text editor of the GNOME  desktop environment. Available for Linux, Mac OSX, Windows OS.
 You can download [http://projects.gnome.org/gedit/index.html here]
