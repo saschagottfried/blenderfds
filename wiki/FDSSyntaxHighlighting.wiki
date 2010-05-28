@@ -50,7 +50,10 @@ Now start Smultron and load any .fds file. That is all. Good work
 Please do not hesitated to contact me to communicate eventual problems or councils.
 Email: [mailto:parsipal@gmail.com parsipal@gmail.com]
 
-
+== Copyright and Copyleft ==
+- Smultron_SHxFDS: Plugin is released under the GNU General Public License (GPL).
+- Smultron: created, designed and programmed by Peter Borg.  With tabs from Positive Spin Media. With regular expressions from IBM & CocoaICU
+- All trademarks and icons are the property of their respective owners.
 
 = gedit Syntax Highlighting Plugin ( for Linux, MAC OSX, Microsoft Windows)=
 gedit is the official text editor of the GNOME  desktop environment. Available for Linux, Mac OSX, Windows OS.
