@@ -25,6 +25,18 @@ FILE NAME: Smultron_SHxFDS.zip  (Coming soon)
   - Snow Leopard (10.6.x) there is a special beta version [https://sourceforge.net/projects/smultron/files/smultron/3.6b1/Smultron-3.6b1.zip/download here] 
        	   (which should fix most bugs introduced in Snow Leopard and some others as well as being generally faster. Please note that there are no localizations included)
 
+2) Quit Smultron before start installation process.
+
+3) Finder → Go → Application → Smultron.app ( then right click → explore contained);
+4) Open Resource directory;
+5) Overwrite "SyntaxDefinitionns.plist";
+6) Open "Syntax Definitions" directory;
+7) Copy "fds.plist";
+
+Now start Smultron and load any .fds file.
+That is all.
+Good work
+
 
 = =
 = gedit Syntax Highlighting Plugin ( for Linux, MAC OSX, Microsoft Windows)=
