@@ -31,7 +31,7 @@ FILE NAME: Smultron_SHxFDS.zip  (Coming soon)
 
 4) Open Resource directory;
 
-5) Overwrite "SyntaxDefinitionns.plist";
+5) Overwrite "SyntaxDefinitions.plist";
 
 6) Open "Syntax Definitions" directory;
 
@@ -42,6 +42,8 @@ Now start Smultron and load any .fds file.
 That is all.
 Good work
 
+== Release history ==
+2009/11/17 ver.0.1-a developed on FDS 5.4.x 
 
 = =
 = gedit Syntax Highlighting Plugin ( for Linux, MAC OSX, Microsoft Windows)=
