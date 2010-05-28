@@ -68,6 +68,7 @@ You can download [http://projects.gnome.org/gedit/index.html here]
 
 == Download ==
 FILE NAME:   (Coming soon in few days)
+=== Hashing ===
 
 SHA1:
 == How to install ==
