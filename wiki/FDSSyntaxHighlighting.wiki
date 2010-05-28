@@ -43,7 +43,12 @@ Now start Smultron and load any .fds file. That is all. Good work
 == Release history ==
 2009/11/17 ver.0.1-a developed on FDS 5.4.x 
 
-= =
+== Contact ==
+Please do not hesitated to contact me to communicate eventual problems or councils.
+email: parsipal@gmail.com
+
+=.=
+
 = gedit Syntax Highlighting Plugin ( for Linux, MAC OSX, Microsoft Windows)=
 gedit is the official text editor of the GNOME  desktop environment. Available for Linux, Mac OSX, Windows OS.
 You can download [http://projects.gnome.org/gedit/index.html here]
