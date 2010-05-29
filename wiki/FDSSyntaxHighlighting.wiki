@@ -72,8 +72,10 @@ FILE NAME:   (Coming soon in few days)
 SHA1:
 == How to install ==
 To do...
+
 == Release history ==
 To do...
+
 == Contact ==
 Please do not hesitated to contact me to communicate eventual problems or councils.
 
@@ -82,7 +84,9 @@ Please do not hesitated to contact me to communicate eventual problems or counci
 - gedit: Released under the GNU General Public License (GPL).
 - All trademarks and icons are the property of their respective owners.
 
-= NotePad Plus Plus (for Microsoft Windows) =
+
+
+= NotePad++ (for Microsoft Windows) =
 You can download from [http://notepad-plus.sourceforge.net/uk/site.htm here]
 
 == Download ==
