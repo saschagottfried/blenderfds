@@ -75,9 +75,18 @@ SHA1:
 To do...
 == Release history ==
 To do...
+== Contact ==
+Please do not hesitated to contact me to communicate eventual problems or councils.
+
+== Copyright and Copyleft ==
+- gedit_SHxFDS: Plugin is released under the GNU General Public License (GPL).
+
+- gedit: Released under the GNU General Public License (GPL).
+
+- All trademarks and icons are the property of their respective owners.
 
 
-= NotePad++ (for Microsoft Windows)=
+= NotePad*+*+ (for Microsoft Windows)=
 You can download from [http://notepad-plus.sourceforge.net/uk/site.htm here]
 
 == Download ==
@@ -89,14 +98,3 @@ SHA1:
 Coming soon...
 == Release history ==
 Coming soon...
-
-
-== Contact ==
-Please do not hesitated to contact me to communicate eventual problems or councils.
-
-== Copyright and Copyleft ==
-- gedit_SHxFDS: Plugin is released under the GNU General Public License (GPL).
-
-- gedit: Released under the GNU General Public License (GPL).
-
-- All trademarks and icons are the property of their respective owners.
