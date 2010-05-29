@@ -75,6 +75,22 @@ SHA1:
 To do...
 == Release history ==
 To do...
+
+
+= NotePad++ (for Microsoft Windows)=
+You can download from [http://notepad-plus.sourceforge.net/uk/site.htm here]
+
+== Download ==
+FILE NAME:   (Coming soon...)
+=== Hashing ===
+
+SHA1:
+== How to install ==
+Coming soon...
+== Release history ==
+Coming soon...
+
+
 == Contact ==
 Please do not hesitated to contact me to communicate eventual problems or councils.
 
