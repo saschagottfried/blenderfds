@@ -86,7 +86,7 @@ Please do not hesitated to contact me to communicate eventual problems or counci
 
 
 
-= NotePad++ (for Microsoft Windows) =
+= test++ (for Microsoft Windows) =
 You can download from [http://notepad-plus.sourceforge.net/uk/site.htm here]
 
 == Download ==
