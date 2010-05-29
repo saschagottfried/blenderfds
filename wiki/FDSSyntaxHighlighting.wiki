@@ -86,7 +86,7 @@ Please do not hesitated to contact me to communicate eventual problems or counci
 - All trademarks and icons are the property of their respective owners.
 
 
-= "NotePad++" (for Microsoft Windows)=
+= NotePad\+\+ (for Microsoft Windows)=
 You can download from [http://notepad-plus.sourceforge.net/uk/site.htm here]
 
 == Download ==
