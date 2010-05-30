@@ -91,7 +91,7 @@ You can download from [http://notepad-plus.sourceforge.net/uk/site.htm here]
 
 == Download ==
 fds+evac User-Defined language
-FILE NAME: fds+evac.xml
+FILE NAME: fds+evac.xml [http://blenderfds.googlecode.com/files/fds%2Bevac.xml here]
 === Hashing ===
 
 SHA1:84DF4A2C4AB72840C8386BF7DF1055E5ED9466A1
