@@ -96,8 +96,8 @@ FILE NAME: fds+evac.xml
 
 SHA1:
 == How to install ==
-Locate the application data folder for NotePad++, e.g.
-C:/My Documents and Settings/User/Application Data/NotePad++/
+Locate the application data folder for Notepad++, e.g.
+C:/My Documents and Settings/User/Application Data/Notepad++/
 
 Open userDefineLang.xml file. If it's blank, then replace the contents with fds+evac.xml.
 Otherwise, you would need to merge the existing contents with fds+evac.xml.
