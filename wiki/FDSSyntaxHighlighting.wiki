@@ -91,10 +91,10 @@ You can download from [http://notepad-plus.sourceforge.net/uk/site.htm here]
 
 == Download ==
 fds+evac User-Defined language
-FILE NAME: fds+evac.xml [http://blenderfds.googlecode.com/files/fds%2Bevac.xml here]
+FILE NAME: fds+evac.xml [http://blenderfds.googlecode.com/files/fds%2Bevac_notepad.zip here]
 === Hashing ===
 
-SHA1:84DF4A2C4AB72840C8386BF7DF1055E5ED9466A1
+SHA1:3FA7C7079BD681988A242F601E68A06E4CED9941
 == How to install ==
 Locate the application data folder for Notepad++, e.g.
 C:/My Documents and Settings/User/Application Data/Notepad++/
