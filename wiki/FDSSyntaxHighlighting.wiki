@@ -94,7 +94,7 @@ fds+evac User-Defined language
 FILE NAME: fds+evac.xml
 === Hashing ===
 
-SHA1:
+SHA1:84DF4A2C4AB72840C8386BF7DF1055E5ED9466A1
 == How to install ==
 Locate the application data folder for Notepad++, e.g.
 C:/My Documents and Settings/User/Application Data/Notepad++/
