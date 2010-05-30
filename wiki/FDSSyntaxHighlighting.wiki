@@ -96,10 +96,9 @@ FILE NAME: fds+evac.xml [http://blenderfds.googlecode.com/files/fds%2Bevac_notep
 
 SHA1:3FA7C7079BD681988A242F601E68A06E4CED9941
 == How to install ==
-Locate the application data folder for Notepad++, e.g.
-C:/My Documents and Settings/User/Application Data/Notepad++/
-
-Open userDefineLang.xml file. If it's blank, then replace the contents with fds+evac.xml.
-Otherwise, you would need to merge the existing contents with fds+evac.xml.
-== Release history ==
-Coming soon...
+1. Unzip the downloaded file to a temporary location.
+2. Locate your application data folder for Notepad++, i.e. %APP_DATA%/NOTEPAD++
+e.g. C:/My Documents and Settings/User/Application Data/Notepad++/
+3. Open userDefineLang.xml file. 
+4. If userDefineLang.xml is blank, then simply replace the contents with fds+evac.xml.
+5. If userDefineLang.xml contains other user defined language, then merge the existing contents with fds+evac.xml.
