@@ -71,10 +71,8 @@ The user selects the `File > Export > FDS Case (.fds)` menu and exports the curr
 
 To specify a different location to save the export file, click on the disk drive letter (e.g. c:) in the file browser window pane, choose the folder and then type the file name.
 
-http://dev.webbizsolutions.co.nz/_images/blender_ui_export.png
+
 
 In the file browser window, the user can also prefer to 'export visible objects' only. This can be useful while debugging the exported geometry in Smokeview.
 
 When exporting large files, the Blender user interface could _freeze_ for several seconds while the process advances. This is an issue with current Blender versions that we hope to solve in the near future. Note: for a complex building, the export process may take up to 3 minutes.
-
-http://dev.webbizsolutions.co.nz/_images/fds_case1.jpg
