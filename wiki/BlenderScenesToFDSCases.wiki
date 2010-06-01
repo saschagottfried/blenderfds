@@ -69,9 +69,7 @@ The user selects the `File > Export > FDS Case (.fds)` menu and exports the curr
 
 [http://lh4.ggpht.com/_iTIkwVoSUm0/S9XoybN9T7I/AAAAAAAAAQ0/zdxvweS7V0E/s720/test_exportmenu_scenepanel.png]
 
-To specify a different location to save the export file, click on the disk drive letter (e.g. c:) in the file browser window pane, choose the folder and then type the file name.
-
-
+To specify a different location to save the export file, click on the desired path in the file browser pane, then specify a file name.
 
 In the file browser window, the user can also prefer to 'export visible objects' only. This can be useful while debugging the exported geometry in Smokeview.
 
