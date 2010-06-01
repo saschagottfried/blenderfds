@@ -66,10 +66,14 @@ gedit is the official text editor of the GNOME  desktop environment. Available f
 You can download [http://projects.gnome.org/gedit/index.html here]
 
 == Download ==
-FILE NAME:   (Coming soon in few days)
+FILE NAME:   
+
+[http://blenderfds.googlecode.com/svn/trunk/other/syntax%20highlight/gedit%20fds%20syntax%20highlight.zip]
+
 === Hashing ===
 
-SHA1:
+SHA1: C7901DD89798A6E780FB2D83432E3D424CB15E33
+
 == How to install ==
 To do...
 
