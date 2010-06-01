@@ -68,7 +68,7 @@ You can download [http://projects.gnome.org/gedit/index.html here]
 == Download ==
 FILE NAME:   
 
-[http://blenderfds.googlecode.com/svn/trunk/other/syntax%20highlight/gedit%20fds%20syntax%20highlight.zip]
+[http://blenderfds.googlecode.com/svn/trunk/other/syntax%20highlight/gedit%20fds%20syntax%20highlight.zip gedit fds syntax highlight.zip]
 
 === Hashing ===
 
