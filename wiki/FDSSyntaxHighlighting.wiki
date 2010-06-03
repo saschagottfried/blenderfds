@@ -70,9 +70,7 @@ gedit is the official text editor of the GNOME  desktop environment. Available f
 You can download [http://projects.gnome.org/gedit/index.html here]
 
 == Download ==
-Provisional:
-
-[http://blenderfds.googlecode.com/svn/trunk/other/syntax%20highlight/gedit%20fds%20syntax%20highlight.zip gedit fds syntax highlight.zip]
+Provisional Version for FDS 5.4.x Keywords: [http://blenderfds.googlecode.com/svn/trunk/other/syntax%20highlight/gedit%20fds%20syntax%20highlight.zip gedit fds syntax highlight.zip]
 
 === Hashing ===
 
