@@ -48,6 +48,7 @@ SHA1(Smultron_SHxFDS5.5.x.zip)= 43a2271cae0cf6fc49d51c64897c71a76e1bb719
 Now start Smultron and load any .fds file. That is all. Good work
 
 == Release history ==
+2010/06/03 ver.0.2-a developed on FDS 5.5.x
 2009/11/17 ver.0.1-a developed on FDS 5.4.x 
 
 == Contact ==
