@@ -85,7 +85,9 @@ Please do not hesitated to contact me to communicate eventual problems or counci
 
 == Copyright and Copyleft ==
 - gedit_SHxFDS: Plugin is released under the GNU General Public License (GPL).
+
 - gedit: Released under the GNU General Public License (GPL).
+
 - All trademarks and icons are the property of their respective owners.
 
 
