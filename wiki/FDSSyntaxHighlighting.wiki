@@ -74,7 +74,7 @@ Provisional Version for all FDS versions (no Keywords): [http://blenderfds.googl
 
 === Hashing ===
 
-SHA1: C7901DD89798A6E780FB2D83432E3D424CB15E33
+SHA1(gedit_fds_syntax_highlight.zip): C7901DD89798A6E780FB2D83432E3D424CB15E33
 
 == How to install ==
 To do...
