@@ -17,10 +17,11 @@ TRY IT.
 == Download ==
 Plugin compatible with FDS 5.4.x keywords: [http://www.tidestudio.com/DOWNLOAD/Smultron_SHxFDS5.4.x.zip Smultron_SHxFDS5.4.x.zip]
 
-Plugin compatible with FDS 5.5.x keywords: Smultron_SHxFDS5.5.x.zip  (Coming soon in few days)
+Plugin compatible with FDS 5.5.x keywords: [http://www.tidestudio.com/DOWNLOAD/Smultron_SHxFDS5.5.x.zip Smultron_SHxFDS5.5.x.zip]
 
 === Hashing ===
 SHA1(Smultron_SHxFDS5.4.x.zip)= 51edd255b19e77a916d116e9901784ea0a025e59
+SHA1(Smultron_SHxFDS5.5.x.zip)= 43a2271cae0cf6fc49d51c64897c71a76e1bb719
 
 == How to install ==
 1) Download and install SMULTRON text editor (Freeware).
