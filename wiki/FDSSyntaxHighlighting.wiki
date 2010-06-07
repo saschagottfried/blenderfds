@@ -71,16 +71,19 @@ You can download [http://projects.gnome.org/gedit/index.html here]
 
 == Download ==
 Provisional Version for all FDS versions (no Keywords): [http://blenderfds.googlecode.com/svn/trunk/other/syntax%20highlight/gedit%20fds%20syntax%20highlight.zip gedit fds syntax highlight.zip]
+Version for FDS 5.5.x (keywords highlighting enable): [http://www.tidestudio.com/DOWNLOAD/gedit_SHxFDS5.5.x.zip gedit_SHxFDS5.5.x.zip]
 
 === Hashing ===
 
 SHA1(gedit_fds_syntax_highlight.zip): C7901DD89798A6E780FB2D83432E3D424CB15E33
+SHA1(gedit_SHxFDS5.5.x.zip)= a19fe66c4832bfc1e078fbc7de80eaa7bc831b61
 
 == How to install ==
 To do...
 
 == Release history ==
-To do...
+Version 2.0 for FDS 5.5.x  2010/06/07
+Provision Version for all FDS version 2009
 
 == Contact ==
 Please do not hesitated to contact me to communicate eventual problems or councils.
