@@ -76,14 +76,19 @@ Version for FDS 5.5.x (keywords highlighting enable): [http://www.tidestudio.com
 === Hashing ===
 
 SHA1(gedit_fds_syntax_highlight.zip): C7901DD89798A6E780FB2D83432E3D424CB15E33
+
 SHA1(gedit_SHxFDS5.5.x.zip)= a19fe66c4832bfc1e078fbc7de80eaa7bc831b61
 
 == How to install ==
-To do...
+For Mac OSX and Linux distro:
+
+Copy this file to: ~/.gnome2/gtksourceview-2.0/language-specs/
 
 == Release history ==
-Version 2.0 for FDS 5.5.x  2010/06/07
-Provision Version for all FDS version 2009
+
+2010/06/07 Version 2.0 for FDS 5.5.x 
+
+2009 Provision Version for all FDS version
 
 == Contact ==
 Please do not hesitated to contact me to communicate eventual problems or councils.
