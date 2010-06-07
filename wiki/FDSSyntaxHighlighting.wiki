@@ -80,9 +80,7 @@ SHA1(gedit_SHxFDS5.5.x.zip)= a19fe66c4832bfc1e078fbc7de80eaa7bc831b61
 SHA1(gedit_fds_syntax_highlight.zip): C7901DD89798A6E780FB2D83432E3D424CB15E33
 
 == How to install ==
-For Mac OSX and Linux distro:
-
-Copy this file to: ~/.gnome2/gtksourceview-2.0/language-specs/
+For Mac OSX and Linux distro: copy this file to: ~/.gnome2/gtksourceview-2.0/language-specs/
 
 == Release history ==
 
