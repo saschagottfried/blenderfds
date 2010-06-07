@@ -15,9 +15,9 @@ Now using "FDS Syntax Highlighting" it will be easier way to read the .fds files
 TRY IT. 
  
 == Download ==
-Plugin compatible with FDS 5.4.x keywords: [http://www.tidestudio.com/DOWNLOAD/Smultron_SHxFDS5.4.x.zip Smultron_SHxFDS5.4.x.zip]
-
 Plugin compatible with FDS 5.5.x keywords: [http://www.tidestudio.com/DOWNLOAD/Smultron_SHxFDS5.5.x.zip Smultron_SHxFDS5.5.x.zip]
+
+Plugin compatible with FDS 5.4.x keywords: [http://www.tidestudio.com/DOWNLOAD/Smultron_SHxFDS5.4.x.zip Smultron_SHxFDS5.4.x.zip]
 
 === Hashing ===
 SHA1(Smultron_SHxFDS5.5.x.zip)= 43a2271cae0cf6fc49d51c64897c71a76e1bb719
@@ -70,8 +70,9 @@ gedit is the official text editor of the GNOME  desktop environment. Available f
 You can download [http://projects.gnome.org/gedit/index.html here]
 
 == Download ==
-Provisional Version for all FDS versions (no Keywords): [http://blenderfds.googlecode.com/svn/trunk/other/syntax%20highlight/gedit%20fds%20syntax%20highlight.zip gedit fds syntax highlight.zip]
 Version for FDS 5.5.x (keywords highlighting enable): [http://www.tidestudio.com/DOWNLOAD/gedit_SHxFDS5.5.x.zip gedit_SHxFDS5.5.x.zip]
+
+Provisional Version for all FDS versions (no Keywords): [http://blenderfds.googlecode.com/svn/trunk/other/syntax%20highlight/gedit%20fds%20syntax%20highlight.zip gedit fds syntax highlight.zip]
 
 === Hashing ===
 SHA1(gedit_SHxFDS5.5.x.zip)= a19fe66c4832bfc1e078fbc7de80eaa7bc831b61
