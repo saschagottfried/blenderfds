@@ -75,4 +75,4 @@ In the file browser window, the user can also prefer to 'export visible objects'
 
 When exporting large files, the Blender user interface could _freeze_ for several seconds while the process advances. This is an issue with current Blender versions that we hope to solve in the near future. Note: for a complex building, the export process may take up to 3 minutes.
 
-[http://lh4.ggpht.com/_iTIkwVoSUm0/S9XoybN9T7I/AAAAAAAAAQ0/zdxvweS7V0E/s720/fds_case1.jpg]
+[http://picasaweb.google.com/emanuele.gissi/BlenderFDSWiki?feat=email#5480125322616353570]
