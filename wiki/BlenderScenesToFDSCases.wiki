@@ -73,6 +73,8 @@ To specify a different location to save the export file, click on the desired pa
 
 In the file browser window, the user can also prefer to 'export visible objects' only. This can be useful while debugging the exported geometry in Smokeview.
 
-When exporting large files, the Blender user interface could _freeze_ for several seconds while the process advances. This is an issue with current Blender versions that we hope to solve in the near future. Note: for a complex building, the export process may take up to 3 minutes.
+When exporting large files, the Blender user interface could _freeze_ for several seconds while the process advances. This is an issue with current Blender version that hopefully will be resolved in the near future. Note: for a relatively complex building such as the example case, the export process may take up to 3 minutes.
+
+Here's the export result of the example case building as viewed in SmokeView:
 
 [http://lh3.ggpht.com/_iTIkwVoSUm0/TA1Q8isrsyI/AAAAAAAAAUw/Dp16RUJY8sQ/fds_case1.jpg]
