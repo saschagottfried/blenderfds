@@ -89,11 +89,9 @@ For Mac OSX and Linux distro: copy this file to: ~/.gnome2/gtksourceview-2.0/lan
 2009 Provision Version for all FDS version
 
 == Contact ==
-Please do not hesitated to contact us to communicate eventual problems or councils.
+Please do not hesitated to contact us to communicate eventual problems or councils. For gedit_SHxFDS5.5.x  -> [mailto:parsipal@gmail.com parsipal@gmail.com]
 
-gedit_SHxFDS5.5.x  -> [mailto:parsipal@gmail.com parsipal@gmail.com]
 
-Provisional Version for all FDS versions (no Keywords) -> [emauele.gissi@gmail.com emanuele.gissi@gmail.com]
 
 
 == Copyright and Copyleft ==
