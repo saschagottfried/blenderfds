@@ -33,8 +33,7 @@ SHA1(Smultron_SHxFDS5.4.x.zip)= 51edd255b19e77a916d116e9901784ea0a025e59
   - Smultron for Snow Leopard (10.6.x) there is a special beta version [https://sourceforge.net/projects/smultron/files/smultron/3.6b1/Smultron-3.6b1.zip/download here] 
        	   (which should fix most bugs introduced in Snow Leopard and some others as well as being generally faster. Please note that there are no localizations included)
 
-- FRAISE for Snow Leopard (10.6.x):[http://github.com/jfmoy/Fraise/downloads download here] 
-  (Smultron changed name in FRAISE, now)
+  - FRAISE for Snow Leopard (10.6.x):[http://github.com/jfmoy/Fraise/downloads download here]  (Smultron changed name in FRAISE, now)
 
 2) Quit Smultron before start installation process.
 
