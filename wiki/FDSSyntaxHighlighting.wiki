@@ -6,7 +6,7 @@ Syntax highlighting is a feature of some text editors that display text in diffe
 
 ----
 
-= Smultron Syntax Highlighting Plugin (for MAC OSX only) =
+= FRAISE (Smultron changed name) Syntax Highlighting Plugin (for MAC OSX only) =
 
 This plugin updates the list of Smultron syntax definitions. 
 Using this FREE text editor you can now highlight the FDS keywords ver.5.4.x
@@ -25,13 +25,16 @@ SHA1(Smultron_SHxFDS5.5.x.zip)= 43a2271cae0cf6fc49d51c64897c71a76e1bb719
 SHA1(Smultron_SHxFDS5.4.x.zip)= 51edd255b19e77a916d116e9901784ea0a025e59
 
 == How to install ==
-1) Download and install SMULTRON text editor (Freeware).
+1) Download and install FRAISE (ex SMULTRON) text editor (Freeware).
  You can download the latest version for:
   
   - Leopard (10.5 and above) from [https://sourceforge.net/projects/smultron/files/smultron/3.5.1/Smultron-3.5.1.zip/download here]
  
   - Snow Leopard (10.6.x) there is a special beta version [https://sourceforge.net/projects/smultron/files/smultron/3.6b1/Smultron-3.6b1.zip/download here] 
        	   (which should fix most bugs introduced in Snow Leopard and some others as well as being generally faster. Please note that there are no localizations included)
+
+- FRAISE for Snow Leopard (10.6.x):[http://github.com/jfmoy/Fraise/downloads/download here] 
+  
 
 2) Quit Smultron before start installation process.
 
