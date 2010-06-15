@@ -6,7 +6,7 @@ Syntax highlighting is a feature of some text editors that display text in diffe
 
 ----
 
-= FRAISE (Smultron changed name) Syntax Highlighting Plugin (for MAC OSX only) =
+= FRAISE (and ex Smultron) Syntax Highlighting Plugin (for MAC OSX only) =
 
 This plugin updates the list of Smultron syntax definitions. 
 Using this FREE text editor you can now highlight the FDS keywords ver.5.4.x
