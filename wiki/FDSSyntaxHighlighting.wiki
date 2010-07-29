@@ -35,7 +35,7 @@ To install it:
 
 Gedit is the official text editor of the Gnome desktop environment.
 
-Download Gedit for Linux, MAC OSX, and MS Windows from: [http://projects.gnome.org/gedit/index.html]
+Download Gedit for Linux, Mac OSX, and MS Windows from: [http://projects.gnome.org/gedit/index.html]
 
 Download the plugin from:
 
