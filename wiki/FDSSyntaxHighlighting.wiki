@@ -52,6 +52,7 @@ Copy this file to the following directories:
 = Syntax highlighting for Notepad++ (MS Windows) =
 
 Download Notepad++ from: [http://notepad-plus-plus.org/]
+
 Download the plugin from: [http://blenderfds.googlecode.com/files]
 
 To install it:
