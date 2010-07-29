@@ -6,11 +6,11 @@ Syntax highlighting is a feature of some text editors that display text in diffe
 
 ----
 
-= Syntax highlighting for Fraise (former Smultron) text editor (MAC OSX only) =
+= Fraise (former Smultron) text editor =
 
 This plugin updates the list of Fraise syntax definitions. Do not hesitate to contact its developer in case of problems: [mailto:parsipal@gmail.com parsipal@gmail.com].
 
-Download Fraise from: [http://www.fraiseapp.com/]
+Download Fraise for Mac OSX from: [http://www.fraiseapp.com/]
 
 Download the plugin from:
 
@@ -31,11 +31,11 @@ To install it:
  # Copy `fds.plist` into it;
  # Now start Fraise and load any FDS input file.
 
-= Syntax highlighting for GEdit text editor (Linux, MAC OSX, MS Windows) =
+= Gedit text editor =
 
-GEdit is the official text editor of the Gnome desktop environment.
+Gedit is the official text editor of the Gnome desktop environment.
 
-Download GEdit from: [http://projects.gnome.org/gedit/index.html]
+Download Gedit for Linux, MAC OSX, and MS Windows from: [http://projects.gnome.org/gedit/index.html]
 
 Download the plugin from:
 
@@ -49,11 +49,11 @@ Copy this file to the following directories:
  * `~/.gnome2/gtksourceview-2.0/language-specs/`
  * `~/.gnome2/gtksourceview-1.0/language-specs/`
 
-= Syntax highlighting for Notepad++ (MS Windows) =
+= Notepad++ =
 
-Download Notepad++ from: [http://notepad-plus-plus.org/]
+Download Notepad++ for MS Windows from: [http://notepad-plus-plus.org/]
 
-Download the plugin from: [http://blenderfds.googlecode.com/files]
+Download the plugin from: [http://code.google.com/p/blenderfds/downloads/list]
 
 To install it:
 
@@ -61,4 +61,4 @@ To install it:
  # Locate your application data folder for Notepad++, i.e. `C:/My Documents and Settings/User/Application Data/Notepad++/`
  # Open userDefineLang.xml file. 
  # If `userDefineLang.xml` is blank, then simply replace the contents with `fds+evac.xml`.
- # If `userDefineLang.xml` contains other user defined language, then append `fds+evac.xml` contents to the existing file. 
+ # If `userDefineLang.xml` contains other user defined languages, append `fds+evac.xml` contents to the existing file. 
