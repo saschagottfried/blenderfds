@@ -13,15 +13,12 @@ This plugin updates the list of Fraise syntax definitions. Do not hesitate to co
 Download Fraise for Mac OSX from: [http://www.fraiseapp.com/]
 
 Download the plugin from:
-
  * FDS 5.5.x keywords: [http://www.tidestudio.com/DOWNLOAD/Smultron_SHxFDS5.5.x.zip Smultron_SHxFDS5.5.x.zip]
-
  * FDS 5.4.x keywords: [http://www.tidestudio.com/DOWNLOAD/Smultron_SHxFDS5.4.x.zip Smultron_SHxFDS5.4.x.zip]
 
 This plugin is released under the GNU General Public License (GPL).
 
 To install it:
-
  # Download and install Fraise text editor.
  # Quit Fraise before start installation process.
  # `Finder → Go → Application → Fraise.app`, then right click on it and choose `explore contained`.
@@ -38,9 +35,7 @@ Gedit is the official text editor of the Gnome desktop environment.
 Download Gedit for Linux, Mac OSX, and MS Windows from: [http://projects.gnome.org/gedit/index.html]
 
 Download the plugin from:
-
  * FDS 5.5.x keywords: [http://www.tidestudio.com/DOWNLOAD/gedit_SHxFDS5.5.x.zip gedit_SHxFDS5.5.x.zip]
-
  * All FDS versions: [http://blenderfds.googlecode.com/svn/trunk/other/syntax%20highlight/gedit%20fds%20syntax%20highlight.zip gedit fds syntax highlight.zip]
 
 This plugin is released under the GNU General Public License (GPL).
@@ -56,7 +51,6 @@ Download Notepad++ for MS Windows from: [http://notepad-plus-plus.org/]
 Download the plugin from: [http://code.google.com/p/blenderfds/downloads/list]
 
 To install it:
-
  # Unzip the downloaded file to a temporary location.
  # Locate your application data folder for Notepad++, i.e. `C:/My Documents and Settings/User/Application Data/Notepad++/`
  # Open userDefineLang.xml file. 
