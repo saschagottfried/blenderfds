@@ -1,22 +1,20 @@
 #summary Installing BlenderFDS
 
-BlenderFDS is built upon the new Blender 2.5x platform. First install Blender 2.5 alpha 2, then install BlenderFDS as an add-on.
+BlenderFDS is built upon the new Blender 2.5x platform. First install Blender, then install BlenderFDS as an add-on.
 
-Beware that BlenderFDS _does not work_ with older Blender versions.
+The current BlenderFDS version only _works_ with Blender 2.5.3 beta.
 
 <wiki:toc max_depth="2" />
 
 ----
 
-= First, install Blender 2.5 alpha 2 =
+= First, install Blender =
 
 Blender is an integrated application that allows the creation of a broad range of 2D and 3D content. Blender provides a broad spectrum of modeling, texturing, lighting, animation and video post-processing functionality in one package. Through its open architecture, Blender provides cross-platform interoperability, extensibility, an incredibly small footprint, and a tightly integrated workflow. Blender is one of the most popular open source and free 3D graphics applications in the world. The main source for information about Blender is its main site http://www.blender.org/
 
-Between 2008 and 2010, Blender has been entirely re-coded to improve its functions, work-flow and interface. The result of this work produced the version of the software known as Blender 2.5x, currently in alpha testing.
+Between 2008 and 2010, Blender has been entirely re-coded to improve its functions, work-flow and interface. The result of this work produced the version of the software known as Blender 2.5.x, currently in beta testing.
 
-To install Blender, download the appropriate package for your platform from http://www.blender.org/download/get-25-alpha/ to your computer.
-
-Currently BlenderFDS works well only with _Blender 2.5 alpha 2_. BlenderFDS _does not work_ with older Blender versions. Future Blender versions will require some minor modifications to BlenderFDS code. We are already testing BlenderFDS with bleeding edge Blender versions. 
+To install Blender, download the appropriate package for your platform from http://www.blender.org/ to your computer.
 
 The MS Windows Blender package comes with an optional self-extracting installer.
 
@@ -34,7 +32,7 @@ Add-ons is the general term for any optional script that extends Blender's funct
 
 For a script to show up in the `Add-ons` panel it will first have to be installed. Click `Install Add-On` button. As file type filtering is on by default (`*.py`), turn off filtering by clicking the small _funnel_ button in the toolbar to show all file types. Then locate the `blenderfds.zip` in the BlenderFDS distribution that you downloaded. 
 
-Blender extracts the add-on and copies it to the `../.blender/scripts/addons` folder, where `..` is your Blender installation location.
+Blender extracts the add-on and copies it to the local `addons` directory.
 
 Once installed, the add-on shows up in the panel and can be activated by clicking on the `Enable Add-on` button.
 
@@ -42,7 +40,7 @@ BlenderFDS is ready to use.
 
 = Removing BlenderFDS =
 
-To remove BlenderFDS from your Blender install, simply disable the BlenderFDS add-on in the `Add-Ons` panel of the `File > User Preferences` window. Then close the Blender executable and delete the `blenderfds` directory from the `../.blender/scripts/addons` folder, where `..` is your Blender installation location.
+To remove BlenderFDS from your Blender install, simply disable the BlenderFDS add-on in the `Add-Ons` panel of the `File > User Preferences` window. Then close the Blender executable and delete the `blenderfds` directory from the local `addons` directory.
 
 = Updating BlenderFDS =
 
