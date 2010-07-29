@@ -33,7 +33,7 @@ To install it:
 
 = Syntax highlighting for GEdit text editor (Linux, MAC OSX, MS Windows) =
 
-GEdit is the official text editor of the GNOME desktop environment.
+GEdit is the official text editor of the Gnome desktop environment.
 
 Download GEdit from: [http://projects.gnome.org/gedit/index.html]
 
