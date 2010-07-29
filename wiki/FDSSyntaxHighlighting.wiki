@@ -1,4 +1,4 @@
-#summary FDSSyntax highlighting
+#summary FDSSyntaxHighlighting
 
 Syntax highlighting is a feature of some text editors that display text in different colors and fonts according to the category of terms. This page lists various sources for FDS syntax highlighting applied to text editors.
 
@@ -6,123 +6,58 @@ Syntax highlighting is a feature of some text editors that display text in diffe
 
 ----
 
-= FRAISE (and ex Smultron) Syntax Highlighting Plugin (for MAC OSX only) =
+= Syntax highlighting for Fraise (former Smultron) text editor (MAC OSX only) =
 
-This plugin updates the list of Smultron syntax definitions. 
-Using this FREE text editor you can now highlight the FDS keywords ver.5.4.x
-For example: using "#" at the begin of each row,  you will see the comment in green color. For those who want to have the total control on the .fds files. and love to use CLI (Command Line Interface), that is a cool free solution.
-Now using "FDS Syntax Highlighting" it will be easier way to read the .fds files. 
-TRY IT. 
- 
-== Download ==
-Plugin compatible with FDS 5.5.x keywords: [http://www.tidestudio.com/DOWNLOAD/Smultron_SHxFDS5.5.x.zip Smultron_SHxFDS5.5.x.zip]
+This plugin updates the list of Fraise syntax definitions. Do not hesitate to contact its developer in case of problems: [mailto:parsipal@gmail.com parsipal@gmail.com].
 
-Plugin compatible with FDS 5.4.x keywords: [http://www.tidestudio.com/DOWNLOAD/Smultron_SHxFDS5.4.x.zip Smultron_SHxFDS5.4.x.zip]
+Download Fraise from: [http://www.fraiseapp.com/]
 
-=== Hashing ===
-SHA1(Smultron_SHxFDS5.5.x.zip)= 43a2271cae0cf6fc49d51c64897c71a76e1bb719
+Download the plugin from:
 
-SHA1(Smultron_SHxFDS5.4.x.zip)= 51edd255b19e77a916d116e9901784ea0a025e59
+ * FDS 5.5.x keywords: [http://www.tidestudio.com/DOWNLOAD/Smultron_SHxFDS5.5.x.zip Smultron_SHxFDS5.5.x.zip]
 
-== How to install ==
-1) Download and install FRAISE (ex SMULTRON) text editor (Freeware).
- You can download the latest version for:
-  
-  - Smultron for Leopard (10.5 and above) from [https://sourceforge.net/projects/smultron/files/smultron/3.5.1/Smultron-3.5.1.zip/download here]
- 
-  - Smultron for Snow Leopard (10.6.x) there is a special beta version [https://sourceforge.net/projects/smultron/files/smultron/3.6b1/Smultron-3.6b1.zip/download here] 
-       	   (which should fix most bugs introduced in Snow Leopard and some others as well as being generally faster. Please note that there are no localizations included)
+ * FDS 5.4.x keywords: [http://www.tidestudio.com/DOWNLOAD/Smultron_SHxFDS5.4.x.zip Smultron_SHxFDS5.4.x.zip]
 
-  - FRAISE for Snow Leopard (10.6.x):[http://github.com/jfmoy/Fraise/downloads download here]  (Smultron changed name in FRAISE, now)
+This plugin is released under the GNU General Public License (GPL).
 
-2) Quit Smultron before start installation process.
+To install it:
 
-3) Finder → Go → Application → Fraise.app ( or Smultron.app) ( then right click → explore contained);
+ # Download and install Fraise text editor.
+ # Quit Fraise before start installation process.
+ # `Finder → Go → Application → Fraise.app`, then right click on it and choose `explore contained`.
+ # Open the `Resource` directory;
+ # Overwrite the `SyntaxDefinitions.plist`;
+ # Open `Syntax Definitions` directory;
+ # Copy `fds.plist` into it;
+ # Now start Fraise and load any FDS input file.
 
-4) Open Resource directory;
+= Syntax highlighting for GEdit text editor (Linux, MAC OSX, MS Windows) =
 
-5) Overwrite "SyntaxDefinitions.plist";
+GEdit is the official text editor of the GNOME desktop environment.
 
-6) Open "Syntax Definitions" directory;
+Download GEdit from: [http://projects.gnome.org/gedit/index.html]
 
-7) Copy "fds.plist";
+Download the plugin from:
 
-Now start Smultron and load any .fds file. That is all. Good work
+ * FDS 5.5.x keywords: [http://www.tidestudio.com/DOWNLOAD/gedit_SHxFDS5.5.x.zip gedit_SHxFDS5.5.x.zip]
 
-== Release history ==
-2010/06/03 ver.0.2-a developed on FDS 5.5.x
+ * All FDS versions: [http://blenderfds.googlecode.com/svn/trunk/other/syntax%20highlight/gedit%20fds%20syntax%20highlight.zip gedit fds syntax highlight.zip]
 
-2009/11/17 ver.0.1-a developed on FDS 5.4.x 
+This plugin is released under the GNU General Public License (GPL).
 
-== Contact ==
-Please do not hesitated to contact me to communicate eventual problems or councils.
-Email: [mailto:parsipal@gmail.com parsipal@gmail.com]
+Copy this file to the following directories:
+ * `~/.gnome2/gtksourceview-2.0/language-specs/`
+ * `~/.gnome2/gtksourceview-1.0/language-specs/`
 
-== Copyright and Copyleft ==
-- Smultron_SHxFDS: Plugin is released under the GNU General Public License (GPL).
+= Syntax highlighting for Notepad++ (MS Windows) =
 
-- Smultron: created, designed and programmed by Peter Borg.  With tabs from Positive Spin Media. With regular expressions from IBM & CocoaICU
+Download Notepad++ from: [http://notepad-plus-plus.org/]
+Download the plugin from: [http://blenderfds.googlecode.com/files]
 
-- All trademarks and icons are the property of their respective owners.
+To install it:
 
-
-
-= gedit Syntax Highlighting Plugin ( for Linux, MAC OSX, Microsoft Windows)=
-gedit is the official text editor of the GNOME  desktop environment. Available for Linux, Mac OSX, Windows OS.
-You can download [http://projects.gnome.org/gedit/index.html here]
-
-== Download ==
-Version for FDS 5.5.x (keywords highlighting enable): [http://www.tidestudio.com/DOWNLOAD/gedit_SHxFDS5.5.x.zip gedit_SHxFDS5.5.x.zip]
-
-Provisional Version for all FDS versions (no Keywords): [http://blenderfds.googlecode.com/svn/trunk/other/syntax%20highlight/gedit%20fds%20syntax%20highlight.zip gedit fds syntax highlight.zip]
-
-=== Hashing ===
-SHA1(gedit_SHxFDS5.5.x.zip)= a19fe66c4832bfc1e078fbc7de80eaa7bc831b61
-
-SHA1(gedit_fds_syntax_highlight.zip): C7901DD89798A6E780FB2D83432E3D424CB15E33
-
-== How to install ==
-For Mac OSX and Linux distro: copy this file to: ~/.gnome2/gtksourceview-2.0/language-specs/
-
-== Release history ==
-
-2010/06/07 Version 2.0 for FDS 5.5.x 
-
-2009 Provision Version for all FDS version
-
-== Contact ==
-Please do not hesitated to contact us to communicate eventual problems or councils. For gedit_SHxFDS5.5.x  -> [mailto:parsipal@gmail.com parsipal@gmail.com]
-
-
-
-
-== Copyright and Copyleft ==
-- gedit_SHxFDS: Plugin is released under the GNU General Public License (GPL).
-
-- gedit: Released under the GNU General Public License (GPL).
-
-- All trademarks and icons are the property of their respective owners.
-
-
-
-= Notepad++ (for Microsoft Windows) =
-You can download from [http://notepad-plus.sourceforge.net/uk/site.htm here]
-
-== Download ==
-fds+evac User-Defined language
-FILE NAME: fds+evac.xml [http://blenderfds.googlecode.com/files/fds%2Bevac_notepad.zip here]
-=== Hashing ===
-
-SHA1:3FA7C7079BD681988A242F601E68A06E4CED9941
-== How to install ==
-1. Unzip the downloaded file to a temporary location.
-
-2. Locate your application data folder for Notepad++, i.e. %APP_DATA%/NOTEPAD++
-
-e.g. C:/My Documents and Settings/User/Application Data/Notepad++/
-
-3. Open userDefineLang.xml file. 
-
-4. If userDefineLang.xml is blank, then simply replace the contents with fds+evac.xml.
-
-5. If userDefineLang.xml contains other user defined language, then merge the existing contents with fds+evac.xml.
+ # Unzip the downloaded file to a temporary location.
+ # Locate your application data folder for Notepad++, i.e. `C:/My Documents and Settings/User/Application Data/Notepad++/`
+ # Open userDefineLang.xml file. 
+ # If `userDefineLang.xml` is blank, then simply replace the contents with `fds+evac.xml`.
+ # If `userDefineLang.xml` contains other user defined language, then append `fds+evac.xml` contents to the existing file. 
