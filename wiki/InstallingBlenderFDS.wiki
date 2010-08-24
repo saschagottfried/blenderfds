@@ -24,6 +24,10 @@ For other operating systems (Linux, Mac OS X...) you can unpack the downloaded c
 
 After downloading the BlenderFDS distribution from http://www.blenderfds.org/, unzip it into your computer.
 
+For Windows, unzip to the following location (create blenderfds folder first, if necessary):
+
+.blender/scripts/addons/blenderfds/
+
 Then launch the Blender executable.
 
 Add-ons is the general term for any optional script that extends Blender's functionality. They are found in the `File > User Preferences` window in the `Add-Ons` panel. The following window tab allows you to install an add-on and enable it.
