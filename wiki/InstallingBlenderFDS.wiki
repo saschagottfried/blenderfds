@@ -24,12 +24,6 @@ For other operating systems (Linux, Mac OS X...) you can unpack the downloaded c
 
 After downloading the BlenderFDS distribution from http://www.blenderfds.org/, unzip it into your computer.
 
-For Windows, unzip to the following location (create blenderfds folder first, if necessary):
-
-.blender/scripts/addons/blenderfds/
-
-Then launch the Blender executable.
-
 Add-ons is the general term for any optional script that extends Blender's functionality. They are found in the `File > User Preferences` window in the `Add-Ons` panel. The following window tab allows you to install an add-on and enable it.
 
 [http://lh6.ggpht.com/_iTIkwVoSUm0/S9HGu7tVZuI/AAAAAAAAAOw/02k6d3QL5LE/install%20Add-On.png]
@@ -41,6 +35,10 @@ Blender extracts the add-on and copies it to the local `addons` directory.
 Once installed, the add-on shows up in the panel and can be activated by clicking on the `Enable Add-on` button.
 
 BlenderFDS is ready to use.
+
+Don't forget that Blender is still in beta testing. Sometimes the installation procedure does not work for unknown reasons. In this case, both in Windows, Mac OSX, and Linux, unzip the `blenderfds.zip` file directly to the `.blender/scripts/addons/blenderfds/` directory. Create the `blenderfds` directory if it is missing.
+
+Then launch the Blender executable and enable the addon as explained before.
 
 = Removing BlenderFDS =
 
