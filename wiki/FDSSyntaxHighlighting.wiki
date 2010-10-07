@@ -35,12 +35,15 @@ Gedit is the official text editor of the Gnome desktop environment.
 Download Gedit for Linux, Mac OSX, and MS Windows from: [http://projects.gnome.org/gedit/index.html]
 
 Download the plugin from:
- * FDS 5.5.x keywords: [http://www.tidestudio.com/DOWNLOAD/gedit_SHxFDS5.5.x.zip gedit_SHxFDS5.5.x.zip]
+ * FDS 5.5.2 + EVAC keywords: [http://www.tidestudio.com/DOWNLOAD/gedit_highlight_FDS_552.zip gedit_highlight_FDS_552.zip]
+ * FDS 5.5.0 keywords: [http://www.tidestudio.com/DOWNLOAD/gedit_SHxFDS5.5.x.zip gedit_SHxFDS5.5.x.zip]
  * All FDS versions: [http://blenderfds.googlecode.com/svn/trunk/other/syntax%20highlight/gedit%20fds%20syntax%20highlight.zip gedit fds syntax highlight.zip]
 
 This plugin is released under the GNU General Public License (GPL).
 
 Copy this file to the following directories:
+ * `~/.local/share/gtksourceview-2.0/language-specs/`
+ or
  * `~/.gnome2/gtksourceview-2.0/language-specs/`
  * `~/.gnome2/gtksourceview-1.0/language-specs/`
 
