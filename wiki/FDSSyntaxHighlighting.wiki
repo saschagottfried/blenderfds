@@ -13,7 +13,7 @@ This plugin updates the list of Fraise syntax definitions. Do not hesitate to co
 Download Fraise for Mac OSX from: [http://www.fraiseapp.com/]
 
 Download the plugin from:
- * FDS 5.5.x keywords: [http://www.tidestudio.com/DOWNLOAD/Smultron_SHxFDS5.5.x.zip Smultron_SHxFDS5.5.x.zip]
+ * FDS 5.5.0 keywords: [http://www.tidestudio.com/DOWNLOAD/Smultron_SHxFDS5.5.x.zip Smultron_SHxFDS5.5.x.zip]
  * FDS 5.4.x keywords: [http://www.tidestudio.com/DOWNLOAD/Smultron_SHxFDS5.4.x.zip Smultron_SHxFDS5.4.x.zip]
 
 This plugin is released under the GNU General Public License (GPL).
