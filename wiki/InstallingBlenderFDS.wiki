@@ -2,8 +2,6 @@
 
 BlenderFDS is built upon the new Blender 2.5x platform. First install Blender, then install BlenderFDS as an add-on.
 
-The current BlenderFDS version only _works_ with Blender 2.5.3 beta.
-
 <wiki:toc max_depth="2" />
 
 ----
@@ -12,7 +10,7 @@ The current BlenderFDS version only _works_ with Blender 2.5.3 beta.
 
 Blender is an integrated application that allows the creation of a broad range of 2D and 3D content. Blender provides a broad spectrum of modeling, texturing, lighting, animation and video post-processing functionality in one package. Through its open architecture, Blender provides cross-platform interoperability, extensibility, an incredibly small footprint, and a tightly integrated workflow. Blender is one of the most popular open source and free 3D graphics applications in the world. The main source for information about Blender is its main site http://www.blender.org/
 
-Between 2008 and 2010, Blender has been entirely re-coded to improve its functions, work-flow and interface. The result of this work produced the version of the software known as Blender 2.5.x, currently in beta testing.
+Between 2008 and 2010, Blender has been entirely re-coded to improve its functions, work-flow and interface. The result of this work produced the version of the software known as Blender 2.5x, currently in beta testing.
 
 To install Blender, download the appropriate package for your platform from http://www.blender.org/ to your computer.
 
