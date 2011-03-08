@@ -103,11 +103,13 @@ When possible, BlenderFDS joins the voxels together in larger _boxes_ to minimiz
 
 [http://lh6.ggpht.com/_iTIkwVoSUm0/S9dRqlKwESI/AAAAAAAAASo/uu5-xDqgHe8/voxelization.png]
 
+[https://lh3.googleusercontent.com/_iTIkwVoSUm0/TXY1dvieKZI/AAAAAAAAAYg/K4RfeEuwwjM/blender%20voxel%20boxel.png]
+
 The voxelization algorithm treats only _manifold objects_. This means that the `object mesh` should be water-tight and well-formed so that BlenderFDS can decide which portion of space is solid and which is instead void. If the `object` is not manifold, an error message is displayed and `XB` is automatically set to `BBox`.
 
 There is a specific page explaining how to deal with this problem: [NonManifoldObjects Dealing with non-manifold objects].
 
-When setting `XB` to 'Voxels`, the overall shape of the `object` is conserved as much as possible:
+When setting `XB` to `Voxels`, the overall shape of the `object` is conserved as much as possible:
 
 [http://lh6.ggpht.com/_iTIkwVoSUm0/S9dgyoPwZrI/AAAAAAAAAS0/Lp5CL2daR5c/voxels_shape.png]
 
