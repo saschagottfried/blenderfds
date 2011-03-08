@@ -24,13 +24,19 @@ After downloading the BlenderFDS distribution from http://www.blenderfds.org/, u
 
 Add-ons is the general term for any optional script that extends Blender's functionality. They are found in the `File > User Preferences` window in the `Add-Ons` panel. The following window tab allows you to install an add-on and enable it.
 
-[http://lh6.ggpht.com/_iTIkwVoSUm0/S9HGu7tVZuI/AAAAAAAAAOw/02k6d3QL5LE/install%20Add-On.png]
+[https://lh6.googleusercontent.com/_iTIkwVoSUm0/TXY0BTCG0NI/AAAAAAAAAYM/MwADp4o-asM/s720/blender%20user%20pref%20clean.png]
 
-For a script to show up in the `Add-ons` panel it will first have to be installed. Click `Install Add-On` button. As file type filtering is on by default (`*.py`), turn off filtering by clicking the small _funnel_ button in the toolbar to show all file types. Then locate the `blenderfds.zip` in the BlenderFDS distribution that you downloaded. 
+For a script to show up in the `Add-ons` panel it will first have to be installed. Click `Install Add-On` button. Locate the `blenderfds.zip` in the BlenderFDS distribution that you downloaded. 
+
+[https://lh3.googleusercontent.com/_iTIkwVoSUm0/TXY0B0oNrcI/AAAAAAAAAYU/f64cw5JSYsw/s720/blender%20user%20pref%20select%20package.png]
 
 Blender extracts the add-on and copies it to the local `addons` directory.
 
 Once installed, the add-on shows up in the panel and can be activated by clicking on the `Enable Add-on` button.
+
+[https://lh6.googleusercontent.com/_iTIkwVoSUm0/TXY0BqgZ61I/AAAAAAAAAYQ/BPiY5hXRv6Q/s720/blender%20user%20pref%20enable%20package%20and%20default.png]
+
+Click on the `Save As Default` button to complete the installing procedure.
 
 BlenderFDS is ready to use.
 
