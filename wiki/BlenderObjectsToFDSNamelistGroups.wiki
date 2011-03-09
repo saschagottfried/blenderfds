@@ -54,9 +54,17 @@ When the Blender `object` has a suitable namelist group name (`OBST, VENT`...) a
 SURF_ID='Brick wall'
 }}}
 
+The following is an example of an `VENT object` description:
+
+[https://lh6.googleusercontent.com/_iTIkwVoSUm0/TXeIMlt0VWI/AAAAAAAAAbw/T7EigpG8f8g/blender%20panel%20VENT.png]
+
 == `SAWTOOTH` parameter ==
 
 In case of an `OBST object`, the user can insert the `SAWTOOTH=.FALSE.` parameter.
+
+The following is an example of an `OBST object` description:
+
+[https://lh3.googleusercontent.com/_iTIkwVoSUm0/TXeIMBzT0XI/AAAAAAAAAbk/ZG_zOp9hMz0/blender%20panel%20OBST.png]
 
 == `IJK` parameter ==
 
@@ -67,6 +75,10 @@ IJK=12,50,50
 }}}
 
 The `Adapt Cell/Voxel` button sets the `scene Voxel Size` to half the FDS `MESH` cell size (See [BlenderScenesToFDSCases Blender scenes to FDS cases]) and updates the `Desired Cell Size` to the calculated cell size.
+
+The following is an example of an `MESH object` description:
+
+[https://lh3.googleusercontent.com/_iTIkwVoSUm0/TXeIMLhHpZI/AAAAAAAAAbo/fmPVWbIkPQs/blender%20panel%20MESH.png]
 
 == `Custom parameters` ==
 
@@ -234,6 +246,10 @@ The user creates an `object` made of separate `faces` distributed inside the bui
 &SLCF QUANTITY='TEMPERATURE', VECTOR=.TRUE., PBY=0.600 /
 ...
 }}}
+
+Here is an example of a `SLCF object` using `PB*` set to faces:
+
+[https://lh4.googleusercontent.com/_iTIkwVoSUm0/TXeIMKDgYOI/AAAAAAAAAbs/jNd4Mz_PS90/blender%20panel%20SLCF.png]
 
 == Setting `XB, XYZ, PB*` at the same time ==
 
