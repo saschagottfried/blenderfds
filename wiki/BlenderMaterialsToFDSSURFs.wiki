@@ -32,6 +32,10 @@ The `FYI` parameter contains user's comments and informations and is inserted in
 FYI='This is a comment.'
 }}}
 
-== FDS predefined materials: `OPEN, INERT, MIRROR` ==
+== FDS predefined `SURF`: `OPEN, INERT, MIRROR` ==
 
-When entered as Blender `materials`, the FDS predefined materials (`OPEN, INERT, MIRROR`) are not exported to the FDS input file.
+When starting a new project, BlenderFDS proposes the creation of the default predefined FDS `SURF` namelists: 
+
+[https://lh6.googleusercontent.com/_iTIkwVoSUm0/TXduVhrkksI/AAAAAAAAAbU/Xvwtm7QiDBs/blender%20create%20predefined%20SURFs.png]
+
+The FDS predefined materials (`OPEN, INERT, MIRROR`) are not exported to the FDS input file.
