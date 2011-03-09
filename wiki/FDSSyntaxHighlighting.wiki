@@ -2,6 +2,8 @@
 
 Syntax highlighting is a feature of some text editors that display text in different colors and fonts according to the category of terms. This page lists various sources for FDS syntax highlighting applied to text editors.
 
+[https://lh5.googleusercontent.com/_iTIkwVoSUm0/TXeUFa-EkjI/AAAAAAAAAcQ/CBnI6aioMaI/s512/gedit%20syntax%20high.png]
+
 <wiki:toc max_depth="2" />
 
 ----
