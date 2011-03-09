@@ -18,7 +18,7 @@ These parameters set the color and the alpha of the FDS `SURF` namelist group, t
 RGB=12,34,35, TRANSPARENCY=.3
 }}}
 
-[http://lh5.ggpht.com/_iTIkwVoSUm0/S9XrlclevJI/AAAAAAAAARM/FQQtjRFOKdQ/s512/matpanel.png]
+[https://lh3.googleusercontent.com/_iTIkwVoSUm0/TXeIMRTOuUI/AAAAAAAAAb0/sfuruUMUxCU/blender%20panel%20SURF.png]
 
 == `Custom parameters` ==
 
