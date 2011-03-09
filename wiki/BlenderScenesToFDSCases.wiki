@@ -25,15 +25,15 @@ The `CHID` value is used as the default file name for the exported FDS input fil
 &HEAD CHID='test 1', TITLE='This is a test fire, case 1' /
 }}}
 
-== `Case Dir` ==
+== Case `Directory` ==
 
-The `Case Dir` is the default directory where the single FDS input file is exported. Each `scene` can be exported into a different FDS input file in its particular directory. After the FDS simulation each case directory stores the results without mixing.
+The case `Directory` is the default directory where the single FDS input file is exported. Each `scene` can be exported into a different FDS input file in its particular directory. After the FDS simulation has completed, each case directory stores the results without mixing.
  
-== `Header` and `Header File` ==
+== `Config File` ==
 
-If `Auto Header` is chosen, a default header file is automatically included in the FDS input file. If `File` is chosen, BlenderFDS includes the specified `Header file` verbatim in the FDS input file. The header file is a text file used to specify the non-geometrical FDS namelist groups, commonly edited with the user-preferred text editor. Beware that BlenderFDS performs no check to the header file syntax.
+If `Auto` is chosen, a default configuration is automatically included in the FDS input file. If `File` is chosen, BlenderFDS includes the specified `Config File` verbatim in the FDS input file. The configuration file is a text file used to specify the non-geometrical FDS namelist groups, commonly edited with the user-preferred text editor. Beware that BlenderFDS performs no check to the configuration file syntax.
 
-A typical header file may contain the following parameters:
+A typical configuration file may contain the following parameters:
 
 {{{
 &TIME T_END=900.0 /
