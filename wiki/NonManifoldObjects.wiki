@@ -20,20 +20,38 @@ Remember that it is often quicker to remodel the problematic `object` from scrat
 
 = An example =
 
-The cube shown in the following picture lacks the upper face, and is thus non-manifold. If the user tries to set `XB` to `Voxels`, an error message appears in the `object properties panel` and `XB` is automatically set back to `BBox`.
+The cube shown in the following picture lacks the upper face, and is thus non-manifold. If the user tries to set `XB` to `Voxels`, an error message appears in the `object properties panel`:
 
-[http://lh3.ggpht.com/_iTIkwVoSUm0/S9XxeMT1ntI/AAAAAAAAARs/3qsCQn_LuDs/s912/objpanel_OBST_notmanifold1.png]
+[https://lh6.googleusercontent.com/_iTIkwVoSUm0/TXdqg-nfjjI/AAAAAAAAAaY/2tyLcl3NRNs/s720/blender%20hollow%20cube1.png]
 
-While trying to fix it, the user switches Blender from `object mode` to `edit mode`. The object mesh is now editable.
+To fix it, the user switches Blender from `Object mode` to `Edit mode`. The object mesh is now editable:
 
-[http://lh3.ggpht.com/_iTIkwVoSUm0/S9XxeChJdxI/AAAAAAAAARw/J3RffnzVoyI/s912/objpanel_OBST_notmanifold2.png]
+[https://lh4.googleusercontent.com/_iTIkwVoSUm0/TXdqhEAY05I/AAAAAAAAAag/TUi99mhDfh4/s720/blender%20hollow%20cube2.png]
 
-Then the user clicks on the `Select Non Manifold` button in the `Tool shelf` at the left side of the `3D View editor`. The problematic edges are selected.
+Then he switches the selection mode to `Edge select mode`:
 
-[http://lh5.ggpht.com/_iTIkwVoSUm0/S9Xxef42jrI/AAAAAAAAAR0/fLTILr3RH8w/s912/objpanel_OBST_notmanifold3.png]
+[https://lh4.googleusercontent.com/_iTIkwVoSUm0/TXdqg_ExihI/AAAAAAAAAac/IPrDQWzbWrg/s720/blender%20hollow%20cube3.png]
 
-The cube lacks a face. So the user select the `Mesh > Faces > Fill` menu of the `3D View editor` `header` to create the missing face.
+Then the user clicks on the `Select > Non Manifold` menu of the `3D View editor`:
 
-[http://lh4.ggpht.com/_iTIkwVoSUm0/S9XxeadBqsI/AAAAAAAAAR4/PHqujAQJDCs/s912/objpanel_OBST_notmanifold4.png]
+[https://lh5.googleusercontent.com/_iTIkwVoSUm0/TXdqjJO9X-I/AAAAAAAAAak/7T_ykfHc1gE/s720/blender%20hollow%20cube4.png]
 
-The user switches Blender back from `edit mode` to `object mode`. The `object` is now manifold, and `XB` can be safely set to `Voxels`.
+The problematic edges are now selected:
+
+[https://lh3.googleusercontent.com/_iTIkwVoSUm0/TXdqjRAmclI/AAAAAAAAAao/x1NLstmXyNw/s720/blender%20hollow%20cube5.png]
+
+The cube lacks a face. So the user select the `Mesh > Faces > Fill` menu of the `3D View editor` `header` to create the missing face:
+
+[https://lh4.googleusercontent.com/_iTIkwVoSUm0/TXdqjo96cjI/AAAAAAAAAas/ry7Z13JqvD8/s720/blender%20hollow%20cube6.png]
+
+The missing face is created:
+
+[https://lh3.googleusercontent.com/_iTIkwVoSUm0/TXdqkbj6KCI/AAAAAAAAAaw/4_YPUIzssDk/s720/blender%20hollow%20cube7.png]
+
+The user switches Blender back from `edit mode` to `object mode`:
+
+[https://lh5.googleusercontent.com/_iTIkwVoSUm0/TXdqlR6QqwI/AAAAAAAAAa4/1ubxzR6_mVw/s720/blender%20hollow%20cube8.png]
+
+The error message disappears: the `object` is now manifold, and `XB` can be safely set to `Voxels`:
+
+[https://lh3.googleusercontent.com/_iTIkwVoSUm0/TXdqlQb652I/AAAAAAAAAa0/_EWjjRa8x60/s720/blender%20hollow%20cube9.png]
