@@ -56,7 +56,9 @@ Every `Panel` contains `controls`, that let the user handle options and properti
 
 == BlenderFDS adds FDS-specific `panels` ==
 
-BlenderFDS adds several FDS-specific `panels` to the `properties editor`.
+Depending on the chosen context, BlenderFDS adds several FDS-specific `panels` to the `properties editor`.
+
+[https://lh3.googleusercontent.com/_iTIkwVoSUm0/TXdOE_xsFTI/AAAAAAAAAZY/ICb_ZgaykMg/s640/blender%20context%20and%20panels.png]
 
 When opening a new Blender file, the BlenderFDS `panels` are listed as the last ones at the bottom of the `properties editor`, and can be hidden under the pile of the other default `panels`. If needed, the user can easily reorder the pile by dragging the hidden `panels` to the top of the list.
 
