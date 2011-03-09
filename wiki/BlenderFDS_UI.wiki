@@ -40,8 +40,6 @@ The `3D view editor` is used for viewing and editing `scenes`.
 
 The `tool shelf` and the `properties` of the `3D view editor` can be unfolded by clicking on the small white `plus` icon at the upper left and upper right corners of the `editor`.
 
-BlenderFDS proposes some specific tools for [NonManifoldObjects dealing with non-manifold objects] at the bottom of the `tool shelf`, when the interface is in `edit mode`. The following picture shows the `3D view editor` in `edit mode`. At the left side is the `tool shelf` with its `FDS Tools panel`. At the right side of the `editor`, the `properties panel` is unfolded:
-
 [http://lh5.ggpht.com/_iTIkwVoSUm0/S9Xxef42jrI/AAAAAAAAAR0/fLTILr3RH8w/s912/objpanel_OBST_notmanifold3.png]
 
 = The `outliner editor` =
@@ -62,22 +60,24 @@ BlenderFDS adds several FDS-specific `panels` to the `properties editor`.
 
 When opening a new Blender file, the BlenderFDS `panels` are listed as the last ones at the bottom of the `properties editor`, and can be hidden under the pile of the other default `panels`. If needed, the user can easily reorder the pile by dragging the hidden `panels` to the top of the list.
 
+[https://lh5.googleusercontent.com/_iTIkwVoSUm0/TXdGH8Sam-I/AAAAAAAAAY4/ZYcs715_AJ0/s720/blender%20dragging%20panel.png]
+
 == The `properties editor` in `scene context` ==
 
-The `scene context button` provides the following BlenderFDS `panel`, that we call `scene properties panel` for shortness:
+The `scene context button` provides the following BlenderFDS `panel`, that we call `scene properties panel` for shortness. For example:
 
-[http://lh3.ggpht.com/_iTIkwVoSUm0/S9XrlsYrUQI/AAAAAAAAARU/QPfwEsWw07E/scenepanel.png]
+[https://lh6.googleusercontent.com/_iTIkwVoSUm0/TXdHmgeQRhI/AAAAAAAAAZE/RZuwuvIMNns/blender%20panel%20case.png]
 
 == The `properties editor` in `object context` ==
 
 For simplicity, we call `object properties panel` the BlenderFDS `panel` in `object context`.
 
-Options and properties, displayed in the FDS-specific `object properties panel`, change depending on the associated namelist group. When the user enters a `VENT` namelist in the appropriate field, the `object properties panel` becomes like this:
+Options and properties, displayed in the FDS-specific `object properties panel`, change depending on the associated namelist group. When the user enters an `OBST` namelist in the appropriate field, the `object properties panel` becomes like this:
 
-[http://lh4.ggpht.com/_iTIkwVoSUm0/S9XrlUfdvqI/AAAAAAAAARQ/cN-g1UTC1WM/objpanel.png]
+[https://lh5.googleusercontent.com/_iTIkwVoSUm0/TXdHmjMzv9I/AAAAAAAAAZI/hHn9Bkbym80/blender%20panel%20object.png]
 
 == The `properties editor` in `material context` ==
 
-The `material context button` provides the following BlenderFDS `panel`, called for short `material properties panel`:
+The `material context button` provides the BlenderFDS `panel`, called for short `material properties panel`. For example:
 
-[http://lh5.ggpht.com/_iTIkwVoSUm0/S9XrlclevJI/AAAAAAAAARM/FQQtjRFOKdQ/s512/matpanel.png]
+[https://lh5.googleusercontent.com/_iTIkwVoSUm0/TXdHmjwD2RI/AAAAAAAAAZM/BEOxBEYCyWo/blender%20panel%20material.png]
