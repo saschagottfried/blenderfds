@@ -1,8 +1,8 @@
 #summary Blender objects to FDS namelist groups
 
-Each Blender `object` is exported as one or more FDS namelist groups sharing the same parameters. The FDS parameters assigned to each `object` are specified in the `object properties panel`. Different options and properties are displayed depending on the associated FDS namelist group.
+Each Blender `object` is exported as one or more FDS namelist groups sharing the same parameters. The FDS parameters assigned to each `object` are specified in the `object properties panel`. Different options and properties are displayed depending on the associated FDS namelist group, obeying to FDS semantic.
 
-The user builds the architectural model. Each element is split in parts, that must have homogeneous thermo-physical properties: in fact, each Blender `object` can only have one set of FDS parameters assigned.
+The user builds the architectural model. Each element is split in parts. Each part should have homogeneous thermo-physical properties, as each Blender `object` can only have one set of FDS parameters assigned.
 
 <wiki:toc max_depth="2" />
 
@@ -10,27 +10,31 @@ The user builds the architectural model. Each element is split in parts, that mu
 
 = FDS namelist group parameters =
 
-The user input every geometric FDS namelist group parameters in the BlenderFDS `object properties panel`. The following paragraphs list one by one all the parameters managed by the interface.
+The user describes every geometric FDS namelist group in the BlenderFDS `object properties panel`. The following paragraphs list one by one some of the parameters managed by the BlenderFDS interface.
 
-== `& Name` parameter ==
+BlenderFDS performs some simple checks on the syntax of the input parameters. The following example shows an unknown `namelist` and an `ID` parameter containing an unacceptable quote character:
 
-The first and most important parameter of the `object properties panel` is the namelist group name `& Name`. If BlenderFDS recognizes the type of namelist, the `panel` is udapted accordingly to only show relevant parameters. The same `panel` label is updated to host the verbose description of the namelist:
+[https://lh5.googleusercontent.com/_iTIkwVoSUm0/TXdX2LphPgI/AAAAAAAAAaM/wBNaxi33G4Q/blender%20error.png]
+
+BlenderFDS does not enforce any automatic correction. It's up to the user to provide a meaningful and syntactically correct parameters.
+
+== `Namelist` parameter ==
+
+The first and most important parameter of the `object properties panel` is the namelist group name `Namelist`. If BlenderFDS recognizes the namelist, the `panel` is udapted accordingly and shows relevant parameters only. The same `panel` label is updated to host a descriptive identification of the chosen namelist.
 
 {{{
-&SLCF /
+&OBST /
 }}}
-
-There is a small bug in the current version of Blender: in same remote cases the label is not updated immediately, but bleeding edge Blender versions solve the issue.
 
 == `ID` parameter ==
 
-The `ID` parameter is preconfigured, based on the Blender `object` name. The user can choose whether to include the `ID` parameter in the exported namelist group or not:
+The `ID` parameter is based on the Blender `object` name:
 
 {{{
 ID='Wall'
 }}}
 
-Some namelist groups do not allow the insertion of the `ID` parameter. We reported the issue to FDS developers, as the presence of an `ID` parameter in all namelists could ease debugging of the FDS file. See [http://code.google.com/p/fds-smv/issues/detail?id=887&can=1&q=reporter%3Aemanuele.gissi FDS Issue 887].
+Some namelist groups still do not allow the insertion of the `ID` parameter. We reported the issue to FDS developers, as the presence of an `ID` parameter in all namelists could ease debugging of the FDS file. See [http://code.google.com/p/fds-smv/issues/detail?id=887&can=1&q=reporter%3Aemanuele.gissi FDS Issue 887].
 
 == `FYI` parameter ==
 
