@@ -2,7 +2,7 @@
 #
 #  This program is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public License
-#  as published by the Free Software Foundation; either version 2
+#  as published by the Free Software Foundation; either version 3
 #  of the License, or (at your option) any later version.
 #
 #  This program is distributed in the hope that it will be useful,
@@ -17,55 +17,49 @@
 # ##### END GPL LICENSE BLOCK #####
 "BlenderFDS, an open tool for the NIST Fire Dynamics Simulator."
 
-# Version
-version = "0.44 2010/05/05"
-
 # Max number of colums for output file
 col_max = 100
 
 # Namelist names
-nl_names = {"OBST": "Obstruction",
-            "HOLE": "Obstruction Cutout",
-            "VENT": "Boundary Condition Patch",
-            "DEVC": "Device",
-            "SLCF": "Slice File",
-            "PROF": "Wall Profile Output",
-            "MESH": "Domain of Simulation",
-            "INIT": "Initial Condition",
-            "ZONE": "Pressure Zone",
-            "EVAC": "Evac Agents Position",
-            "EVHO": "Evac Agents Hole",
-            "EXIT": "Evac Exit",
-            "ENTR": "Evac Entry",
-            "DOOR": "Evac Door",
-            "CORR": "Evac Corridor",
-            "EVSS": "Evac Incline",
-            "STRS": "Evac Staircase",
-           }
+nls = {"OBST": "Obstruction",
+       "HOLE": "Obstruction Cutout",
+       "VENT": "Boundary Condition Patch",
+       "DEVC": "Device",
+       "SLCF": "Slice File",
+       "PROF": "Wall Profile Output",
+       "MESH": "Domain of Simulation",
+       "INIT": "Initial Condition",
+       "ZONE": "Pressure Zone",
+       "EVAC": "Evac Agents Position",
+       "EVHO": "Evac Agents Hole",
+       "EXIT": "Evac Exit",
+       "ENTR": "Evac Entry",
+       "DOOR": "Evac Door",
+       "CORR": "Evac Corridor",
+       "EVSS": "Evac Incline",
+       "STRS": "Evac Staircase",
+      }
 
-# Namelist groups
-# The last group is always used to collect all remaining namelist groups.
-nl_groups = [("Computational domain", ("MESH", "INIT", "ZONE")),
-             ("Geometry", ("OBST", "HOLE", "VENT")),
-             ("Evacuation", ("EVAC","EVHO","EXIT","ENTR","DOOR","CORR","EVSS","STRS")),
-             ("Control logic and output", ("DEVC", "SLCF", "PROF")),
-             ("Others", ()),
-            ]
-
-# Namelist parameters
-nl_params = {"SURF_ID":  ("DEVC", "OBST","VENT"),
+# Namelist parameters FIXME ID, "SLCF",
+nl_params = {"ID":       ("DEVC", "PROF", "HOLE", "INIT", "MESH", "OBST", "VENT", "ZONE", "EVAC", "EVHO", "EXIT", "ENTR", "DOOR", "CORR", "EVSS", "STRS"), 
+             "SURF_ID":  ("DEVC", "OBST","VENT"),
              "SAWTOOTH": ("OBST", ),
              "IJK":      ("MESH", ),
-             "XB":       ("DEVC", "HOLE", "INIT", "MESH", "OBST", "SLCF", "VENT", "ZONE", "EVAC", "EVHO", "EXIT", "ENTR", "DOOR", "CORR", "EVSS"),
+             "XB":       ("DEVC", "HOLE", "INIT", "MESH", "OBST", "SLCF", "VENT", "ZONE", "EVAC", "EVHO", "EXIT", "ENTR", "DOOR", "CORR", "EVSS", "STRS"),
              "XYZ":      ("DEVC", "PROF", "VENT", "EXIT", "DOOR", "STRS"),
              "PB":       ("SLCF", "VENT"),
-            }
+             }
+
+# Namelist groups, a tuple for sorting
+# The last group is used to collect all remaining namelist groups.
+nl_groups = (("Computational domain",     ("MESH", "INIT", "ZONE")),
+             ("Geometry",                 ("OBST", "HOLE", "VENT")),
+             ("Evacuation",               ("EVAC","EVHO","EXIT","ENTR","DOOR","CORR","EVSS","STRS")),
+             ("Control logic and output", ("DEVC", "SLCF", "PROF")),
+             ("Others",                   ()),
+             )
 
 # Predefined FDS SURF boundary conditions (Blender materials)
-mas_predefined = ["OPEN", "MIRROR", "INERT"]
-
-# Return namelist description
-def get_nl_description(nl_name):
-    """Return namelist description"""
-    return "FDS {} ({})".format(nl_name, nl_names.get(nl_name, "Unknown Object")) 
-
+mas_predefined = ("OPEN", "MIRROR", "INERT")
+# They are created by the hardcoded operator:
+# class MATERIAL_OT_bf_create_predefined(bpy.types.Operator):
