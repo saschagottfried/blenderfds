@@ -20,31 +20,25 @@ For other operating systems (Linux, Mac OS X...) you can unpack the downloaded c
 
 = Then, install BlenderFDS add-on into Blender =
 
-Add-ons is the general term for any optional script that extends Blender's functionality. They are found in the `File > User Preferences` window in the Blender `Add-Ons` panel.
+Add-ons is the general term for any optional script that extends Blender's functionality. After installing Blender, download the latest BlenderFDS distribution package (eg: `BlenderFDS_0.70.zip`) from http://www.blenderfds.org/ and unzip it in a comfortable location.
 
-Download the latest BlenderFDS distribution (eg: `BlenderFDS_0.70.zip`) from http://www.blenderfds.org/ to your computer and unzip it.
-
-The following window tab allows you to install an add-on and enable it.
+After launching the Blender executable, open the the Blender `Add-Ons` panel using the `File > User Preferences` menu. The following window tab opens up.
 
 [https://lh6.googleusercontent.com/_iTIkwVoSUm0/TXY0BTCG0NI/AAAAAAAAAYM/MwADp4o-asM/s720/blender%20user%20pref%20clean.png]
 
-For a script to show up in the `Add-ons` panel it first has to be installed. Click `Install Add-On` button and locate the `blenderfds.zip` file inside the BlenderFDS distribution.
+For a script to show up in the `Add-ons` panel it first has to be installed. Click `Install Add-On` button and locate the `blenderfds.zip` file inside the BlenderFDS distribution package that you just downloaded and unzipped.
 
 [https://lh3.googleusercontent.com/_iTIkwVoSUm0/TXY0B0oNrcI/AAAAAAAAAYU/f64cw5JSYsw/s720/blender%20user%20pref%20select%20package.png]
 
-Blender opens the add-on and copies it to the Blender local `addons` directory.
+Blender automatically unzips the BlenderFDS add-on and copies its content to the Blender local `addons/blenderfds` directory.
 
-Once installed, the add-on shows up in the panel and can be activated by clicking on the `Enable Add-on` button.
+Once installed, the add-on shows up in the `Add-ons` panel. By clicking on the `Enable Add-on` button, you can activate its functionalities.
 
 [https://lh6.googleusercontent.com/_iTIkwVoSUm0/TXY0BqgZ61I/AAAAAAAAAYQ/BPiY5hXRv6Q/s720/blender%20user%20pref%20enable%20package%20and%20default.png]
 
-Finally, click on the `Save As Default` button to complete the installing procedure.
+Finally, click on the `Save As Default` button to complete the installing procedure and make the installation permanent.
 
 BlenderFDS is ready to use.
-
-Don't forget that Blender is still in beta testing. Sometimes the installation procedure does not work for unknown reasons. In this case, both in Windows, Mac OSX, and Linux, unzip the `blenderfds.zip` file directly to the `.blender/scripts/addons/blenderfds/` directory. Create the `blenderfds` directory if it is missing.
-
-Then launch the Blender executable and enable BlenderFDS addon as explained before.
 
 = Removing BlenderFDS =
 
