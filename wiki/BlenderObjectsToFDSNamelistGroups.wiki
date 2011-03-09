@@ -18,7 +18,7 @@ BlenderFDS performs some simple checks on the syntax of the input parameters. Th
 
 [https://lh5.googleusercontent.com/_iTIkwVoSUm0/TXdX2LphPgI/AAAAAAAAAaM/wBNaxi33G4Q/blender%20error.png]
 
-BlenderFDS _does not enforce_ any automatic correction. It's up to the user to provide a meaningful and syntactically correct parameters.
+BlenderFDS _does not enforce_ any automatic correction. It's up to the user to provide meaningful and syntactically correct parameters.
 
 == `Namelist` parameter ==
 
@@ -48,7 +48,7 @@ FYI='This is a comment.'
 
 == `SURF_ID` parameter ==
 
-When the Blender `object` has a suitable namelist group name (`OBST, VENT`...) and the reference to a Blender material exists, BlenderFDS configures and shows the `SURF_ID` parameter referring to the appropriate Blender material:
+When the Blender `object` has a suitable namelist group name (`OBST, VENT`...) and the reference to a Blender material exists, BlenderFDS automatically configures and shows the relevant `SURF_ID` parameter referring to the appropriate Blender material:
 
 {{{
 SURF_ID='Brick wall'
@@ -70,7 +70,7 @@ The `Adapt Cell/Voxel` button sets the `scene Voxel Size` to half the FDS `MESH`
 
 == `Custom parameters` ==
 
-`Custom parameters` field is used to include other FDS parameters to the namelist group. BlenderFDS inserts the `Custom parameters` value as it is, verbatim, and does not perform any check on its semantic. The user should use paired single quotes (') for string in order to conserve uniformity with auto-generated FDS parameters.
+`Custom parameters` field is used to include other FDS parameters to the namelist group. BlenderFDS inserts the `Custom parameters` value as it is, verbatim, and does not perform any check on its semantic. The user should use paired single quotes (eg: 'This is a string') for strings in order to conserve uniformity with auto-generated FDS parameters.
 
 = FDS namelist group geometry =
 
@@ -79,7 +79,7 @@ A Blender `object` is transformed into one or more FDS namelist groups depending
 == `XB` parameter ==
 
 || *Blender `object` `XB` set to* || *Exported as* || *Number of exported FDS namelists* ||
-|| None || Nothing || None ||
+|| None || `XB` not set || None ||
 || Voxels || Voxelized solid || Many ||
 || BBox || Bounding box || Only one ||
 || Faces || Faces, one for each face of the Blender `object` || Number of `object mesh faces` ||
@@ -179,7 +179,7 @@ For example, `XB` set to `Edges` setting can be used to describe a group of beam
 == `XYZ` parameter ==
 
 || *Blender `object` `XYZ` set to* || *Exported as* || *Number of FDS namelist groups* ||
-|| None || Nothing || None ||
+|| None || `XYZ` not set || None ||
 || Verts || Vertices || Vertices, one for each vertex of the Blender `object` ||
 || Center || Center || Only one ||
 
@@ -214,7 +214,7 @@ The `object` `center` is the small dot that appears when the Blender `object` is
 == `PB*` parameter ==
 
 || *Blender `object` `PB*` set to* || *Exported as* || *Number of FDS namelist groups* ||
-|| None || Nothing || None ||
+|| None || `PB*` not set || None ||
 || Faces || Planes || Planes, one for each `face` of the Blender `object` ||
 
 === `PB*` set to `None` ===
