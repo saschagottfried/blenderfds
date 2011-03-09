@@ -4,15 +4,13 @@ Each Blender `object` is exported as one or more FDS namelist groups sharing the
 
 The user builds the architectural model. Each element is split in parts, that must have homogeneous thermo-physical properties: in fact, each Blender `object` can only have one set of FDS parameters assigned.
 
-BlenderFDS cleans all the user input strings from forbidden characters, as quotation marks and non-ASCII chars.
-
 <wiki:toc max_depth="2" />
 
 ----
 
 = FDS namelist group parameters =
 
-The FDS namelist group parameters are completely described in the BlenderFDS `object properties panel`. The following paragraphs list one by one all the parameters managed by the interface.
+The user input every geometric FDS namelist group parameters in the BlenderFDS `object properties panel`. The following paragraphs list one by one all the parameters managed by the interface.
 
 == `& Name` parameter ==
 
