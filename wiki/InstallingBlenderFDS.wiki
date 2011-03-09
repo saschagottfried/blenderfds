@@ -32,7 +32,7 @@ For a script to show up in the `Add-ons` panel it first has to be installed. Cli
 
 Blender automatically unzips the BlenderFDS add-on and copies its content to the Blender local `addons/blenderfds` directory.
 
-Once installed, the add-on shows up in the `Add-ons` panel. By clicking on the `Enable Add-on` button, you can activate its functionalities.
+Once installed, the add-on shows up in the `Add-ons` panel. By checking the `Enable Add-on` checkbox, you can activate its functionalities.
 
 [https://lh6.googleusercontent.com/_iTIkwVoSUm0/TXY0BqgZ61I/AAAAAAAAAYQ/BPiY5hXRv6Q/s720/blender%20user%20pref%20enable%20package%20and%20default.png]
 
