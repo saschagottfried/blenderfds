@@ -12,11 +12,13 @@ The user builds the architectural model. Each element is split in parts. Each pa
 
 The user describes every geometric FDS namelist group in the BlenderFDS `object properties panel`. The following paragraphs list one by one some of the parameters managed by the BlenderFDS interface.
 
+== Syntax errors ==
+
 BlenderFDS performs some simple checks on the syntax of the input parameters. The following example shows an unknown `namelist` and an `ID` parameter containing an unacceptable quote character:
 
 [https://lh5.googleusercontent.com/_iTIkwVoSUm0/TXdX2LphPgI/AAAAAAAAAaM/wBNaxi33G4Q/blender%20error.png]
 
-BlenderFDS does not enforce any automatic correction. It's up to the user to provide a meaningful and syntactically correct parameters.
+BlenderFDS _does not enforce_ any automatic correction. It's up to the user to provide a meaningful and syntactically correct parameters.
 
 == `Namelist` parameter ==
 
@@ -46,45 +48,37 @@ FYI='This is a comment.'
 
 == `SURF_ID` parameter ==
 
-When the Blender `object` has a suitable namelist group name (`OBST, VENT`...) and the reference to a Blender material exists, BlenderFDS configures and shows the `SURF_ID` parameter referring to the appropriate Blender material. The user can choose whether to insert the parameter in the namelist group or not:
+When the Blender `object` has a suitable namelist group name (`OBST, VENT`...) and the reference to a Blender material exists, BlenderFDS configures and shows the `SURF_ID` parameter referring to the appropriate Blender material:
 
 {{{
 SURF_ID='Brick wall'
 }}}
 
-The following figure shows a `VENT object` with the relevant `SURF_ID` parameter:
-
-[http://lh4.ggpht.com/_iTIkwVoSUm0/S9XxU0f7LZI/AAAAAAAAARo/cs-z464nQMg/objpanel_VENT.png]
-
 == `SAWTOOTH` parameter ==
 
-In case of an `OBST object`, the user can insert the `SAWTOOTH=.FALSE.` parameter:
-
-[http://lh5.ggpht.com/_iTIkwVoSUm0/S9XxUhW97wI/AAAAAAAAARg/eK0h5tXIJ38/objpanel_OBST.png]
+In case of an `OBST object`, the user can insert the `SAWTOOTH=.FALSE.` parameter.
 
 == `IJK` parameter ==
 
-When the user enters a `MESH object`, the `panel` is updated to show the `IJK` parameter. The `IJK` number of FDS `MESH` cells are calculated using the `Cell Size` specified by the user. BlenderFDS updates user values for `Cell Size` to keep into account the requirements of the Poisson solver along y and z axis, as required by FDS:
+When the user enters a `MESH object`, the `panel` is updated to show the `IJK` parameter. The `IJK` numbers of FDS `MESH` cells are calculated using the `Desired Cell Size` specified by the user. BlenderFDS keeps into account the requirements of the Poisson solver along y and z axis, as required by FDS:
 
 {{{
 IJK=12,50,50
 }}}
 
-The `Adapt voxel button` sets the `scene Voxel Size` to half the FDS `MESH` cell size (See [BlenderScenesToFDSCases Blender scenes to FDS cases]).
-
-[http://lh6.ggpht.com/_iTIkwVoSUm0/S9XxUYGnmAI/AAAAAAAAARc/MDbsCFdii0w/objpanel_MESH.png]
+The `Adapt Cell/Voxel` button sets the `scene Voxel Size` to half the FDS `MESH` cell size (See [BlenderScenesToFDSCases Blender scenes to FDS cases]) and updates the `Desired Cell Size` to the calculated cell size.
 
 == `Custom parameters` ==
 
-`Custom parameters` field is used to include other FDS parameters to the namelist group. BlenderFDS inserts the `Custom parameters` value as it is, verbatim, and does not perform any check on its validity. The user interface just replaces all the double quotes (") with single quotes (') for uniformity with auto-generated FDS parameters.
+`Custom parameters` field is used to include other FDS parameters to the namelist group. BlenderFDS inserts the `Custom parameters` value as it is, verbatim, and does not perform any check on its semantic. The user should use paired single quotes (') for string in order to conserve uniformity with auto-generated FDS parameters.
 
 = FDS namelist group geometry =
 
-A Blender `object` is transformed into one or more FDS namelist groups depending on the complexity of its geometry and on the user requirements. The exported geometry is set using the `XB`, `XYZ`, and `PB*` (`PBX, PBY, PBZ`) `object` parameters.
+A Blender `object` is transformed into one or more FDS namelist groups depending on the complexity of its geometry and on the user requirements. The exported geometry is set using the `XB`, `XYZ`, `PBX`, `PBY`, or `PBZ` `object` parameters.
 
 == `XB` parameter ==
 
-|| *Blender `object` `XB` set to* || *Exported as* || *Number of FDS namelist groups* ||
+|| *Blender `object` `XB` set to* || *Exported as* || *Number of exported FDS namelists* ||
 || None || Nothing || None ||
 || Voxels || Voxelized solid || Many ||
 || BBox || Bounding box || Only one ||
@@ -105,9 +99,11 @@ When possible, BlenderFDS joins the voxels together in larger _boxes_ to minimiz
 
 [http://lh6.ggpht.com/_iTIkwVoSUm0/S9dRqlKwESI/AAAAAAAAASo/uu5-xDqgHe8/voxelization.png]
 
+Here is an example of a cylinder voxelization using different voxel sizes:
+
 [https://lh3.googleusercontent.com/_iTIkwVoSUm0/TXY1dvieKZI/AAAAAAAAAYg/K4RfeEuwwjM/blender%20voxel%20boxel.png]
 
-The voxelization algorithm treats only _manifold objects_. This means that the `object mesh` should be water-tight and well-formed so that BlenderFDS can decide which portion of space is solid and which is instead void. If the `object` is not manifold, an error message is displayed and `XB` is automatically set to `BBox`.
+The voxelization algorithm treats only _manifold objects_. This means that the `object mesh` should be water-tight and well-formed so that BlenderFDS can decide which portion of space is solid and which is instead void. If the `object` is not manifold, an error message is displayed in the user interface and in the exported FDS input file.
 
 There is a specific page explaining how to deal with this problem: [NonManifoldObjects Dealing with non-manifold objects].
 
@@ -135,7 +131,7 @@ The Blender `object` is exported to many FDS namelist groups sharing the same pa
 
 BlenderFDS calculates the `object` bounding box in global coordinates. The resulting box coordinates are exported as `XB` parameter of one FDS namelist group.
 
-In `BBox`, the overall shape of the `object` is not conserved:
+In `BBox`, the overall shape of the `object` is not conserved, only its size is preserved:
 
 [http://lh6.ggpht.com/_iTIkwVoSUm0/S9dgyfvZf5I/AAAAAAAAASw/mbMTAOg73MU/bbox_shape.png]
 
@@ -247,4 +243,4 @@ The user creates an `object` made of separate `faces` distributed inside the bui
 
 The user can set both `XB, XYZ, PB*` at the same time: the affected namelist group receives both parameters.
 
-However some combinations are not allowed. When a conflicting combination is entered, the user interface shows an error message, and the conflicting setting is restored to a safe value. The conflicting settings are those that require multiple namelist groups more than once. For example, `XB` set to `Voxels` and `XYZ` set to `Verts`. Conversely `XB` set to `Voxels` and `XYZ` set to `Center` are compatible settings.
+However some combinations are not allowed. When a conflicting combination is entered, the user interface shows an error message. It is up to the user to set a safe value. The conflicting settings are those that require multiple namelist groups more than once. For example, `XB` set to `Voxels` and `XYZ` set to `Verts`. Conversely `XB` set to `Voxels` and `XYZ` set to `Center` are compatible settings.
