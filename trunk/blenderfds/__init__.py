@@ -15,51 +15,218 @@
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # ##### END GPL LICENSE BLOCK #####
-"BlenderFDS, an open tool for the NIST Fire Dynamics Simulator."
+"""BlenderFDS, an open tool for the NIST Fire Dynamics Simulator."""
 
-# Max number of colums for output file
-col_max = 100
+bl_addon_info = {
+    "name": "BlenderFDS",
+    "author": "Emanuele Gissi",
+    "version": (0, 70),
+    "blender": (2, 5, 6),
+    "api": 31667,
+    "category": "Export",
+    "location": "File > Export > FDS Case (.fds)",
+    "description": "BlenderFDS, an open graphical editor for the NIST Fire Dynamics Simulator",
+    "wiki_url": "http://www.blenderfds.org/",
+    "tracker_url": "http://code.google.com/p/blenderfds/issues/list",
+    "category": "Import-Export",
+}
 
-# Namelist names
-nls = {"OBST": "Obstruction",
-       "HOLE": "Obstruction Cutout",
-       "VENT": "Boundary Condition Patch",
-       "DEVC": "Device",
-       "SLCF": "Slice File",
-       "PROF": "Wall Profile Output",
-       "MESH": "Domain of Simulation",
-       "INIT": "Initial Condition",
-       "ZONE": "Pressure Zone",
-       "EVAC": "Evac Agents Position",
-       "EVHO": "Evac Agents Hole",
-       "EXIT": "Evac Exit",
-       "ENTR": "Evac Entry",
-       "DOOR": "Evac Door",
-       "CORR": "Evac Corridor",
-       "EVSS": "Evac Incline",
-       "STRS": "Evac Staircase",
-      }
+### To support reload properly, try to access a package var, if it's there, reload everything
+#
+#
 
-# Namelist parameters FIXME ID, "SLCF",
-nl_params = {"ID":       ("DEVC", "PROF", "HOLE", "INIT", "MESH", "OBST", "VENT", "ZONE", "EVAC", "EVHO", "EXIT", "ENTR", "DOOR", "CORR", "EVSS", "STRS"), 
-             "SURF_ID":  ("DEVC", "OBST","VENT"),
-             "SAWTOOTH": ("OBST", ),
-             "IJK":      ("MESH", ),
-             "XB":       ("DEVC", "HOLE", "INIT", "MESH", "OBST", "SLCF", "VENT", "ZONE", "EVAC", "EVHO", "EXIT", "ENTR", "DOOR", "CORR", "EVSS", "STRS"),
-             "XYZ":      ("DEVC", "PROF", "VENT", "EXIT", "DOOR", "STRS"),
-             "PB":       ("SLCF", "VENT"),
-             }
+if "bpy" in locals():
+    import imp
+#   imp.reload(bf_config)
+    imp.reload(bf_ui)
+    imp.reload(bf_operators)
+    imp.reload(bf_export)
+#   imp.reload(bf_geometry)
+else:
+#   from . import bf_config
+    from . import bf_ui
+    from . import bf_operators
+    from . import bf_export
+#   from . import bf_geometry
 
-# Namelist groups, a tuple for sorting
-# The last group is used to collect all remaining namelist groups.
-nl_groups = (("Computational domain",     ("MESH", "INIT", "ZONE")),
-             ("Geometry",                 ("OBST", "HOLE", "VENT")),
-             ("Evacuation",               ("EVAC","EVHO","EXIT","ENTR","DOOR","CORR","EVSS","STRS")),
-             ("Control logic and output", ("DEVC", "SLCF", "PROF")),
-             ("Others",                   ()),
-             )
+import bpy
+from bpy.props import *
+from io_utils import ExportHelper
+import os
 
-# Predefined FDS SURF boundary conditions (Blender materials)
-mas_predefined = ("OPEN", "MIRROR", "INERT")
-# They are created by the hardcoded operator:
-# class MATERIAL_OT_bf_create_predefined(bpy.types.Operator):
+### UI: Menu
+#
+#
+
+class ExportFDS(bpy.types.Operator, ExportHelper):
+    """Export Blender objects as FDS file."""
+    bl_idname = "export_scene.nist_fds"
+    bl_label = "Export as FDS case file"
+
+    filename_ext = ".fds"
+    filter_glob = StringProperty(default="*.fds", options={'HIDDEN'})
+    
+    export_visible = BoolProperty(name="Visible Only",
+                                  description="Export visible objects only",
+                                  default=False)
+
+    def execute(self, context):
+        # FIXME asincronous saving non blocking
+        return bf_export.save(self, context, **self.as_keywords(ignore=("check_existing", "filter_glob")))
+
+def menu_func_export(self, context):
+    # Prepare default filepath
+    filepath = os.path.splitext(bpy.data.filepath)[0] + ".fds"
+    path = os.path.dirname(filepath)
+    basename = os.path.basename(filepath)
+    # If the context scene contains path and basename, use them
+    sc = context.scene
+    if sc.name: basename = bpy.path.clean_name(sc.name) + ".fds"
+    if sc.bf_directory: path = sc.bf_directory
+    # Call the exporter script
+    filepath = path + '/' + basename
+    self.layout.operator(ExportFDS.bl_idname, text="Fire Dynamics Simulator Case (.fds)").filepath = filepath
+
+### Registration/Unregistration
+#
+#
+
+def register():
+
+    # scene properties
+    bpy.types.Scene.bf_title = StringProperty(
+        name="TITLE",
+        description="Insert case description into TITLE parameter",
+        maxlen=60)
+    bpy.types.Scene.bf_directory = StringProperty(
+        name="Directory",
+        description="Case main directory",
+        subtype="DIR_PATH")
+
+    items_list = [("AUTO", "Auto Config", "Automatic basic configuration for non-geometric parameters"),
+                  ("FILE", "Config File", "Use external configuration file to describe non-geometric parameters",)]
+    bpy.types.Scene.bf_config_type = EnumProperty(
+        name="Config Type",
+        description="Configuration type of non-geometric parameters",
+        items=items_list,
+        default="AUTO")
+    bpy.types.Scene.bf_config_filepath = StringProperty(
+        name="Config File",
+        description="Path to external configuration file describing non-geometric parameters",
+        subtype="FILE_PATH",
+        default="config.fds")
+        
+    bpy.types.Scene.bf_voxel_size = FloatVectorProperty(
+        name="Voxel",
+        description="Voxel size used for solid objects voxelization",
+        subtype="XYZ",
+        step=1,precision=3,min=.001,max=10.,
+        default=(.20, .20, .20))
+                                   
+    # object properties
+    bpy.types.Object.bf_export = BoolProperty(
+        name="Export",
+        description="Export this Blender object to an FDS namelist",
+        default=False)
+    bpy.types.Object.bf_nl = StringProperty(
+        name="Namelist",
+        description="Namelist group name",
+        default="OBST")
+                                  
+    items_list = [("NONE",   "None",   "None"),
+                  ("VOXELS", "Voxels", "Voxelized solid"),
+                  ("BBOX",   "BBox",   "Bounding box"),
+                  ("FACES",  "Faces",  "Faces, one for each face of this object"),
+                  ("EDGES",  "Edges",  "Segments, one for each edge of this object")]
+    bpy.types.Object.bf_xb = EnumProperty(
+        name="XB",
+        description="Set XB parameter",
+        items=items_list,
+        default="BBOX")
+    
+    items_list = [("NONE",   "None",   "None"),
+                  ("CENTER", "Center", "Point, corresponding to center point of this object"),
+                  ("VERTS",  "Vertices",  "Points, one for each vertex of this object"),]
+    bpy.types.Object.bf_xyz = EnumProperty(
+        name="XYZ",
+        description="Set XYZ parameter",
+        items=items_list,
+        default="NONE")
+    
+    items_list = [("NONE",   "None",   "None"),
+                  ("FACES",  "Faces",  "Planes, one for each face of this object"),]
+    bpy.types.Object.bf_pb = EnumProperty(
+        name="PB*",
+        description="Set PBX, PBY, PBZ parameters",
+        items=items_list,
+        default="NONE")
+
+    bpy.types.Object.bf_cell_size = FloatVectorProperty(
+        name="Desired Cell",
+        description="Desired MESH cell size",
+        subtype="XYZ",
+        step=1,precision=3,min=.001,max=10.,
+        default=(.20,.20,.20))
+    bpy.types.Object.bf_sawtooth = BoolProperty(
+        name="SAWTOOTH=.FALSE.",
+        description="Set SAWTOOTH=.FALSE. parameter",
+        default=False)
+    bpy.types.Object.bf_ijk = BoolProperty(
+        name="IJK",
+        description="Set IJK parameter",
+        default=True)
+    bpy.types.Object.bf_fyi = StringProperty(
+        name="FYI",
+        description="Insert namelist description into FYI parameter",
+        maxlen=60)
+    bpy.types.Object.bf_custom_param = StringProperty(
+        name="Custom Namelist Parameters",
+        description="Custom parameters are appended verbatim to the namelist, use single quotes")
+            
+    # material properties
+    bpy.types.Material.bf_export = BoolProperty(
+        name="Export",
+        description="Export this Blender material to an FDS SURF namelist",
+        default=True)
+    bpy.types.Material.bf_fyi = StringProperty(
+        name="FYI",
+        description="Insert SURF description into FYI parameter",
+        maxlen=60)
+    bpy.types.Material.bf_custom_param = StringProperty(
+        name="Custom SURF parameters",
+        description="Custom parameters are appended verbatim to the namelist, use single quotes")
+
+    # export menu
+    bpy.types.INFO_MT_file_export.append(menu_func_export)
+
+def unregister():
+
+    # scene properties
+    del bpy.types.Scene.bf_title
+    del bpy.types.Scene.bf_directory
+    del bpy.types.Scene.bf_config_type
+    del bpy.types.Scene.bf_config_filepath
+    del bpy.types.Scene.bf_voxel_size
+                                   
+    # object properties
+    del bpy.types.Object.bf_export
+    del bpy.types.Object.bf_nl
+    del bpy.types.Object.bf_xb
+    del bpy.types.Object.bf_xyz
+    del bpy.types.Object.bf_pb
+    del bpy.types.Object.bf_cell_size
+    del bpy.types.Object.bf_sawtooth
+    del bpy.types.Object.bf_ijk
+    del bpy.types.Object.bf_fyi
+    del bpy.types.Object.bf_custom_param
+        
+    # material properties
+    del bpy.types.Material.bf_export
+    del bpy.types.Material.bf_fyi     
+    del bpy.types.Material.bf_custom_param
+    
+    # export menu
+    bpy.types.INFO_MT_file_export.remove(menu_func_export)
+    
+if __name__ == "__main__":
+    register()
