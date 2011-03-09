@@ -40,7 +40,7 @@ The `3D view editor` is used for viewing and editing `scenes`.
 
 The `tool shelf` and the `properties` of the `3D view editor` can be unfolded by clicking on the small white `plus` icon at the upper left and upper right corners of the `editor`.
 
-[http://lh5.ggpht.com/_iTIkwVoSUm0/S9Xxef42jrI/AAAAAAAAAR0/fLTILr3RH8w/s912/objpanel_OBST_notmanifold3.png]
+[https://lh6.googleusercontent.com/_iTIkwVoSUm0/TXdTEJ_CzzI/AAAAAAAAAZk/Z07IyOIQnKA/s640/blender%203D%20view%20editor.png]
 
 = The `outliner editor` =
 
