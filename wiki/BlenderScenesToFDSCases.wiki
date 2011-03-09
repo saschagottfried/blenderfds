@@ -19,19 +19,23 @@ Each `scene` requires the user to enter several parameters in its `scene panel`:
 
 == `CHID` and `TITLE` parameters ==
 
-The `CHID` value is used as the default file name for the exported FDS input file. The `CHID` and `TITLE` values are also used to insert an appropriate `HEAD` namelist group in that file. For example:
+The `CHID` value is used as the default file name for the exported FDS input file. For this reason the requirements for the `CHID` string are more stringent: it shall be a valid filename. So no spaces are allowed.
+
+The `CHID` and `TITLE` values are also used to insert an appropriate `HEAD` namelist group in that file. For example:
 
 {{{
-&HEAD CHID='test 1', TITLE='This is a test fire, case 1' /
+&HEAD CHID='uni-build-s1', TITLE='University building, scenario 1' /
 }}}
 
 == Case `Directory` ==
 
-The case `Directory` is the default directory where the single FDS input file is exported. Each `scene` can be exported into a different FDS input file in its particular directory. After the FDS simulation has completed, each case directory stores the results without mixing.
+The case `Directory` is the default directory where the single FDS input file is exported. Each `scene` can be exported to a different FDS input file stored in its particular directory. Each FDS simulation store its output files in its directory and they do not get mixed with other simulation results.
  
 == `Config File` ==
 
-If `Auto` is chosen, a default configuration is automatically included in the FDS input file. If `File` is chosen, BlenderFDS includes the specified `Config File` verbatim in the FDS input file. The configuration file is a text file used to specify the non-geometrical FDS namelist groups, commonly edited with the user-preferred text editor. Beware that BlenderFDS performs no check to the configuration file syntax.
+If `Auto Config` is chosen, an empty default configuration is automatically included in the FDS input file. This is often used to check the geometry.
+
+If `Config File` is chosen, BlenderFDS includes the specified `Config File` verbatim at the beginning the exported FDS input file. The configuration file is a text file used to specify the non-geometrical FDS namelist groups, commonly edited with the user-preferred text editor. Beware that BlenderFDS performs no sanity check to the configuration file syntax and semantic.
 
 A typical configuration file may contain the following parameters:
 
@@ -59,7 +63,9 @@ A typical configuration file may contain the following parameters:
 
 == `Voxel Size` ==
 
-The `Voxel Size` represents the dimension of the voxel employed to transform some of the Blender `objects` geometries in FDS boxes. To obtain a reliable geometry description for the subsequent CFD simulation, the user should enter a `Voxel Size` that is at least _half_ of the smallest expected FDS mesh cell size.  
+The `Voxel Size` represents the dimension of the voxel employed to transform some of the Blender `objects` geometries in FDS boxes. To obtain a reliable geometry description for the subsequent CFD simulation, the user should enter a `Voxel Size` that is at least _half_ of the smallest expected FDS mesh cell size. 
+
+[https://lh3.googleusercontent.com/_iTIkwVoSUm0/TXY1dvieKZI/AAAAAAAAAYg/K4RfeEuwwjM/blender%20voxel%20boxel.png]
 
 = Exporting current Blender `scene` to an FDS input file =
 
