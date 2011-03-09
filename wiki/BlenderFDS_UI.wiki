@@ -68,7 +68,7 @@ When opening a new Blender file, the BlenderFDS `panels` are listed as the last 
 
 The `scene context button` provides the following BlenderFDS `panel`, that we call `scene properties panel` for shortness. For example:
 
-[https://lh6.googleusercontent.com/_iTIkwVoSUm0/TXdHmgeQRhI/AAAAAAAAAZE/RZuwuvIMNns/blender%20panel%20case.png]
+[https://lh5.googleusercontent.com/_iTIkwVoSUm0/TXeILv2TABI/AAAAAAAAAbg/M3T-_HbsugI/blender%20panel%20case.png]
 
 == The `properties editor` in `object context` ==
 
@@ -76,10 +76,10 @@ For simplicity, we call `object properties panel` the BlenderFDS `panel` in `obj
 
 Options and properties, displayed in the FDS-specific `object properties panel`, change depending on the associated namelist group. When the user enters an `OBST` namelist in the appropriate field, the `object properties panel` becomes like this:
 
-[https://lh5.googleusercontent.com/_iTIkwVoSUm0/TXdHmjMzv9I/AAAAAAAAAZI/hHn9Bkbym80/blender%20panel%20object.png]
+[https://lh3.googleusercontent.com/_iTIkwVoSUm0/TXeIMBzT0XI/AAAAAAAAAbk/ZG_zOp9hMz0/blender%20panel%20OBST.png]
 
 == The `properties editor` in `material context` ==
 
 The `material context button` provides the BlenderFDS `panel`, called for short `material properties panel`. For example:
 
-[https://lh5.googleusercontent.com/_iTIkwVoSUm0/TXdHmjwD2RI/AAAAAAAAAZM/BEOxBEYCyWo/blender%20panel%20material.png]
+[https://lh3.googleusercontent.com/_iTIkwVoSUm0/TXeIMRTOuUI/AAAAAAAAAb0/sfuruUMUxCU/blender%20panel%20SURF.png]
