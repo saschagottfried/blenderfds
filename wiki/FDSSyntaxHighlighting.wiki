@@ -21,7 +21,7 @@ This plugin is released under the GNU General Public License (GPL).
 To install it:
  # Download and install Fraise text editor.
  # Quit Fraise before start installation process.
- # `Finder → Go → Application → Fraise.app`, then right click on it and choose `explore contained`.
+ # `Finder > Go > Application > Fraise.app`, then right click on it and choose `explore contained`.
  # Open the `Resource` directory;
  # Overwrite the `SyntaxDefinitions.plist`;
  # Open `Syntax Definitions` directory;
