@@ -9,4 +9,5 @@
  * [NonManifoldObjects Dealing with non-manifold objects]
  * [BlenderMaterialsToFDSSURFs Blender materials to FDS SURFs]
  * [BlenderScenesToFDSCases Blender scenes to FDS cases]
+ * [BlenderFDSSQA BlenderFDS software quality assurance]
  * [FDSSyntaxHighlighting FDS syntax highlighting]
