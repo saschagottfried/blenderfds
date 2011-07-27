@@ -12,7 +12,7 @@ Each Blender file contains a database of geometric features. This database conta
 
 The following example outliner panel shows this kind of data organization:
 
-[http://lh6.ggpht.com/_iTIkwVoSUm0/S9RHEMD992I/AAAAAAAAAPk/fzhQ1VVeJUs/outliner.png]
+[https://lh5.googleusercontent.com/-a1wOmS4D37g/TjAWhydxt3I/AAAAAAAAAfU/pMm70faQyWY/outliner-window.png]
 
 == Blender entities: `scenes`, `objects`, `meshes`, `materials` ==
 
