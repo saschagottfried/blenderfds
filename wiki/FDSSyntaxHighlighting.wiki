@@ -56,11 +56,11 @@ Download Notepad++ for MS Windows from: [http://notepad-plus-plus.org/]
 
 Download the plugin from: [http://code.google.com/p/blenderfds/downloads/list]
 
-This plugin is released under the GNU General Public License (GPL).
+This plugin is released under the GNU General Public License (GPL) by Dipl.-Ing. M.Kitzlinger, Technische Universitaet Darmstadt, Institut fuer Numerische Methoden und Informatik im Bauwesen, 
 
 To install it:
- # Unzip the downloaded file to a temporary location.
- # Locate your application data folder for Notepad++, i.e. `C:/My Documents and Settings/User/Application Data/Notepad++/`
- # Open userDefineLang.xml file. 
- # If `userDefineLang.xml` is blank, then simply replace the contents with `fds+evac.xml`.
- # If `userDefineLang.xml` contains other user defined languages, append `fds+evac.xml` contents to the existing file. 
+
+ # Open Notepad++
+ # Open the User-Defined Dialog e.g. via View-menu.
+ # Press import-button and select the downloaded file.
+ # Restart Notepad++
