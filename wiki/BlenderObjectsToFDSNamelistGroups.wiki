@@ -262,6 +262,9 @@ However some combinations are not allowed. When a conflicting combination is ent
 After setting up FDS parameters and geometry for a single Blender object, the user can easily copy those settings to other Blender objects:
 
  # Select the destination objects in Blender `3D view editor` or `outliner editor`. The last selected object becomes the active object. The active object is outlined in yellow, the other selected objects are outlined in orange. The current active object is used as source for copying.
+
+[http://wiki.blender.org/uploads/a/a9/25-Manual-Object-Selection-001.png]
+
  # Push the `To Selected Objects` button at the bottom of the `object properties panel`. All the FDS parameters and geometry of the active object are copied to the selected objects.
 
 [https://lh5.googleusercontent.com/-stwpQ1gY0yk/TwGFAPzfssI/AAAAAAAAAgw/-w1giZUZ5eU/s378/ToSelectedObjects.png]
