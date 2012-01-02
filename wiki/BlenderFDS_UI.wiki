@@ -51,7 +51,7 @@ The `tool shelf` and the `properties` of the `3D view editor` can be unfolded by
 
 The `outliner editor` is a hierarchical diagram displaying a list of all Blender entities, their parents and progeny. It is used for easily navigating complex `scenes`:
 
-[http://lh6.ggpht.com/_iTIkwVoSUm0/S9RHEMD992I/AAAAAAAAAPk/fzhQ1VVeJUs/outliner.png]
+[https://lh5.googleusercontent.com/-a1wOmS4D37g/TjAWhydxt3I/AAAAAAAAAfU/pMm70faQyWY/s463/outliner-window.png]
 
 = The `properties editor` =
 
