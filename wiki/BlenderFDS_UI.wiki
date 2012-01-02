@@ -14,6 +14,11 @@ Before starting, please watch this screencast:
 
 [http://www.blendercookie.com/getting-started-with-blender-navigation-and-interface/]
 
+and read the first part of Blender User Manual:
+
+[http://wiki.blender.org/index.php/Doc:2.6/Manual]
+
+
 The Blender UI is composed of `editors`, `headers`, `context buttons`, `panels`, and `controls`.
 
 The `editors` are non-overlapping parts of the UI that divide the Blender application window. There are several types of `editors`, which respond to specific functions. Each editor has its own `header`. An `header` is a menubar positioned either at the top or at the bottom of its hosting `editor`.
