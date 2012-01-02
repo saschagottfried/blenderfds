@@ -256,3 +256,14 @@ Here is an example of a `SLCF object` using `PB*` set to faces:
 The user can set both `XB, XYZ, PB*` at the same time: the affected namelist group receives both parameters.
 
 However some combinations are not allowed. When a conflicting combination is entered, the user interface shows an error message. It is up to the user to set a safe value. The conflicting settings are those that require multiple namelist groups more than once. For example, `XB` set to `Voxels` and `XYZ` set to `Verts`. Conversely `XB` set to `Voxels` and `XYZ` set to `Center` are compatible settings.
+
+= Copying FDS parameters and geometry from Blender active object to other objects =
+
+After setting up FDS parameters and geometry for a single Blender object, the user can easily copy those settings to other Blender objects:
+
+# Select the destination objects in Blender `3D view editor` or `outliner editor`. The last selected object becomes the active object. The active object is outlined in yellow, the other selected objects are outlined in orange. The current active object is used as source for copying.
+# Push the `To Selected Objects` button at the bottom of the `object properties panel`. All the FDS parameters and geometry of the active object are copied to the selected objects.
+
+[https://lh5.googleusercontent.com/-stwpQ1gY0yk/TwGFAPzfssI/AAAAAAAAAgw/-w1giZUZ5eU/s378/ToSelectedObjects.png]
+
+The copied parameters are independent from the source object parameters: a modification of the copied parameters do not influence the source object's parameters and vice versa.
