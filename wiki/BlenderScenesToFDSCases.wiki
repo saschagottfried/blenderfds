@@ -10,7 +10,7 @@ When exported, each Blender `scene` becomes an FDS case, that is an `.fds` text 
 
 In general, the user needs to simulate several scenarios with similar geometries and thermo-physical parameters. Only a small number of parameters are to be modified.
 The user builds the geometry into a Blender `scene`. Then duplicates the `objects` in several new `scenes`:
- * the `objects` that do not change should be linked between the `scenes` to share exactly the same geometrical `mesh` and FDS parameters. If the user decides to modify the common geometry or the common thermo-physical parameters, all the linked `objects` from all `scenes` are modified accordingly.
+ * the `objects` that do not change should be linked between the `scenes` to share exactly the same geometrical `mesh` and FDS parameters. If the user decides to modify the common geometry or the common thermo-physical parameters, all the linked `objects` from all `scenes` are modified accordingly. See [http://wiki.blender.org/index.php/Doc:2.6/Manual/Modeling/Objects/Duplication] for precisions.
  * depending on the scenarios, some `objects` from specific `scenes` must have their own geometry and thermo-physical parameters. The user unlinks them from the common properties and they become independent. Then the user can modify their parameters and geometry.
 
 Each `scene` requires the user to enter several parameters in its `scene panel`:
