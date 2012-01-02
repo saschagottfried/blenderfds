@@ -266,4 +266,4 @@ After setting up FDS parameters and geometry for a single Blender object, the us
 
 [https://lh5.googleusercontent.com/-stwpQ1gY0yk/TwGFAPzfssI/AAAAAAAAAgw/-w1giZUZ5eU/s378/ToSelectedObjects.png]
 
-The copied parameters are independent from the source object parameters: a modification of the copied parameters do not influence the source object's parameters and vice versa.
+The copied parameters are independent from the source object parameters: a modification of the copied parameters does not influence the source object's parameters and vice versa.
