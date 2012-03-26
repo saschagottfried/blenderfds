@@ -36,7 +36,7 @@ Gedit is the official text editor of the Gnome desktop environment.
 
 Download Gedit for Linux, Mac OSX, and MS Windows from: [http://projects.gnome.org/gedit/index.html]
 
-Download the plugin from [http://blenderfds.googlecode.com/svn/trunk/other/syntax%20highlight/gedit%20fds%20syntax%20highlight.zip gedit fds syntax highlight.zip]
+Download the plugin from [http://code.google.com/p/blenderfds/downloads/detail?name=gedit_fds_20120326.zip&can=2&q= link]
 
 This plugin is released under the GNU General Public License (GPL).
 
