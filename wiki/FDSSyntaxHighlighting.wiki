@@ -8,31 +8,9 @@ Syntax highlighting is a feature of some text editors that display text in diffe
 
 ----
 
-= Fraise (former Smultron) text editor =
-
-This plugin updates the list of Fraise syntax definitions. Do not hesitate to contact its developer in case of problems: [mailto:parsipal@gmail.com parsipal@gmail.com].
-
-Download Fraise for Mac OSX from: [http://www.fraiseapp.com/]
-
-Download the plugin from:
- * FDS 5.5.0 keywords: [http://www.tidestudio.com/DOWNLOAD/Smultron_SHxFDS5.5.x.zip Smultron_SHxFDS5.5.x.zip]
- * FDS 5.4.x keywords: [http://www.tidestudio.com/DOWNLOAD/Smultron_SHxFDS5.4.x.zip Smultron_SHxFDS5.4.x.zip]
-
-This plugin is released under the GNU General Public License (GPL).
-
-To install it:
- # Download and install Fraise text editor.
- # Quit Fraise before start installation process.
- # `Finder > Go > Application > Fraise.app`, then right click on it and choose `explore contained`.
- # Open the `Resource` directory;
- # Overwrite the `SyntaxDefinitions.plist`;
- # Open `Syntax Definitions` directory;
- # Copy `fds.plist` into it;
- # Now start Fraise and load any FDS input file.
-
 = Gedit text editor =
 
-Gedit is the official text editor of the Gnome desktop environment.
+Gedit is the official text editor of the Gnome desktop environment, that comes preinstalled in many Linux distributions.
 
 Download Gedit for Linux, Mac OSX, and MS Windows from: [http://projects.gnome.org/gedit/index.html]
 
@@ -56,3 +34,25 @@ To install it:
  # Open the User-Defined Dialog e.g. via View-menu.
  # Press import-button and select the downloaded file.
  # Restart Notepad++
+
+= Fraise (former Smultron) text editor =
+
+This plugin updates the list of Fraise syntax definitions. Do not hesitate to contact its developer in case of problems: [mailto:parsipal@gmail.com parsipal@gmail.com].
+
+Download Fraise for Mac OSX from: [http://www.fraiseapp.com/]
+
+Download the plugin from:
+ * FDS 5.5.0 keywords: [http://www.tidestudio.com/DOWNLOAD/Smultron_SHxFDS5.5.x.zip Smultron_SHxFDS5.5.x.zip]
+ * FDS 5.4.x keywords: [http://www.tidestudio.com/DOWNLOAD/Smultron_SHxFDS5.4.x.zip Smultron_SHxFDS5.4.x.zip]
+
+This plugin is released under the GNU General Public License (GPL).
+
+To install it:
+ # Download and install Fraise text editor.
+ # Quit Fraise before start installation process.
+ # `Finder > Go > Application > Fraise.app`, then right click on it and choose `explore contained`.
+ # Open the `Resource` directory;
+ # Overwrite the `SyntaxDefinitions.plist`;
+ # Open `Syntax Definitions` directory;
+ # Copy `fds.plist` into it;
+ # Now start Fraise and load any FDS input file.
