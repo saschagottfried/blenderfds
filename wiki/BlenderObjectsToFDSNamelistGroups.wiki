@@ -68,7 +68,13 @@ The following is an example of an `OBST object` description:
 
 == `IJK` parameter ==
 
-When the user enters a `MESH object`, the `panel` is updated to show the `IJK` parameter. The `IJK` numbers of FDS `MESH` cells are calculated using the `Desired Cell Size` specified by the user. BlenderFDS keeps into account the requirements of the Poisson solver along y and z axis, as required by FDS:
+When the user enters a `MESH object`, the `panel` is updated to show the `IJK` parameter. The `IJK` numbers of FDS `MESH` cells are calculated using the `Desired Cell Size` specified by the user.
+
+BlenderFDS keeps into account the requirements of the FDS Poisson solver along y and z axis, as required by FDS. In fact the user cannot choose the J and K numbers he prefers, he shall stick to (2 ^ n) x (3 ^ m) x (5 ^ l) numbers as explained in paragraph § 6.3.1 of the FDS User's guide. Given the `Desired Cell Size`, BlenderFDS does the work for you, by choosing the best approximations for the J and K numbers.
+
+Meshes alignement can then become a nightmare: I usually adapt mesh geometric dimensions to obtain good J and K numbers and correctly aligned meshes. This sometimes requires wizardry arts...
+
+The parameter is then exported as follows:
 
 {{{
 IJK=12,50,50
