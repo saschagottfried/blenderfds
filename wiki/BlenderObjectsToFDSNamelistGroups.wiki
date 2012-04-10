@@ -46,6 +46,13 @@ The `FYI` parameter contains user's comments and informations and is inserted as
 FYI='This is a comment.'
 }}}
 
+If the namelist group cannot contain an `ID` parameter, as it is the case for `SLCF` and `INIT` (IMHO an FDS bug), the object name is inserted into the `FYI` parameter as follows:
+
+
+{{{
+FYI='(Name of the object) This is a comment.'
+}}}
+
 == `SURF_ID` parameter ==
 
 When the Blender `object` has a suitable namelist group name (`OBST, VENT`...) and the reference to a Blender material exists, BlenderFDS automatically configures and shows the relevant `SURF_ID` parameter referring to the appropriate Blender material:
@@ -70,9 +77,9 @@ The following is an example of an `OBST object` description:
 
 When the user enters a `MESH object`, the `panel` is updated to show the `IJK` parameter. The `IJK` numbers of FDS `MESH` cells are calculated using the `Desired Cell Size` specified by the user.
 
-BlenderFDS keeps into account the requirements of the FDS Poisson solver along y and z axis, as required by FDS. In fact the user cannot choose the J and K numbers he prefers, he shall stick to (2 ^ n) x (3 ^ m) x (5 ^ l) numbers as explained in paragraph § 6.3.1 of the FDS User's guide. Given the `Desired Cell Size`, BlenderFDS does the work for you, by choosing the best approximations for the J and K numbers.
+BlenderFDS keeps into account the requirements of the FDS Poisson solver along the y and the z axis, as required by FDS. In fact the user cannot choose the J and K values he prefers, he shall stick to 2^n^ 3^m^ 5^l^ results as explained in paragraph § 6.3.1 of the FDS User's guide. Given the `Desired Cell Size` choses the best approximations for the J and K cell numbers.
 
-Meshes alignement can then become a nightmare: I usually adapt mesh geometric dimensions to obtain good J and K numbers and correctly aligned meshes. This sometimes requires wizardry arts...
+Meshes alignement can then become a nightmare: I usually adapt mesh geometric dimensions to obtain good J and K values and correctly aligned meshes. This sometimes requires wizardry arts...
 
 The parameter is then exported as follows:
 
