@@ -10,7 +10,7 @@ BlenderFDS is built upon the new Blender 2.5x platform. First install Blender, t
 
 Blender is an integrated application that allows the creation of a broad range of 2D and 3D content. Blender provides a broad spectrum of modeling, texturing, lighting, animation and video post-processing functionality in one package. Through its open architecture, Blender provides cross-platform interoperability, extensibility, an incredibly small footprint, and a tightly integrated workflow. Blender is one of the most popular open source and free 3D graphics applications in the world. The main source for information about Blender is its main site http://www.blender.org/
 
-Between 2008 and 2011, Blender has been entirely re-coded to improve its functions, work-flow and interface. The result of this work produced the version of the software known as Blender 2.5x. After a long beta testing phase, Blender 2.5x series is now considered stable.
+Between 2008 and 2011, Blender has been entirely re-coded to improve its functions, work-flow and interface. The result of this work produced the version of the software known as Blender 2.5x. After a long beta testing phase, Blender 2.6x series is now considered stable.
 
 Download the appropriate package for your platform from http://www.blender.org/ and install it on your computer.
 
@@ -20,7 +20,7 @@ For other operating systems (Linux, Mac OS X...) you can unpack the downloaded c
 
 = Then, install BlenderFDS add-on into Blender =
 
-Add-ons is the general term for any optional script that extends Blender's functionality. After installing Blender, download the latest BlenderFDS distribution package (eg: `BlenderFDS_1.0.2.zip`) from http://www.blenderfds.org/ and unzip it in a comfortable location.
+Add-ons is the general term for any optional script that extends Blender's functionality. After installing Blender, download the latest BlenderFDS distribution package (eg: `BlenderFDS_1.2.3.zip`) from http://www.blenderfds.org/ and unzip it in a comfortable location.
 
 After launching the Blender executable, open the the Blender `Add-Ons` panel using the `File > User Preferences` menu and clicking on the `Add-Ons` tab (1). The following window tab opens up:
 
