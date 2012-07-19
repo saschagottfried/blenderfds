@@ -41,7 +41,7 @@ Vim is a highly configurable text editor built to enable efficient text editing.
 
 Download Vim from: [http://www.vim.org]
 
-Here is a syntax highlighting building script provided by Andrew Louie: [http://code.google.com/p/blenderfds/w/edit/FDSSyntaxHighlighting]
+Here is a syntax highlighting building script provided by Andrew Louie: [https://sites.google.com/site/louiea/vimsyntaxfileforfds]
 
 If you use Vim, you do not need too many explanations... ;-)
 
