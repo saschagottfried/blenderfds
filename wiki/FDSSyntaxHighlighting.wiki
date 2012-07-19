@@ -35,6 +35,16 @@ To install it:
  # Press import-button and select the downloaded file.
  # Restart Notepad++
 
+= Vim text editor =
+
+Vim is a highly configurable text editor built to enable efficient text editing. It is an improved version of the vi editor distributed with most UNIX systems. 
+
+Download Vim from: [http://www.vim.org]
+
+Here is a syntax highlighting building script provided by Andrew Louie: [http://code.google.com/p/blenderfds/w/edit/FDSSyntaxHighlighting]
+
+If you use Vim, you do not need too many explanations... ;-)
+
 = Fraise (former Smultron) text editor =
 
 This plugin updates the list of Fraise syntax definitions. Do not hesitate to contact its developer in case of problems: [mailto:parsipal@gmail.com parsipal@gmail.com].
