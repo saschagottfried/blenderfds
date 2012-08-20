@@ -1,5 +1,7 @@
 #summary Blender objects to FDS namelist groups
 
+|| This page needs to be updated for *BlenderFDS 2.0.0*, please hold on. ||
+
 Each Blender `object` is exported as one or more FDS namelist groups sharing the same parameters. The FDS parameters assigned to each `object` are specified in the `object properties panel`. Different options and properties are displayed depending on the associated FDS namelist group, obeying to FDS semantic.
 
 The user builds the architectural model. Each element is split in parts. Each part should have homogeneous thermo-physical properties, as each Blender `object` can only have one set of FDS parameters assigned.
