@@ -3,7 +3,7 @@
 
 [http://lh5.ggpht.com/_iTIkwVoSUm0/S9L-T9fHCzI/AAAAAAAAAO8/rA6cMfvaLNQ/blenderfds_192.png]
 
-|| Updated *BlenderFDS 2.0.0* documentation is going to be released in the coming weeks ||
+|| This page needs to be updated for *BlenderFDS 2.0.0*, please hold on. ||
 
 = BlenderFDS 1.2.3 documentation =
 
