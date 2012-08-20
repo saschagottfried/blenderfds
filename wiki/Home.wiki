@@ -3,7 +3,9 @@
 
 [http://lh5.ggpht.com/_iTIkwVoSUm0/S9L-T9fHCzI/AAAAAAAAAO8/rA6cMfvaLNQ/blenderfds_192.png]
 
-= BlenderFDS documentation =
+|| Updated *BlenderFDS 2.0.0* documentation is going to be released in the coming weeks ||
+
+= BlenderFDS 1.2.3 documentation =
 
 This wiki contains all the BlenderFDS documentation. Browse the articles using the table of contents on the left side. Please, consider that a wiki is always a work in progress.
 
