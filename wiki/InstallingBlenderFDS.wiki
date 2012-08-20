@@ -1,6 +1,6 @@
 #summary Installing BlenderFDS
 
-BlenderFDS is built upon the new Blender 2.5x platform. First install Blender, then install BlenderFDS as an add-on.
+BlenderFDS is built upon the new Blender 2.6x platform. First install Blender, then install BlenderFDS as an add-on.
 
 <wiki:toc max_depth="2" />
 
