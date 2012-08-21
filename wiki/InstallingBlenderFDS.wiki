@@ -8,6 +8,10 @@ BlenderFDS is built upon the new Blender 2.6x platform. First install Blender, t
 
 = First, install Blender =
 
+|| BlenderFDS 2.0.0 shall be installed on Blender 2.64. It does not work with older versions and it is not guaranteed to work with newer ones. ||
+
+|| Blender 2.64 is at the moment still unreleased, in the meantime you can download a good test release from [http://wiki.blender.org/index.php/Dev:Ref/Release_Notes/2.64 here]. ||
+
 Blender is an integrated application that allows the creation of a broad range of 2D and 3D content. Blender provides a broad spectrum of modeling, texturing, lighting, animation and video post-processing functionality in one package. Through its open architecture, Blender provides cross-platform interoperability, extensibility, an incredibly small footprint, and a tightly integrated workflow. Blender is one of the most popular open source and free 3D graphics applications in the world. The main source for information about Blender is its main site http://www.blender.org/
 
 Between 2008 and 2011, Blender has been entirely re-coded to improve its functions, work-flow and interface. The result of this work produced the version of the software known as Blender 2.5x. After a long beta testing phase, Blender 2.6x series is now considered stable.
