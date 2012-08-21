@@ -31,7 +31,7 @@ Here are two blog entries from Yorik van Havre blog. These are general but step-
 
  * [https://www.packtpub.com/create-3d-architecture-buildings-scenery-with-blender/book Allan Brito, "Blender 3D Architecture, Buildings, and Scenery", Packt Publishing]
  * [http://en.wikibooks.org/wiki/Blender_3D] Free wikibooks
- * [http://www.cdschools.org/54223045235521/blank/browse.asp?A=383&BMDRN=2000&BCOB=0&C=55205 Free course book from Central Dauphin High School]
+ * [http://www.cdschools.org/Page/455 Free course book from Central Dauphin High School]
 
 [http://lh5.ggpht.com/_iTIkwVoSUm0/S9Qz8l16FUI/AAAAAAAAAPY/euyK4I6s0uU/Allan%20Brito%20book.png]
 
