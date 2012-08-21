@@ -1,6 +1,6 @@
 #summary The idea behind BlenderFDS
 
-|| This page is being updated to *BlenderFDS 2.0.0*, please hold on. ||
+|| Updated to *BlenderFDS 2.0.0*. ||
 
 Here we talk about the idea that led to BlenderFDS.
 
