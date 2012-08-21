@@ -1,6 +1,6 @@
 #summary Installing BlenderFDS
 
-|| Updated to *BlenderFDS 2.0*. ||
+|| Updated to *BlenderFDS 2.0* ||
 
 BlenderFDS is built upon the new Blender 2.6x platform. First install Blender, then install BlenderFDS as an add-on.
 
