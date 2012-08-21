@@ -1,6 +1,6 @@
 #summary BlenderFDS user interface
 
-|| This page is being updated to *BlenderFDS 2.0.0*, please hold on. ||
+|| Updated to *BlenderFDS 2.0* ||
 
 BlenderFDS is based on Blender. You do not need to be a Blender power user to use BlenderFDS, but it is much better if you are already familiar with its particular interface and you are able to quickly build simple architectural models. See the list of resources provided in the [LearningBlender Learning Blender] page for help.
 
@@ -19,7 +19,6 @@ Before starting, please watch this screencast:
 and read the first part of Blender User Manual:
 
 [http://wiki.blender.org/index.php/Doc:2.6/Manual]
-
 
 The Blender UI is composed of `editors`, `headers`, `context buttons`, `panels`, and `controls`.
 
