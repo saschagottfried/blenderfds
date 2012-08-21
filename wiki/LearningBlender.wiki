@@ -4,7 +4,7 @@ The Blender windowing system is a treat. It looks like some sort of space-ship c
 
 Once you learn it, however, you'll wish all your programs worked this way.
 
-The following is a short list of educational resources for Blender. Many of these resources are dedicated to _Blender 2.49_, and are currently being transitioned to the _Blender 2.5.x series_. The transition will take some time.
+The following is a short list of educational resources for Blender. Many of these resources are dedicated to _Blender 2.49_, and are currently being transitioned to the _Blender 2.6x series_. The transition will take some time.
 
 <wiki:toc max_depth="2" />
 
