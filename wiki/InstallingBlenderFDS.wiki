@@ -24,7 +24,7 @@ For other operating systems (Linux, Mac OS X...) you can unpack the downloaded c
 
 = Then, install BlenderFDS add-on into Blender =
 
-Add-ons is the general term for any optional script that extends Blender's functionality. After installing Blender, download the latest BlenderFDS distribution package (eg: `BlenderFDS_1.2.3.zip`) from http://www.blenderfds.org/ and unzip it in a comfortable location.
+Add-ons is the general term for any optional script that extends Blender's functionality. After installing Blender, download the latest BlenderFDS distribution package (eg: `BlenderFDS_2.0.0.zip`) from http://www.blenderfds.org/ and unzip it in a comfortable location.
 
 After launching the Blender executable, open the the Blender `Add-Ons` panel using the `File > User Preferences` menu and clicking on the `Add-Ons` tab (1). The following window tab opens up:
 
