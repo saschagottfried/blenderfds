@@ -266,7 +266,7 @@ The user creates an `object` made of separate `faces` distributed inside the bui
 
 Here is an example of a `SLCF object` using `PB*` set to faces:
 
-[https://lh4.googleusercontent.com/_iTIkwVoSUm0/TXeIMKDgYOI/AAAAAAAAAbs/jNd4Mz_PS90/blender%20panel%20SLCF.png]
+[https://lh4.googleusercontent.com/-xtrib3VKxi4/UDOtKEowqdI/AAAAAAAAAoA/Eu1USS_LK_w/s411/SLCF.png]
 
 == Setting `XB, XYZ, PB*` at the same time ==
 
