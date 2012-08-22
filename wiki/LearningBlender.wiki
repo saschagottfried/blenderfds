@@ -1,6 +1,6 @@
 #summary Learning Blender
 
-|| Updated to *BlenderFDS 2.0* ||
+|| *Updated to 2.0* ||
 
 The Blender windowing system is a treat. It looks like some sort of space-ship control panel and you have never seen anything like it. The learning curve can be steep, and new users can be discouraged at first.
 
