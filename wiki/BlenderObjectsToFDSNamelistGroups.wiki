@@ -1,6 +1,6 @@
 #summary Blender objects to FDS namelist groups
 
-|| This page is being updated to *BlenderFDS 2.0*, please hold on. ||
+|| *This page is being updated to 2.0*, please hold on. ||
 
 Each Blender `object` is exported as one or more FDS namelist groups sharing the same parameters. The FDS parameters assigned to each `object` are specified in the `object properties panel`. Different options and properties are displayed depending on the associated FDS namelist group, obeying to FDS semantic.
 
