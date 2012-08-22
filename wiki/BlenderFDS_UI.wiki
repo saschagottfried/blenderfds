@@ -1,6 +1,6 @@
 #summary BlenderFDS user interface
 
-|| Updated to *BlenderFDS 2.0* ||
+|| *Updated to 2.0* ||
 
 BlenderFDS is based on Blender. You do not need to be a Blender power user to use BlenderFDS, but it is much better if you are already familiar with its particular interface and you are able to quickly build simple architectural models. See the list of resources provided in the [LearningBlender Learning Blender] page for help.
 
