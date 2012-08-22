@@ -14,9 +14,13 @@ The following is a short list of educational resources for Blender. Many of thes
 
 = Some starting points =
 
-This is the best starting point I could find. Here are some introductory screencasts on Blender 2.5:
+This is the best starting point I could find. Here are some introductory screencasts on Blender:
 
  * [http://www.blendercookie.com/getting-started-with-blender-modeling/]
+
+A new introductory course:
+
+ * [http://blendercourse.com/English/blendercourse-basics-v2]
 
 Here are two blog entries from Yorik van Havre blog. These are general but step-by-step introductions to quick architecture modeling with Blender.
 
