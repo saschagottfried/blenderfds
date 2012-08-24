@@ -22,7 +22,7 @@ RGB=12,34,35, TRANSPARENCY=.3
 
 == `Custom parameters` ==
 
-`Custom parameters` field is used to include other FDS parameters to the `SURF` namelist group. BlenderFDS inserts the `Custom parameters` value as it is, verbatim, and does not perform any check on its validity. The user interface just replaces all the double quotes (") with single quotes (') for uniformity with the rest of auto-generated parameters.
+`Custom parameters` field is used to include other FDS parameters to the `SURF` namelist group. BlenderFDS inserts the `Custom parameters` value as it is, verbatim, and does not perform any check on its semantic. The user should use paired single quotes (eg: `PAR1='This is a string', PAR2='This is another'`) for strings in order to conserve uniformity with auto-generated FDS parameters.
 
 == `FYI` parameter ==
 
