@@ -58,6 +58,8 @@ To update BlenderFDS, remove the previous BlenderFDS install, as explained in th
 
 = Porting old files to new BlenderFDS releases =
 
+|| *New in 2.0:* file formats ||
+
 BlenderFDS file format changes sometimes. The majority of the changes are automatically migrated, some need user's intervention.
 
 == BlenderFDS 1.2.3 to BlenderFDS 2.0 ==
@@ -68,4 +70,4 @@ The user needs to review her old BlenderFDS files:
 
 == Previous releases to BlenderFDS 1.2.3 ==
 
-BlenderFDS file format is automatically migrated.
+BlenderFDS files are automatically converted.
