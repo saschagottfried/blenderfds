@@ -1,6 +1,6 @@
 #summary Blender scenes to FDS cases
 
-|| Updated to *2.0* ||
+|| *Updated to 2.0* ||
 
 When exported, each Blender `scene` becomes an FDS case, that is an `.fds` text input file.
 
