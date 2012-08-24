@@ -115,9 +115,9 @@ No `XB` parameter is added to the exported namelist group.
 
 || *New in 2.0*: New voxelization algorithm ||
 
-The Blender `object` is treated by a voxelization algorithm that approximates its geometry as if it was made up of [http://www.lego.com Lego] bricks. Geometric objects are converted from their continuous geometric representation into a set of voxels that best approximates the continuous object. The voxel size is specified by the user on a per-object basis, according to the desired accuracy.
+The Blender `object` is treated by a voxelization algorithm that approximates its geometry as if it was made up of [http://www.lego.com Lego] bricks. Objects are converted from their continuous geometric representation into a set of voxels that best approximates the continuous geometry of the object. The voxel size is specified by the user on a per-object basis, according to the desired accuracy.
 
-The previous releases of BlenderFDS used a common _marching cube algorithm_ implemented in Python by Michael Schardt for Blender 2.48 and released under a GPL license. Due to its inherent slowness and other precision problems, this algorithm was replaced in BlenderFDS 2.0 by a direct employ of the Blender Remesh modifier contributed by Nicholas Bishop to Blender 2.62. This modifier uses a new method for contouring a signed grid developed by Tao Ju [Ju, T., Losasso, F., Schaefer, S., Warren, J., Dual Contouring of Hermite Data, Proceedings of ACM SIGGRAPH, 21-26 July 2002]. The new algorithm is much faster than the previous one.
+The previous releases of BlenderFDS used a common _marching cube algorithm_ implemented in Python by Michael Schardt for Blender 2.48 and released under a GPL license. Due to its inherent slowness and other precision problems, this algorithm was replaced in BlenderFDS 2.0 by a direct employ of the Blender Remesh modifier contributed by Nicholas Bishop to Blender 2.62. This modifier uses a new method for contouring a signed grid developed by Tao Ju _[Ju, T., Losasso, F., Schaefer, S., Warren, J., Dual Contouring of Hermite Data, Proceedings of ACM SIGGRAPH, 21-26 July 2002]_. The new algorithm is much faster than the previous one.
 
 [http://lh5.ggpht.com/_iTIkwVoSUm0/S9dLEyo67MI/AAAAAAAAASc/yvSFrr20JEI/lego_building.jpg] 
 
@@ -159,7 +159,13 @@ The Blender `object` is exported to many FDS namelist groups sharing the same pa
 
 || *New in 2.0*: Voxel size on a per-object basis ||
 
-*FIXME*
+The voxel is cubic and its size is specified by the user on a per-object basis, according to the desired accuracy. When exporting to FDS, geometric features that are smaller than voxel size are automatically filtered out by the voxelization algorithm.
+
+When voxel size is too small compared to object size, the number of voxels grows too much. To prevent out of memory conditions, an error message appears and the required voxel size is not guaranteed:
+
+[https://lh4.googleusercontent.com/-HXPS7rO4dnQ/UDdUl0xhLyI/AAAAAAAAAq0/OeXtD8Os6-8/s800/size%2520too%2520large%2520voxel%2520no.png]
+
+Reduce the size of the voxelized object (eg by splitting it in two smaller objects) until the error message disappears.
 
 === Visualizing voxels ===
 
