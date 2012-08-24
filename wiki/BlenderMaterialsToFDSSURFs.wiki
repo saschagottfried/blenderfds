@@ -1,5 +1,7 @@
 #summary Blender materials to FDS SURF namelist groups
 
+|| *Updated to 2.0* ||
+
 Blender `materials` are exported to `SURFs` namelist groups only if they are referenced by other `objects`. 
 
 <wiki:toc max_depth="2" />
@@ -18,7 +20,7 @@ These parameters set the color and the alpha of the FDS `SURF` namelist group, t
 RGB=12,34,35, TRANSPARENCY=.3
 }}}
 
-[https://lh3.googleusercontent.com/_iTIkwVoSUm0/TXeIMRTOuUI/AAAAAAAAAb0/sfuruUMUxCU/blender%20panel%20SURF.png]
+[https://lh6.googleusercontent.com/-7iqLFKBO9F8/UDOtsTLdM2I/AAAAAAAAApE/J-E25YERdKk/s800/SURF.png]
 
 == `Custom parameters` ==
 
