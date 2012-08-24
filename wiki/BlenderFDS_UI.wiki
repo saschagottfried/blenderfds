@@ -69,23 +69,3 @@ Depending on the chosen context, BlenderFDS adds several FDS-specific `panels` t
 When opening a new Blender file, the BlenderFDS `panels` are listed as the last ones at the bottom of the `properties editor`, and can be hidden under the pile of the other default `panels`. If needed, the user can easily reorder the pile by dragging the hidden `panels` to the top of the list.
 
 [https://lh3.googleusercontent.com/_iTIkwVoSUm0/TXdTxQ86rfI/AAAAAAAAAZ0/HW3EtF4QWS0/blender%20dragging%20panel.png]
-
-== The `properties editor` in `scene context` ==
-
-The `scene context button` provides the following BlenderFDS `panel`, that we call `scene properties panel` for shortness. For example:
-
-[https://lh5.googleusercontent.com/_iTIkwVoSUm0/TXeILv2TABI/AAAAAAAAAbg/M3T-_HbsugI/blender%20panel%20case.png]
-
-== The `properties editor` in `object context` ==
-
-For simplicity, we call `object properties panel` the BlenderFDS `panel` in `object context`.
-
-Options and properties, displayed in the FDS-specific `object properties panel`, change depending on the associated namelist group. When the user enters an `OBST` namelist in the appropriate field, the `object properties panel` becomes like this:
-
-[https://lh3.googleusercontent.com/_iTIkwVoSUm0/TXeIMBzT0XI/AAAAAAAAAbk/ZG_zOp9hMz0/blender%20panel%20OBST.png]
-
-== The `properties editor` in `material context` ==
-
-The `material context button` provides the BlenderFDS `panel`, called for short `material properties panel`. For example:
-
-[https://lh3.googleusercontent.com/_iTIkwVoSUm0/TXeIMRTOuUI/AAAAAAAAAb0/sfuruUMUxCU/blender%20panel%20SURF.png]
