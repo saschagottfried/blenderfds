@@ -72,9 +72,11 @@ The following is an example of an `OBST object` description:
 
 == `IJK` parameter ==
 
+|| *New in 2.0*: `IJK` setup  ||
+
 When the user enters a `MESH object`, the `panel` is updated to show the `IJK` parameter.
 
-BlenderFDS checks if the number of cells requested by the user along the y and the z axis respects the requirements of the FDS Poisson solver. If this is not the case the user can push the button `Correct IJK` and good values are proposed, as explained in paragraph § 6.3.1 of the FDS User's guide.
+BlenderFDS checks if the number of cells requested by the user along the y and the z axis respects the requirements of the FDS Poisson solver. If this is not the case the user can push the button `Correct IJK` and set good values, as explained in paragraph § 6.3.1 of the FDS User's guide.
 
 Meshes alignment can become a nightmare: I usually adapt mesh geometric dimensions to obtain good J and K values and correctly aligned meshes. This sometimes requires wizardry arts...
 
@@ -86,11 +88,11 @@ IJK=12,50,50
 
 The following is an example of an `MESH object` description:
 
-[https://lh3.googleusercontent.com/-FitQCumDDaE/UDOtrAz7IoI/AAAAAAAAAo4/_sCyI4igxuQ/s413/MESH.png]
+[https://lh6.googleusercontent.com/-tX23Y_ZxXIo/UDdEJ7pHy5I/AAAAAAAAAqM/79Q4CPZxqgE/s144/MESH.png]
 
 == `Custom parameters` ==
 
-`Custom parameters` field is used to include other FDS parameters to the namelist group. BlenderFDS inserts the `Custom parameters` value as it is, verbatim, and does not perform any check on its semantic. The user should use paired single quotes (eg: 'This is a string') for strings in order to conserve uniformity with auto-generated FDS parameters.
+`Custom parameters` field is used to include other FDS parameters to the namelist group. BlenderFDS inserts the `Custom parameters` value as it is, verbatim, and does not perform any check on its semantic. The user should use paired single quotes (eg: `PAR1='This is a string', PAR2='This is another'`) for strings in order to conserve uniformity with auto-generated FDS parameters.
 
 = FDS namelist group geometry =
 
@@ -111,6 +113,8 @@ No `XB` parameter is added to the exported namelist group.
 
 === `XB` set to `Voxels` ===
 
+|| *New in 2.0*: New voxelization algorithm. It can treat both _manifold_ and _non manifold_ objects. ||
+
 The Blender `object` is treated by a voxelization algorithm that approximates its geometry as if it was made up of [http://www.lego.com Lego] bricks. The building brick is named _voxel_, and its size is specified by the user in the `scene properties panel` (See [BlenderScenesToFDSCases]).
 
 [http://lh5.ggpht.com/_iTIkwVoSUm0/S9dLEyo67MI/AAAAAAAAASc/yvSFrr20JEI/lego_building.jpg] 
@@ -123,9 +127,9 @@ Here is an example of a cylinder voxelization using different voxel sizes:
 
 [https://lh3.googleusercontent.com/_iTIkwVoSUm0/TXY1dvieKZI/AAAAAAAAAYg/K4RfeEuwwjM/blender%20voxel%20boxel.png]
 
-The voxelization algorithm treats only _manifold objects_. This means that the `object mesh` should be water-tight and well-formed so that BlenderFDS can decide which portion of space is solid and which is instead void. If the `object` is not manifold, an error message is displayed in the user interface and in the exported FDS input file.
+The new voxelization algorithm can treat both _manifold_ and _non manifold_ objects, but exported geometries are more precise if the originating objects are _manifold_, that is water-tight and well-formed, so that BlenderFDS can decide which portion of space is solid and which is instead void. This is the reason why, if the object is non manifold, a warning message is displayed.
 
-There is a specific page explaining how to deal with this problem: [NonManifoldObjects Dealing with non-manifold objects].
+There is a specific page explaining how to deal with non manifold objects: [NonManifoldObjects Dealing with non-manifold objects].
 
 When setting `XB` to `Voxels`, the overall shape of the `object` is conserved as much as possible:
 
@@ -134,7 +138,7 @@ When setting `XB` to `Voxels`, the overall shape of the `object` is conserved as
 The Blender `object` is exported to many FDS namelist groups sharing the same parameters, and covering the same geometry. For example:
 
 {{{
-&OBST ID='Wall', XB=-1.575,-1.375,-1.375,-0.475,-0.025,1.975, SURF_ID='Gypsum wall',
+&OBST ID='Wall_0', XB=-1.575,-1.375,-1.375,0.475,0.025,1.975, SURF_ID='Gypsum wall',
       SAWTOOTH=.False., FYI='Voxelized walls' /
 &OBST ID='Wall_1', XB=-1.575,-1.375,-1.375,1.375,1.975,3.025, SURF_ID='Gypsum wall',
       SAWTOOTH=.False., FYI='Voxelized walls' /
@@ -173,7 +177,7 @@ Of course. it is much more clean and less prone to errors to directly model "str
 For example, `XB` set to `Faces` setting can be profitably employed to describe several `VENTs` that share the same parameters. The user creates an `object` made of separate `faces` distributed inside the building, and obtains a series of `VENTs`:
 
 {{{
-&VENT ID='Fan', XB=5.000,6.000,0.000,1.000,7.134,7.134, SURF_ID='Supply',
+&VENT ID='Fan_0', XB=5.000,6.000,0.000,1.000,7.134,7.134, SURF_ID='Supply',
       DEVC_ID='Sd1' /
 &VENT ID='Fan_1', XB=5.000,6.000,11.000,12.000,7.134,7.134, SURF_ID='Supply', 
       DEVC_ID='Sd1' /
@@ -189,7 +193,7 @@ BlenderFDS calculates the end points global coordinates of the Blender `object` 
 For example, `XB` set to `Edges` setting can be used to describe a group of beam detectors, sharing the same parameters. The user creates an `object` made of independent `edges` distributed inside the building, and obtains a series of `DEVCs`:
 
 {{{
-&DEVC ID='Beam detectors', XB=0.029,-1.271,-1.235,1.307,2.500,2.500,
+&DEVC ID='Beam detectors_0', XB=0.029,-1.271,-1.235,1.307,2.500,2.500,
       QUANTITY='PATH OBSCURATION', SETPOINT=0.33 , FYI='Two detectors' /
 &DEVC ID='Beam detectors_1', XB=1.217,-1.271,0.043,1.307,2.500,2.500,
       QUANTITY='PATH OBSCURATION', SETPOINT=0.33 , FYI='Two detectors' /
@@ -214,7 +218,7 @@ BlenderFDS calculates the global coordinates of the Blender `object` `vertices`.
 For example, `XYZ` set to `Verts` setting can be used to describe a group of thermocouples, sharing the same parameters. The user creates an `object` made of independent `vertices` distributed inside the building, and obtains a series of `DEVCs` like this:
 
 {{{
-&DEVC ID='Thermocouple serie', XYZ=-0.000,0.000,0.100, QUANTITY='THERMOCOUPLE' /
+&DEVC ID='Thermocouple serie_0', XYZ=-0.000,0.000,0.100, QUANTITY='THERMOCOUPLE' /
 &DEVC ID='Thermocouple serie_1', XYZ=-0.000,0.000,0.400, QUANTITY='THERMOCOUPLE' /
 &DEVC ID='Thermocouple serie_2', XYZ=-0.000,0.000,0.700, QUANTITY='THERMOCOUPLE' /
 &DEVC ID='Thermocouple serie_3', XYZ=-0.000,0.000,1.000, QUANTITY='THERMOCOUPLE' /
