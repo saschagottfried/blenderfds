@@ -60,6 +60,12 @@ The following is an example of a `VENT object` description:
 
 [https://lh5.googleusercontent.com/-DJfmcPIkwu8/UDOtstsLLUI/AAAAAAAAApA/VpPimsr_FCA/s409/VENT.png]
 
+`SURF_ID3` and `SURF_ID6` parameters are currently not supported. These latter parameters parameters depend on the absolute orientation of the reference system. In Blender each object has its local ref system, that can be rotated, scaled, moved, thus not aligned any more with the global system.
+
+I personally find SURF_ID3 and SURF_ID6 rather _unclean_ and prefer to use separate `VENT` objects. I usually duplicate the desired face and separate it by creating a new Blender object. Then I move it slightly outside the original object, and finally set the new `VENT` namelist and its properties.
+
+The new `VENT` object can be _parented_ to the original `OBST` to follow its translations, rotations and scalings. [http://wiki.blender.org/index.php/Doc:2.6/Manual/Modeling/Objects/Groups_and_Parenting See Blender manual] to discover how.
+
 == `SAWTOOTH` and `THICKEN` parameters ==
 
 || *New in 2.0*: `THICKEN` parameter ||
