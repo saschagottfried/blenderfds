@@ -115,7 +115,7 @@ No `XB` parameter is added to the exported namelist group.
 
 || *New in 2.0*: New voxelization algorithm. It can treat both _manifold_ and _non manifold_ objects. ||
 
-The Blender `object` is treated by a voxelization algorithm that approximates its geometry as if it was made up of [http://www.lego.com Lego] bricks. The building brick is named _voxel_, and its size is specified by the user in the `scene properties panel` (See [BlenderScenesToFDSCases]).
+The Blender `object` is treated by a voxelization algorithm that approximates its geometry as if it was made up of [http://www.lego.com Lego] bricks. The building brick is named _voxel_, and its size is specified by the user on a per-object basis.
 
 [http://lh5.ggpht.com/_iTIkwVoSUm0/S9dLEyo67MI/AAAAAAAAASc/yvSFrr20JEI/lego_building.jpg] 
 
