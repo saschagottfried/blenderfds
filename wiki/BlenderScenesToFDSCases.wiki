@@ -1,6 +1,6 @@
 #summary Blender scenes to FDS cases
 
-|| This page is beeing updated to *2.0*, please hold on. ||
+|| Updated to *2.0* ||
 
 When exported, each Blender `scene` becomes an FDS case, that is an `.fds` text input file.
 
@@ -65,9 +65,10 @@ A typical configuration file may contain the following parameters:
 
 == `Voxel Size` ==
 
-The `Voxel Size` represents the dimension of the voxel employed to transform some of the Blender `objects` geometries in FDS boxes. To obtain a reliable geometry description for the subsequent CFD simulation, the user should enter a `Voxel Size` that is at least _half_ of the smallest expected FDS mesh cell size. 
+|| *New in 2.0*: voxel size is set on a per-object basis ||
 
-[https://lh3.googleusercontent.com/_iTIkwVoSUm0/TXY1dvieKZI/AAAAAAAAAYg/K4RfeEuwwjM/blender%20voxel%20boxel.png]
+The `Voxel Size` is not any more set in the `scene` panel.
+See [BlenderObjectsToFDSNamelistGroups#XB_parameter] for a detailed description.
 
 = Exporting current Blender `scene` to an FDS input file =
 
