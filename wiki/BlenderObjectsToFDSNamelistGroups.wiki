@@ -48,7 +48,7 @@ The `FYI` parameter contains user's comments and informations and is inserted as
 FYI='This is a comment.'
 }}}
 
-== `SURF_ID` parameter ==
+== `SURF_ID`, `SURF_ID3`, and `SURF_ID6` parameters ==
 
 When the Blender `object` has a suitable namelist group name (`OBST, VENT`...) and the reference to a Blender material exists, BlenderFDS automatically configures and shows the relevant `SURF_ID` parameter referring to the appropriate Blender material:
 
