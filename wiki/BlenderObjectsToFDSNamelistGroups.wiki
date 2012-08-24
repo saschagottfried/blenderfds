@@ -88,7 +88,7 @@ IJK=12,50,50
 
 The following is an example of an `MESH object` description:
 
-[https://lh6.googleusercontent.com/-tX23Y_ZxXIo/UDdEJ7pHy5I/AAAAAAAAAqM/79Q4CPZxqgE/s144/MESH.png]
+[https://lh6.googleusercontent.com/-tX23Y_ZxXIo/UDdEJ7pHy5I/AAAAAAAAAqM/79Q4CPZxqgE/s800/MESH.png]
 
 == `Custom parameters` ==
 
