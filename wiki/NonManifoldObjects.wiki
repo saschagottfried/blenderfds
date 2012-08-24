@@ -1,8 +1,8 @@
 #summary Dealing with non-manifold objects
 
-|| This page needs to be updated for *BlenderFDS 2.0.0*, please hold on. ||
+|| *Updated to 2.0* ||
 
-Before you begin modeling always remember that, when you are modeling a Blender `object` that needs to be _voxelized_, you should create a volume that make sense in a physical world: _water-tight_ and _well-formed_ so that BlenderFDS can decide which portion of space is solid and which is instead void.
+Before you begin modeling always remember that, when you are modeling a Blender `object` that needs to be _voxelized_, it is better to create a volume that make sense in a physical world: _water-tight_ and _well-formed_ so that BlenderFDS can decide which portion of space is solid and which is instead void.
 
 The easiest way to do this is to work by extruding existing volume, and using boolean operations to combine volumes. It is often difficult to retrofit existing models, so it is best to start from scratch and with each step keep the goal in mind. Models made for visualization are often not good for voxelization.
 
@@ -11,6 +11,10 @@ The easiest way to do this is to work by extruding existing volume, and using bo
 ----
 
 = Fixing non-manifold models =
+
+|| *New in 2.0*: The new voxelization algorithm can treat both _manifold_ and _non manifold_ objects ||
+
+The new voxelization algorithm can treat both _manifold_ and _non manifold_ objects, but exported geometries are more precise if the originating objects are _manifold_, that is water-tight and well-formed, so that BlenderFDS can decide which portion of space is solid and which is instead void. This is the reason why, if the object is non manifold, a warning message is displayed.
 
 We share this problem with people working in 3D printing processes. This is the reason why one of the best and detailed explications of the problem and how to fix it is found on Shapeways site: [http://www.shapeways.com/tutorials/fixing-non-manifold-models Fixing non-manifold models]
 
