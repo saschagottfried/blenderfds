@@ -26,6 +26,8 @@ Remember that it is often quicker to remodel the problematic `object` from scrat
 
 = An example =
 
+|| *FIXME*: The following screenshots are not updated to BlenderFDS 2.0 ||
+
 The cube shown in the following picture lacks the upper face, and is thus non-manifold. If the user tries to set `XB` to `Voxels`, an error message appears in the `object properties panel`:
 
 [https://lh6.googleusercontent.com/_iTIkwVoSUm0/TXdqg-nfjjI/AAAAAAAAAaY/2tyLcl3NRNs/s720/blender%20hollow%20cube1.png]
