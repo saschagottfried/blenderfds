@@ -17,7 +17,7 @@ The user builds the geometry into a Blender `scene`. Then duplicates the `object
 
 Each `scene` requires the user to enter several parameters in its `scene panel`:
 
-[https://lh5.googleusercontent.com/_iTIkwVoSUm0/TXeILv2TABI/AAAAAAAAAbg/M3T-_HbsugI/blender%20panel%20case.png]
+[https://lh4.googleusercontent.com/-40Zud8q3xgw/UDOtLaVPZRI/AAAAAAAAAoU/LqzBns9vGTE/s800/case.png]
 
 == `CHID` and `TITLE` parameters ==
 
