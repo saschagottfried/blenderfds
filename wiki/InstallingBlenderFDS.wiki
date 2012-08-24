@@ -55,3 +55,17 @@ To remove BlenderFDS from your Blender install, simply disable the BlenderFDS ad
 = Updating BlenderFDS =
 
 To update BlenderFDS, remove the previous BlenderFDS install, as explained in the previous paragraph, and install the new version from scratch.
+
+= Porting old files to new BlenderFDS releases =
+
+BlenderFDS file format changes sometimes. The majority of the changes are automatically migrated, some need user's intervention.
+
+== BlenderFDS 1.2.3 to BlenderFDS 2.0 ==
+
+The user needs to review her old BlenderFDS files:
+ * check all MESH objects and set the IJK parameter again,
+ * check all voxelized objects and set the new voxel size on a per-object basis.
+
+== Previous releases to BlenderFDS 1.2.3 ==
+
+BlenderFDS file format is automatically migrated.
