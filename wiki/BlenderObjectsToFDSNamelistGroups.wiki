@@ -60,7 +60,9 @@ The following is an example of a `VENT object` description:
 
 [https://lh5.googleusercontent.com/-DJfmcPIkwu8/UDOtstsLLUI/AAAAAAAAApA/VpPimsr_FCA/s409/VENT.png]
 
-`SURF_ID3` and `SURF_ID6` parameters are currently not supported. These latter parameters parameters depend on the absolute orientation of the reference system. In Blender each object has its local ref system, that can be rotated, scaled, moved, thus not aligned any more with the global system.
+|| *New in 2.0*: why `SURF_ID3` and `SURF_ID6` are not supported ||
+
+`SURF_ID3` and `SURF_ID6` parameters are not supported by BlenderFDS. These parameters parameters depend on the absolute orientation of the reference system. In Blender each object has its local ref system, that can be rotated, scaled, moved, thus not aligned any more with the global system.
 
 I personally find `SURF_ID3` and `SURF_ID6` parameters rather _unclean_ and prefer to create separate `VENT` objects. I usually _duplicate_ the desired face and _separate_ it from the original object by creating a new Blender object. Then I move the new object slightly outside the original object, and finally set the new `VENT` namelist and its properties.
 
