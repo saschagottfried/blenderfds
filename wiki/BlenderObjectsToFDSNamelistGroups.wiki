@@ -74,19 +74,15 @@ The following is an example of an `OBST object` description:
 
 When the user enters a `MESH object`, the `panel` is updated to show the `IJK` parameter.
 
-BlenderFDS checks if the number of cells requested by the user along the y and the z axis respects the requirements of the FDS Poisson solver. If this is not the case a button appears *FIXME*
+BlenderFDS checks if the number of cells requested by the user along the y and the z axis respects the requirements of the FDS Poisson solver. If this is not the case the user can push the button `Correct IJK` and good values are proposed, as explained in paragraph § 6.3.1 of the FDS User's guide.
 
-keeps into account the requirements of the FDS Poisson solver along the y and the z axis, as required by FDS. In fact the user cannot choose the J and K values he prefers, he shall stick to 2^n^ 3^m^ 5^l^ results as explained in paragraph § 6.3.1 of the FDS User's guide. Given the `Desired Cell Size` choses the best approximations for the J and K cell numbers.
-
-Meshes alignement can then become a nightmare: I usually adapt mesh geometric dimensions to obtain good J and K values and correctly aligned meshes. This sometimes requires wizardry arts...
+Meshes alignment can become a nightmare: I usually adapt mesh geometric dimensions to obtain good J and K values and correctly aligned meshes. This sometimes requires wizardry arts...
 
 The parameter is then exported as follows:
 
 {{{
 IJK=12,50,50
 }}}
-
-The `Adapt Cell/Voxel` button sets the `scene Voxel Size` to half the FDS `MESH` cell size (See [BlenderScenesToFDSCases Blender scenes to FDS cases]) and updates the `Desired Cell Size` to the calculated cell size.
 
 The following is an example of an `MESH object` description:
 
