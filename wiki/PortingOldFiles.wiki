@@ -10,7 +10,7 @@ File format changes sometimes. The majority of the changes are automatically mig
 
 = BlenderFDS 1.2.3 to BlenderFDS 2.0 =
 
-The user need to review her old BlenderFDS files:
+The user needs to review her old BlenderFDS files:
  * check all MESH objects and set the IJK parameter again,
  * check all voxelized objects and set the new voxel size on a per-object basis.
 
