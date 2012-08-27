@@ -140,7 +140,7 @@ In particular, the Blender _Wall_ `object`, and its _Gypsum wall_ `material` are
 {{{
 &SURF ID='Gypsum wall', RGB=204,199,56, MATL_ID='Gypsum plaster', THICKNESS=0.03 /
 
-&OBST ID='Wall', XB=-1.575,-1.375,-1.375,-0.475,-0.025,1.975, SURF_ID='Gypsum wall',
+&OBST ID='Wall_0', XB=-1.575,-1.375,-1.375,-0.475,-0.025,1.975, SURF_ID='Gypsum wall',
       SAWTOOTH=.False., FYI='Voxelized walls' /
 &OBST ID='Wall_1', XB=-1.575,-1.375,-1.375,1.375,1.975,3.025, SURF_ID='Gypsum wall',
       SAWTOOTH=.False., FYI='Voxelized walls' /
