@@ -26,8 +26,6 @@ Remember that it is often quicker to remodel the problematic `object` from scrat
 
 = An example: how to fix a non-manifold object =
 
-|| *FIXME*: The following screenshots are not updated to BlenderFDS 2.0 ||
-
 The following picture shows a rotated cube. The cube lacks one face, and is thus non-manifold. If the user tries to set `XB` to `Voxels`, a warning message appears in the `object properties panel`:
 
 [https://lh5.googleusercontent.com/-F8HAZ2MsQIA/UDssNcz0wUI/AAAAAAAAAtE/w7JossOuMlQ/s800/m1.png]
