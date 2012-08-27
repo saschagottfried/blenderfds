@@ -36,34 +36,26 @@ To fix it, the user clicks on the `Select Non Manifold Edges` buttons. Blender s
 
 [https://lh5.googleusercontent.com/-1x-mQPczoXU/UDssNSagsDI/AAAAAAAAAs8/MoGp6ce9GjE/s800/m2.png]
 
-It is often better to first delete problematic vertices, edges, and faces, then rebuild them properly. In this simple case the user can just fill the missing face by pressing the `f` key:
+It is often better to first delete problematic vertices, edges, and faces, then rebuild them properly, especially if they are deeply hidden inside a complex solid. In this simple case the user can just fill the missing face by pressing the `f` key:
 
 [https://lh4.googleusercontent.com/-Sd-iBaZiZas/UDssNZWntoI/AAAAAAAAAs4/e2FoVxWhKwU/s800/m3.png]
 
-Then he switches the selection mode to `Edge select mode`:
+The user switches back to `Object Mode` and the warning message disappears. It is time to check for voxelization quality, click on the `Show Voxels` button.
 
-[https://lh4.googleusercontent.com/_iTIkwVoSUm0/TXdqg_ExihI/AAAAAAAAAac/IPrDQWzbWrg/s720/blender%20hollow%20cube3.png]
+[https://lh3.googleusercontent.com/-yXfpP5pOmuU/UDssN-BIe-I/AAAAAAAAAtI/e5VcVUUa21g/s800/m4.png]
 
-Then the user clicks on the `Select > Non Manifold` menu of the `3D View editor`:
+This is what is obtained, the voxelization seems good:
 
-[https://lh5.googleusercontent.com/_iTIkwVoSUm0/TXdqjJO9X-I/AAAAAAAAAak/7T_ykfHc1gE/s720/blender%20hollow%20cube4.png]
+[https://lh5.googleusercontent.com/-TItAk5AXz-k/UDssOFft2OI/AAAAAAAAAtM/F2n9f6mEHNI/s800/m5.png]
 
-The problematic edges are now selected:
+As already said, the new voxelization algorithm can treat _non manifold_ objects. In this simple case of one only face missing, it could produce an as good voxelization:
 
-[https://lh3.googleusercontent.com/_iTIkwVoSUm0/TXdqjRAmclI/AAAAAAAAAao/x1NLstmXyNw/s720/blender%20hollow%20cube5.png]
+[https://lh6.googleusercontent.com/-99ejvn1Nv1U/UDssOwYvcnI/AAAAAAAAAtg/vbZLxhTI1Qc/s800/m8.png]
 
-The cube lacks a face. So the user select the `Mesh > Faces > Fill` menu of the `3D View editor` `header` to create the missing face:
+But if we treat a non-manifold geometry like the following one, where two faces are missing...
 
-[https://lh4.googleusercontent.com/_iTIkwVoSUm0/TXdqjo96cjI/AAAAAAAAAas/ry7Z13JqvD8/s720/blender%20hollow%20cube6.png]
+[https://lh5.googleusercontent.com/-B5UQN_EYJmM/UDssOZOgm7I/AAAAAAAAAtU/AaECdKYWzso/s800/m6.png]
 
-The missing face is created:
+... the voxelization algorithm cannot produce a good voxelization:
 
-[https://lh3.googleusercontent.com/_iTIkwVoSUm0/TXdqkbj6KCI/AAAAAAAAAaw/4_YPUIzssDk/s720/blender%20hollow%20cube7.png]
-
-The user switches Blender back from `edit mode` to `object mode`:
-
-[https://lh5.googleusercontent.com/_iTIkwVoSUm0/TXdqlR6QqwI/AAAAAAAAAa4/1ubxzR6_mVw/s720/blender%20hollow%20cube8.png]
-
-The error message disappears: the `object` is now manifold, and `XB` can be safely set to `Voxels`:
-
-[https://lh3.googleusercontent.com/_iTIkwVoSUm0/TXdqlQb652I/AAAAAAAAAa0/_EWjjRa8x60/s720/blender%20hollow%20cube9.png]
+[https://lh3.googleusercontent.com/-UthQQNhyhNg/UDssOt_Zv2I/AAAAAAAAAtY/mMB6vd1wmcE/s800/m7.png]
