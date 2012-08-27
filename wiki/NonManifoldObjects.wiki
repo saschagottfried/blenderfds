@@ -20,7 +20,7 @@ We share this problem with people working in 3D printing processes. One of the b
 
 The suggested operations can be performed directly inside Blender (Shapeways folks use Blender, too!).
 
-When desperate there is another powerful but somewhat more complex tool: [http://meshlab.sourceforge.net/ MeshLab]. You need to export your `object mesh` from Blender in STL format, fix it in MeshLab, and import it back into Blender: a procedure not meant for the faint of hearth...
+When desperate there is another powerful but somewhat more complex tool: [http://meshlab.sourceforge.net/ MeshLab]. You need to export your `object mesh` from Blender in STL format, fix it in !MeshLab, and import it back into Blender: a procedure not meant for the faint of hearth...
 
 Remember that it is often quicker to remodel the problematic `object` from scratch.
 
@@ -48,7 +48,7 @@ The user clicks on the `Show Voxels` button and this is what is obtained. The vo
 
 = An example: most non-manifold objects can be correctly voxelized =
 
-As already said, the new voxelization algorithm can treat _non manifold_ objects. In the previous simple case of one only face missing, it could produce an as good voxelized object, even if the geometry was not fixed. This would be the result:
+As already said, the new voxelization algorithm can treat _non manifold_ objects. In the previous simple case where one only face was missing, even if the geometry was not fixed, it could produce an as good voxelized object. This would be the result:
 
 [https://lh6.googleusercontent.com/-99ejvn1Nv1U/UDssOwYvcnI/AAAAAAAAAtg/vbZLxhTI1Qc/s800/m8.png]
 
