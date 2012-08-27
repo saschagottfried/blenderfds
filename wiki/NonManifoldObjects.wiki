@@ -28,13 +28,17 @@ Remember that it is often quicker to remodel the problematic `object` from scrat
 
 || *FIXME*: The following screenshots are not updated to BlenderFDS 2.0 ||
 
-The cube shown in the following picture lacks the upper face, and is thus non-manifold. If the user tries to set `XB` to `Voxels`, an error message appears in the `object properties panel`:
+The rotated cube shown in the following picture lacks one face, and is thus non-manifold. If the user tries to set `XB` to `Voxels`, an error message appears in the `object properties panel`:
 
-[https://lh6.googleusercontent.com/_iTIkwVoSUm0/TXdqg-nfjjI/AAAAAAAAAaY/2tyLcl3NRNs/s720/blender%20hollow%20cube1.png]
+[https://lh5.googleusercontent.com/-F8HAZ2MsQIA/UDssNcz0wUI/AAAAAAAAAtE/w7JossOuMlQ/s800/m1.png]
 
-To fix it, the user switches Blender from `Object mode` to `Edit mode`. The object mesh is now editable:
+To fix it, the user clicks on the `Select Non Manifold Edges` buttons. Blender switches from `Object mode` to `Edit mode` and problematic edges are selected:
 
-[https://lh4.googleusercontent.com/_iTIkwVoSUm0/TXdqhEAY05I/AAAAAAAAAag/TUi99mhDfh4/s720/blender%20hollow%20cube2.png]
+[https://lh5.googleusercontent.com/-1x-mQPczoXU/UDssNSagsDI/AAAAAAAAAs8/MoGp6ce9GjE/s800/m2.png]
+
+It is often better to first delete problematic vertices, edges, and faces, then rebuild them properly. In this simple case the user can just fill the missing face by pressing the `f` key:
+
+[https://lh4.googleusercontent.com/-Sd-iBaZiZas/UDssNZWntoI/AAAAAAAAAs4/e2FoVxWhKwU/s800/m3.png]
 
 Then he switches the selection mode to `Edge select mode`:
 
