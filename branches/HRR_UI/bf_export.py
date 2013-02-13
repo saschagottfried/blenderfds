@@ -130,6 +130,10 @@ def _include_element(context, el):
         pas += (("IJK",(el.bf_ijk_n[0],el.bf_ijk_n[1],el.bf_ijk_n[2])),)
     if "RGB" in nl_params:
         pas += (("RGB",(int(el.diffuse_color[0]*255.),int(el.diffuse_color[1]*255.),int(el.diffuse_color[2]*255.)) ),)
+    if "HRRPUA" in nl_params and el.bf_useHRR:
+        pas += (("HRRPUA", el.bf_hrrpua),)
+    if "TAU_Q" in nl_params and el.bf_UseHRRRamp:
+        pas += (("TAU_Q", el.bf_tau_q),)
     if "TRANSPARENCY" in nl_params and el.use_transparency:
         pas += (("TRANSPARENCY",el.alpha),)
     if "OUTLINE" in nl_params and el.draw_type == "Wire":

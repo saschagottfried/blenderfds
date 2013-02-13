@@ -310,11 +310,42 @@ class MATERIAL_PT_bf(MaterialButtonsPanel, bpy.types.Panel):
             row.active = "TRANSPARENCY" in nl_params
             row.prop(ma, "use_transparency", text="TRANSPARENCY")
             row.prop(ma, "alpha")
-
-        # Custom param
+            
+        if "HRRPUA" in nl_params:
+            if ma.users > 1:
+                layout.label(text="Material assigned to more than 1 object", icon="ERROR")
+            box = layout.box()            
+            row=box.row()
+            col1, col2 = row.column(), row.column()
+            col1.prop(ma, "bf_useHRR", text="Heat Release")            
+            if ma.bf_useHRR:
+                col1.prop(ma, "bf_hrrTotal", text="Total HRR")
+                facearea = 0.0
+                for p in ob.data.polygons:
+                    facearea += p.area
+                col1.label(text="Object Surface Area: " + str(round(facearea,2)) + "sq.m")
+                col1.label(text="HRR/Area : " + str(round(ma.bf_hrrpua,2)) + "kW")
+                
+                col2.prop(ma, "bf_UseHRRRamp", text="HRR Ramp")
+                if ma.bf_UseHRRRamp:
+                    col2.prop(ma,"bf_UsetSquared",text="t-squared Ramp")
+                    if ma.bf_UsetSquared:                
+                        #col1.active = "TAU_Q" in nl_params
+                        col2.label(text="Fire Growth Rate:")
+                        col2.prop(ma, "bf_tsquared_growth", text="")
+                        if ma.bf_tsquared_growth == "CUSTOM":
+                            col2.label(text="Alpha:")
+                            col2.prop(ma, "bf_tsquared_alpha", text="")
+                            
+                    else:
+                         col2.label(text="Ramp Time [sec]:")
+                         col2.prop(ma, "bf_tau_q", text="")
+        
+        # Custom paramt
         col = layout.column()
         col.label(text="Custom {0} Parameters:".format(bf_nl))
         col.prop(ma, "bf_custom_param", text="")
         if bf_export.has_unmatched_quotes(ma.bf_custom_param): 
             col.label(text="Use matched single straight quotes", icon="ERROR")
+        
 

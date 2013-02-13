@@ -42,7 +42,7 @@ nls = {"OBST": "Obstruction",
       }
 
 # Namelist parameters
-# Possible choices: "ID","FYI","SURF_ID","SAWTOOTH","IJK","XB","XYZ","PB","RGB","TRANSPARENCY","OUTLINE"
+# Possible choices: "ID","FYI","SURF_ID","SAWTOOTH","IJK","XB","XYZ","PB","RGB","HRRPUA","TAU_Q","TRANSPARENCY","OUTLINE"
 nl_params = {"OBST": ("ID","FYI","SURF_ID","SAWTOOTH","THICKEN","XB","OUTLINE"),
              "HOLE": (     "FYI","XB",),
              "VENT": ("ID","FYI","SURF_ID","XB","XYZ","PB","OUTLINE"),
@@ -60,7 +60,7 @@ nl_params = {"OBST": ("ID","FYI","SURF_ID","SAWTOOTH","THICKEN","XB","OUTLINE"),
              "CORR": ("ID","FYI","XB",),
              "EVSS": ("ID","FYI","XB",),
              "STRS": ("ID","FYI","XB","XYZ",),
-             "SURF": ("ID","FYI","RGB","TRANSPARENCY",),
+             "SURF": ("ID","FYI","RGB","HRRPUA","TAU_Q","TRANSPARENCY",),
             }
 
 # Namelist groups, a tuple for selecting

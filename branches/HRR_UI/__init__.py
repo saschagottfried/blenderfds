@@ -53,6 +53,7 @@ import bpy
 from bpy.props import *
 from bpy_extras.io_utils import ExportHelper
 from os import path
+from math import sqrt
 
 ### UI: Menu
 
@@ -80,6 +81,35 @@ def menu_func_export(self, context):
     # Call the exporter script
     filepath = "{0}/{1}".format(directory, basename)
     self.layout.operator(ExportFDS.bl_idname, text="Fire Dynamics Simulator Case (.fds)").filepath = filepath
+
+### Update function functions for bf properties
+def update_Material_HRR(self, context):
+    ob = context.active_object
+    facearea = 0.0
+    for p in ob.data.polygons:
+        facearea += p.area
+    self.bf_hrrpua = self.bf_hrrTotal / facearea
+    if not self.bf_tau_q:
+        self.bf_tau_q = 0.0
+    if not self.bf_tsquared_alpha:
+        self.bf_tsquared_alpha = 0.0
+    if self.bf_UseHRRRamp:
+        if self.bf_UsetSquared:
+            if self.bf_tsquared_growth == "SLOW":
+                self.bf_tsquared_alpha = 0.00293
+            elif self.bf_tsquared_growth == "MED":
+                self.bf_tsquared_alpha = 0.01172
+            elif self.bf_tsquared_growth == "FAST":
+                self.bf_tsquared_alpha = 0.0469
+            elif self.bf_tsquared_growth == "UFAST":
+                self.bf_tsquared_alpha = 0.1876
+            elif self.bf_tsquared_growth == "CUSTOM":
+                pass
+            self.bf_tau_q = -sqrt(self.bf_hrrTotal/self.bf_tsquared_alpha)
+            #print("TAU_Q: " + str(self.bf_tau_q))
+            #print("HRR Total: " + str(hrrtotal))
+    else:
+        return
 
 ### Registration/Unregistration
 
@@ -193,12 +223,67 @@ def register():
         name="Voxels shown",
         description="This object voxels are currently being shown",
         default=False)
-
-    # material properties
+    
+        # material properties
     bpy.types.Material.bf_export = BoolProperty(
         name="Export",
         description="Export this Blender material to an FDS SURF namelist",
         default=True)
+    
+    bpy.types.Material.bf_useHRR = BoolProperty(
+        name="Heat Release",
+        description="Include the HRRPUA parameter when exporting this material",
+        default=False,
+        update=update_Material_HRR)
+        
+    bpy.types.Material.bf_hrrpua = FloatProperty(
+        name="Area Heat Release Rate",
+        description = "The heat release rate per unit of area",
+        step=1,precision=2,min=0.,
+        default = 0.)
+    
+    bpy.types.Material.bf_hrrTotal = FloatProperty(
+        name="Total Heat Release Rate",
+        description = "The heat release rate for all faces of the object",
+        step=1,precision=2,min=0.,
+        default = 0.,
+        update=update_Material_HRR)
+        
+    bpy.types.Material.bf_UseHRRRamp = BoolProperty(
+        name="Area Heat Release Rate",
+        description = "The heat release rate per unit of area",
+        default = False,
+        update=update_Material_HRR)
+    
+    bpy.types.Material.bf_UsetSquared = BoolProperty(
+        name="t-squared heat release",
+        description="Include the TAU_Q parameter when exporting this material",
+        default=False,
+        update=update_Material_HRR)
+
+    bpy.types.Material.bf_tau_q = FloatProperty(
+        name="HRR Ramp time coefficient",
+        description = "The time to reach the max HRR. negative value results in t-squared curve.",
+        step=1,precision=2,
+        default = 0.)
+    
+    bpy.types.Material.bf_tsquared_alpha = FloatProperty(
+        name="Custom growth coefficient",
+        description = "The fire growth rate coefficient specified by the user.",
+        step=0.1,precision=4,min=0.,
+        default = 0.00293)
+        
+    items_list = [("SLOW", "Slow", "Slow t-squared fire"),
+                  ("MED", "Medium", "Medium t-squared fire"),
+                  ("FAST", "Fast", "Fast t-squared fire"),
+                  ("UFAST", "Ultra-Fast", "Ultra-Fast t-squared fire"),
+                  ("CUSTOM",  "Custom", "Custom t-squared fire")]
+    bpy.types.Material.bf_tsquared_growth = EnumProperty(
+        name="Growth Rate",
+        description="Set fire growth rate",
+        items=items_list,
+        default="SLOW",
+        update=update_Material_HRR)
         
     bpy.types.Material.bf_nl = StringProperty(
         name="Namelist",
@@ -243,6 +328,14 @@ def unregister():
 
     # material properties
     del bpy.types.Material.bf_export
+    del bpy.types.Material.bf_useHRR
+    del bpy.types.Material.bf_hrrpua
+    del bpy.types.Material.bf_hrrTotal
+    del bpy.types.Material.bf_UseHRRRamp
+    del bpy.types.Material.bf_UsetSquared
+    del bpy.types.Material.bf_tau_q
+    del bpy.types.Material.bf_tsquared_alpha
+    del bpy.types.Material.bf_tsquared_growth
     del bpy.types.Material.bf_nl
     del bpy.types.Material.bf_fyi
     del bpy.types.Material.bf_custom_param
