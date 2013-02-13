@@ -18,9 +18,9 @@
 "BlenderFDS, an open tool for the NIST Fire Dynamics Simulator."
 
 # Max number of colums for output file
-col_max = 100
+col_max = 80
 
-# Namelist names
+# Namelist description
 nls = {"OBST": "Obstruction",
        "HOLE": "Obstruction Cutout",
        "VENT": "Boundary Condition Patch",
@@ -38,26 +38,40 @@ nls = {"OBST": "Obstruction",
        "CORR": "Evac Corridor",
        "EVSS": "Evac Incline",
        "STRS": "Evac Staircase",
+       "SURF": "Boundary Condition",
       }
 
-# Namelist parameters FIXME ID, "SLCF",
-nl_params = {"ID":       ("DEVC", "PROF", "HOLE", "INIT", "MESH", "OBST", "VENT", "ZONE", "EVAC", "EVHO", "EXIT", "ENTR", "DOOR", "CORR", "EVSS", "STRS"), 
-             "SURF_ID":  ("DEVC", "OBST","VENT"),
-             "SAWTOOTH": ("OBST", ),
-             "IJK":      ("MESH", ),
-             "XB":       ("DEVC", "HOLE", "INIT", "MESH", "OBST", "SLCF", "VENT", "ZONE", "EVAC", "EVHO", "EXIT", "ENTR", "DOOR", "CORR", "EVSS", "STRS"),
-             "XYZ":      ("DEVC", "PROF", "VENT", "EXIT", "DOOR", "STRS"),
-             "PB":       ("SLCF", "VENT"),
-             }
+# Namelist parameters
+# Possible choices: "ID","FYI","SURF_ID","SAWTOOTH","IJK","XB","XYZ","PB","RGB","TRANSPARENCY","OUTLINE"
+nl_params = {"OBST": ("ID","FYI","SURF_ID","SAWTOOTH","THICKEN","XB","OUTLINE"),
+             "HOLE": (     "FYI","XB",),
+             "VENT": ("ID","FYI","SURF_ID","XB","XYZ","PB","OUTLINE"),
+             "DEVC": ("ID","FYI","SURF_ID","XB","XYZ","PB",),
+             "SLCF": (     "FYI","XB","PB",),
+             "PROF": ("ID","FYI","XYZ",),
+             "MESH": ("ID","FYI","IJK","XB",),
+             "INIT": (     "FYI","XB",),
+             "ZONE": ("ID","FYI","XB",),
+             "EVAC": ("ID","FYI","XB",),
+             "EVHO": ("ID","FYI","XB",),
+             "EXIT": ("ID","FYI","XB","XYZ",),
+             "ENTR": ("ID","FYI","XB",),
+             "DOOR": ("ID","FYI","XB","XYZ",),
+             "CORR": ("ID","FYI","XB",),
+             "EVSS": ("ID","FYI","XB",),
+             "STRS": ("ID","FYI","XB","XYZ",),
+             "SURF": ("ID","FYI","RGB","TRANSPARENCY",),
+            }
 
-# Namelist groups, a tuple for sorting
-# The last group is used to collect all remaining namelist groups.
-nl_groups = (("Computational domain",     ("MESH", "INIT", "ZONE")),
+# Namelist groups, a tuple for selecting
+# The last empty group is used to collect all the remaining namelist groups.
+nl_groups = (("Boundary condition defs",  ("SURF",)),
+             ("Computational domain",     ("MESH", "INIT", "ZONE")),
              ("Geometry",                 ("OBST", "HOLE", "VENT")),
              ("Evacuation",               ("EVAC","EVHO","EXIT","ENTR","DOOR","CORR","EVSS","STRS")),
              ("Control logic and output", ("DEVC", "SLCF", "PROF")),
              ("Others",                   ()),
-             )
+            )
 
 # Predefined FDS SURF boundary conditions (Blender materials)
 mas_predefined = ("OPEN", "MIRROR", "INERT")

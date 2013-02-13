@@ -16,255 +16,150 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-import bpy
-from mathutils import Vector, geometry
+import bpy, bmesh
+from mathutils import Vector
 from time import time
 
-# FIXME psyco
-
 ### Working on Blender objects and meshes
-# input: ob or me
-# output: me or bool
 
-def get_global_mesh(ob):
+def _get_global_mesh(context, ob):
     """Return object mesh modified and transformed in global coordinates."""
-    # Get ob mesh in global coordinates and return it
-    me = ob.create_mesh(bpy.context.scene, True, "PREVIEW") # apply modifiers
-    me.transform(ob.matrix_world) # transform mesh in global coordinates
+    me = ob.to_mesh(context.scene, True, "PREVIEW") # apply modifiers
+    me.transform(ob.matrix_world) # transform mesh in global coordinates, apply scale, rotation, and location
     return me
 
-def is_manifold(me):
+def _get_tessfaces(context, me):
+    """Get bmesh tessfaces"""
+    me.update(calc_tessface=True)
+    return me.tessfaces
+
+def is_manifold(context, me):
     """Check if mesh me is manifold"""
-    edgeusers = dict()
-    faces = me.faces
-    if len(faces) == 0: return False
-    for face in faces:
-        for edgekey in face.edge_keys:
-            edgeusers.setdefault(edgekey, 0)
-            edgeusers[edgekey] += 1
-    for val in edgeusers.values():
-        if val != 2: return False
+    bme = bmesh.new()
+    bme.from_mesh(me)
+    for edge in bme.edges:
+        if not edge.is_manifold: return False
+    for vert in bme.verts:
+        if not vert.is_manifold: return False
     return True
 
-### Auxiliary functions to get_boxels
-#
-#
-
-class _Fa3:
-    """Used to triangulate the mesh and simplify the notation"""
-    def __init__(self, vertices, normal):
-        self.vertices = vertices
-        self.normal = normal
-
-def _is_inside_z_projection(point, fa3s):
-    """Check if point is inside z projections of faces fa3s"""
-    # Calculate boundary edges of the z projection surface of fa3s
-    boundary_edges = set()
-    for fa3 in fa3s:
-        for edge in ((fa3.vertices[0], fa3.vertices[1]),
-                     (fa3.vertices[1], fa3.vertices[2]),
-                     (fa3.vertices[2], fa3.vertices[0])):
-            if (edge[0], edge[1]) in boundary_edges:
-                boundary_edges.remove((edge[0], edge[1]))
-                continue
-            if (edge[1], edge[0]) in boundary_edges:
-                boundary_edges.remove((edge[1], edge[0]))
-                continue
-            boundary_edges.add(edge)
-    # Check if the point is inside the surface (2D-polygon test)
-    inside = False
-    for edge in boundary_edges:
-        p0, p1 = edge[0].co, edge[1].co
-        if (p0[1] <= point[1] < p1[1]):
-            if geometry.normal(point, p0, p1)[2] < 0.0: inside = not inside
-            continue
-        if (p1[1] <= point[1] < p0[1]):
-            if geometry.normal(point, p0, p1)[2] > 0.0: inside = not inside
-            continue
-    return inside
-
-def _triangulate(me):
-    """me.faces triangulation, return list of fa3 faces"""
-    # fa3s is a list containing Fa3 face objects
-    # me.faces -> fa3s, face -> fa3
-    fa3s = list()
-    for face in me.faces:
-        fa3s.append(_Fa3(vertices=[me.vertices[face.vertices[0]],
-                                   me.vertices[face.vertices[1]],
-                                   me.vertices[face.vertices[2]]],
-                         normal=face.normal))
-        if len(face.vertices) != 3: # If it's a quad, add another face
-            fa3s.append(_Fa3(vertices=[me.vertices[face.vertices[0]],
-                                       me.vertices[face.vertices[2]],
-                                       me.vertices[face.vertices[3]]],
-                             normal=face.normal))
-    return fa3s
-
-def _voxelize(ob, voxel_size, solid):
-    """Voxelize ob mesh, return a set of voxels
-This code is copy-pasted from Cells v1.2_248 (GPL) for Blender
-by Michael Schardt (m.schardt@web.de)
-"""
-    # Timing
-    t0 = time()
-    # Get ob mesh in global coordinates and triangulate it
-    me = get_global_mesh(ob)
-    fa3s = _triangulate(me)
-    # Get bin vertices: voxels_vertices
-    # it uses vertices from Blender mesh me
-    voxels_vertices = dict() # {vertex obj: (3,7,3), vertex obj: (1,2,3), ...}
-    for vertex in me.vertices:
-        coords = vertex.co
-        voxels_vertices[vertex] = (int(round(coords[0]/voxel_size[0])),
-                                   int(round(coords[1]/voxel_size[1])),
-                                   int(round(coords[2]/voxel_size[2])))
-    # Get bin faces: voxels
-    voxels = dict()
-    for fa3 in fa3s:
-        vertices = fa3.vertices
-        # Calc min and max of fa3 integer delta x
-        fidxs = [voxels_vertices[vertex][0] for vertex in vertices]
-        fidxs.sort()
-        min_fidx, max_fidx = fidxs[0], fidxs[-1]
-        # Calc min and max of fa3 integer delta y
-        fidys = [voxels_vertices[vertex][1] for vertex in vertices]
-        fidys.sort()
-        min_fidy, max_fidy = fidys[0], fidys[-1]
-        # Calc min and max of fa3 integer delta z
-        fidzs = [voxels_vertices[vertex][2] for vertex in vertices]
-        fidzs.sort()
-        min_fidz, max_fidz = fidzs[0], fidzs[-1]
-        # Fast path: used especially for small fa3s spanning a single voxel only
-        # The following uses a very smart approach for choice of category!
-        category = 0
-        if (max_fidx > min_fidx): category |= 1
-        if (max_fidy > min_fidy): category |= 2
-        if (max_fidz > min_fidz): category |= 4
-        if category == 0: # single voxel
-            voxels.setdefault((min_fidx, min_fidy, min_fidz), set()).add(fa3)
-                # If key (min_fidx, ...) not in voxels dict,
-                # voxels[key] = set().add(fa3) else voxels[key] = set(existing fa3s).add(fa3)
-            continue
-        if category == 1: # multiple voxels in x-, single voxel in y- and z-direction
-            for fidx in range(min_fidx, max_fidx + 1):
-                voxels.setdefault((fidx, min_fidy, min_fidz), set()).add(fa3)
-            continue
-        if category == 2: # multiple voxels in y-, single voxel in x- and z-direction
-            for fidy in range(min_fidy, max_fidy + 1):
-                voxels.setdefault((min_fidx, fidy, min_fidz), set()).add(fa3)
-            continue
-        if category == 4: # multiple voxels in z-, single voxel in x- and y-direction
-            for fidz in range(min_fidz, max_fidz + 1):
-                voxels.setdefault((min_fidx, min_fidy, fidz), set()).add(fa3)
-            continue
-        # Long path: fa3 spans multiple voxels in more than one direction
-        a0 = fa3.normal
-        r0 = 0.5 * (abs(a0[0])*voxel_size[0] + abs(a0[1])*voxel_size[1] + abs(a0[2])*voxel_size[2])
-        es = [Vector((1.0, 0.0, 0.0)), Vector((0.0, 1.0, 0.0)), Vector((0.0, 0.0, 1.0))]
-        cc = Vector((0.0, 0.0, 0.0))
-        for fidx in range(min_fidx, max_fidx + 1):
-            cc[0] = fidx * voxel_size[0]
-            for fidy in range(min_fidy, max_fidy + 1):
-                cc[1] = fidy * voxel_size[1]
-                for fidz in range(min_fidz, max_fidz + 1):
-                    cc[2] = fidz * voxel_size[2]
-                    if not solid and (fidx, fidy, fidz) in voxels: continue
-                       # voxel already populated -> no further processing needed for hollow model
-                    vertices_wrk = [vertex.co - cc for vertex in vertices]
-                    if not (-r0 <= a0 * vertices_wrk[0] <= r0): continue
-                       # voxel not intersecting fa3 hyperplane
-                    # Check overlap of voxel with fa3 (separating axis theorem)                     
-                    fa3s_wrk = [vertices_wrk[1] - vertices_wrk[0],
-                                vertices_wrk[2] - vertices_wrk[1],
-                                vertices_wrk[0] - vertices_wrk[2]]
-                    overlap = True
-                    for fa3_wrk in fa3s_wrk:
-                        if not overlap: break
-                        for e in es:
-                            if not overlap: break
-                            a = e.cross(fa3_wrk)
-                            r = 0.5 * (abs(a[0])*voxel_size[0] + abs(a[1])*voxel_size[1] + abs(a[2])*voxel_size[2] )
-                            ds = [a * vertex_wrk for vertex_wrk in vertices_wrk]
-                            ds.sort()
-                            if (ds[0] > r or ds[-1] < -r): overlap = False              
-                    if overlap: voxels.setdefault((fidx, fidy, fidz), set()).add(fa3)
-    # The hollow voxel representation is complete, now fill
-    if solid:
-        # find min, max voxels in x
-        idxs = [voxel[0] for voxel in voxels]
-        idxs.sort() # voxel[0] is its fidx from the key
-        min_idx, max_idx = idxs[0], idxs[-1]
-        # find min, max voxels in y
-        idys = [voxel[1] for voxel in voxels]
-        idys.sort() # voxel[0] is its fidy from the key
-        min_idy, max_idy = idys[0], idys[-1]
-        # find min, max voxels in z
-        idzs = [voxel[2] for voxel in voxels]
-        idzs.sort() # voxel[0] is its fidz from the key
-        min_idz, max_idz = idzs[0], idzs[-1]
-        # init point_test and loop
-        point_test = Vector((0.0, 0.0, 0.0))
-        for idx in range(min_idx, max_idx + 1):
-            point_test[0] = idx * voxel_size[0]
-            for idy in range(min_idy, max_idy + 1):
-                point_test[1] = idy * voxel_size[1]
-                odd_parity = False
-                fa3s_tested = set()
-                # walk the z pile and keep track of parity
-                for idz in range(min_idz, max_idz + 1):
-                    fa3s_wrk = voxels.get((idx, idy, idz), set()) - fa3s_tested
-                        # .get returns the value for key if key is in the dict, else the default,
-                        # in this case an empty set.
-                    if fa3s_wrk: # voxel contains fa3s
-                        # categorize fa3s in this voxel by normal
-                        fa3s_pos, fa3s_neg = list(), list()
-                        for fa3_wrk in fa3s_wrk:
-                            fa3_normal_z = fa3_wrk.normal[2] # get z of normal
-                            if fa3_normal_z >= 0.0: fa3s_pos.append(fa3_wrk)
-                            if fa3_normal_z <= 0.0: fa3s_neg.append(fa3_wrk)                        
-                            fa3s_tested.add(fa3_wrk)
-                        # check if point_test inside z projections       
-                        if fa3s_pos:
-                            if _is_inside_z_projection(point_test, fa3s_pos):
-                                odd_parity = not odd_parity
-                        if fa3s_neg:
-                            if _is_inside_z_projection(point_test, fa3s_neg):
-                                odd_parity = not odd_parity
-                    else: # voxel contains no fa3s (empty voxel)
-                        if odd_parity: voxels[(idx, idy, idz)] = 1
-                            # odd parity -> empty voxel inside ob
-    # Clean up and return voxels (keys only!)
-    # each voxel is expressed in integer voxel coordinates
-    # voxels is exported as a set
-    voxels = set([(voxel[0], voxel[1], voxel[2]) for voxel in voxels]) # no more linked to me
-    bpy.data.meshes.remove(me)
-    print("   voxelize:", time()-t0)
-    return voxels
+def calc_remesh(context, dimension, voxel_size):
+    """Calc Remesh modifier parameters"""
+    dimension_too_large = True
+    for octree_depth in range(1,11):
+        scale = dimension / voxel_size / 2 ** octree_depth
+        if 0.010 < scale < 0.990:
+            dimension_too_large = False
+            break
+    if dimension_too_large: scale = 0.990
+    voxel_size = dimension / scale / 2 ** octree_depth
+    return octree_depth, scale, voxel_size, dimension_too_large
 
 ### Extracting coordinates from objects
 # input:  ob
 # output: [(x0,x1,y0,y1,z0,z1, ), ] or
 #         [(x0,y0,z0, ), ]
 
-def get_bbox(ob):
+def get_voxels(context, ob):
+    """Return object voxels"""
+    # Init
+    t0 = time()
+    sc = context.scene
+    voxel_size = ob.bf_voxel_size
+    epsilon = 0.001
+    # Create a new tmp object from original object, link it to the scene and update the scene
+    # The new object mesh has modifiers, scale, rotation, and location applied
+    me_new = _get_global_mesh(context, ob)
+    ob_new = bpy.data.objects.new("{0}_tmp".format(ob.name), me_new)
+    ob_new.bf_is_voxels = True
+    sc.objects.link(ob_new)
+    sc.update()
+    # Add new Remesh modifier to the tmp object
+    dimension = max(ob_new.dimensions) # before appling the modifier
+    mo = ob_new.modifiers.new('voxels_tmp','REMESH')
+    mo.octree_depth, mo.scale, voxel_size, dimension_too_large = calc_remesh(context, dimension, voxel_size)
+    mo.mode = 'BLOCKS'
+    mo.remove_disconnected_pieces = False
+    t1 = time()
+    # Extract tessfaces from the object mesh as modified by Remesh (modifiers applied)
+    me_new = _get_global_mesh(context, ob_new)
+    tessfaces = _get_tessfaces(context, me_new)
+    t2 = time()
+    # Clean unneeded tmp object
+    ob_new.modifiers.remove(mo)
+    sc.objects.unlink(ob_new)
+    bpy.data.objects.remove(ob_new)
+    t3 = time()
+    # Classify tessfaces
+    voxel_size_half = voxel_size / 2.
+    origin = me_new.vertices[0].co
+    facezs = dict()
+    for tessface in tessfaces:
+        center_loc = tessface.center - origin
+        if abs(tessface.normal[2]) >.9:  # tessface is normal to z axis
+            ix = round((center_loc[0] - voxel_size_half) / voxel_size)
+            iy = round((center_loc[1] - voxel_size_half) / voxel_size)
+            iz = round( center_loc[2] / voxel_size)
+            if (ix, iy) in facezs:
+                facezs[(ix, iy)].append(iz)
+            else:
+                facezs[(ix, iy)] = [iz,]
+    t4 = time()
+    # Create boxes along z axis, then grow them in x and y direction
+    boxes = set()
+    while facezs:
+        key, values = facezs.popitem()
+        values.sort()
+        while values:
+            end = values.pop()
+            start = values.pop()
+            boxes.add((key[0], key[0] + 1, key[1], key[1] + 1, start, end,))
+    boxes = _grow_boxes_along_y(_grow_boxes_along_x(boxes))
+    # Prepare XBs
+    result = list()
+    for box in boxes:
+        a = origin + Vector((box[0], box[2], box[4])) * voxel_size
+        b = origin + Vector((box[1], box[3], box[5])) * voxel_size
+        result.append((a[0]-epsilon, b[0]+epsilon, a[1]-epsilon, b[1]+epsilon, a[2]-epsilon, b[2]+epsilon),)
+    # Clean up temporary mesh
+    bpy.data.meshes.remove(me_new)
+    # Timing and return
+    tt = time() - t0
+    return result, tt, dimension_too_large
+
+def get_bbox(context, ob):
     """Return object bounding box in global coordinates"""
-    # Init mesh
-    me = get_global_mesh(ob)
-    # Calc the bounding box in global coordinates
+    # Init
+    t0 = time()
+    me = _get_global_mesh(context, ob)
+    # Check at least one vertex
+    if not me.vertices:
+        bpy.data.meshes.remove(me)
+        l = ob.location
+        return [(l[0], l[0], l[1], l[1], l[2], l[2],), ]
+    # Calc the bounding box in global coordinates and clean
     bbminx, bbminy, bbminz = me.vertices[0].co
     bbmaxx, bbmaxy, bbmaxz = me.vertices[0].co
     for vertex in me.vertices:
         x, y, z = vertex.co
         bbminx, bbminy, bbminz = min(bbminx, x), min(bbminy, y), min(bbminz, z)
         bbmaxx, bbmaxy, bbmaxz = max(bbmaxx, x), max(bbmaxy, y), max(bbmaxz, z)
-    return [(bbminx, bbmaxx, bbminy, bbmaxy, bbminz, bbmaxz,), ]
+    # Clean up and return
+    bpy.data.meshes.remove(me)
+    # Timing and return
+    tt = time() - t0
+    return ((bbminx, bbmaxx, bbminy, bbmaxy, bbminz, bbmaxz,), ), tt
 
-def get_faces(ob):
+def get_faces(context, ob):
     """Return object face straightened bounding boxes in global coordinates"""
-    result = []
-    me = get_global_mesh(ob)
-    for face in me.faces:
-        vertices = [me.vertices[vertex] for vertex in face.vertices]
+    # Init
+    t0 = time()
+    result = list()
+    me = _get_global_mesh(context, ob)
+    tessfaces = _get_tessfaces(context, me)
+    # For each tessface...
+    for tessface in tessfaces:
+        vertices = [me.vertices[vertex] for vertex in tessface.vertices]
         # Calc the bounding box in global coordinates
         bbminx, bbminy, bbminz = vertices[0].co
         bbmaxx, bbmaxy, bbmaxz = vertices[0].co
@@ -279,119 +174,125 @@ def get_faces(ob):
         if bbd[0][1] == 0: bbmaxz = bbminz = (bbminz+bbmaxz)/2
         result.append((bbminx, bbmaxx, bbminy, bbmaxy, bbminz, bbmaxz,),)
     result.sort()
-    return result
+    # Clean up
+    bpy.data.meshes.remove(me)
+    # Timing and return
+    tt = time() - t0
+    return result, tt
 
-def get_planes(ob):
+def get_planes(context, ob):
     """Return object planes with orientation and coordinate"""
-    xbs = get_faces(ob)
-    result = tuple()
+    # Init
+    t0 = time()
+    result = list()
+    xbs, tt = get_faces(context, ob)
+    # For each face build a plane...
     for xb in xbs:
-        if   xb[1] - xb[0] < .000001: result += (("X", xb[0]),)
-        elif xb[3] - xb[2] < .000001: result += (("Y", xb[2]),)
-        elif xb[5] - xb[4] < .000001: result += (("Z", xb[4]),)
-    return result
+        if   xb[1] - xb[0] < .000001: result.append(("X", xb[0],),)
+        elif xb[3] - xb[2] < .000001: result.append(("Y", xb[2],),)
+        elif xb[5] - xb[4] < .000001: result.append(("Z", xb[4],),)
+    result.sort()
+    # Nothing to clean up
+    # Timing and return
+    tt = time() - t0
+    return result, tt
 
-def get_edges(ob):
+def get_edges(context, ob):
     """Return object edges in global coordinates"""
-    result = []
-    me = get_global_mesh(ob)
+    # Init
+    t0 = time()
+    result = list()
+    me = _get_global_mesh(context, ob)
+    # For each edge...
     for edge in me.edges:
         pt0x, pt0y, pt0z = me.vertices[edge.vertices[0]].co
         pt1x, pt1y, pt1z = me.vertices[edge.vertices[1]].co
         result.append((pt0x, pt1x, pt0y, pt1y, pt0z, pt1z,),)
     result.sort()
-    return result
+    # Clean up
+    bpy.data.meshes.remove(me)
+    # Timing and return
+    tt = time() - t0
+    return result, tt
 
-def get_vertices(ob):
+def get_vertices(context, ob):
     """Return object vertices in global coordinates"""
-    result = []
-    me = get_global_mesh(ob)
+    # Init
+    t0 = time()
+    result = list()
+    me = _get_global_mesh(context, ob)
+    # For each vertex...
     for vertex in me.vertices:
         pt0x, pt0y, pt0z = vertex.co
-        result.append((pt0x, pt0y, pt0z),)
+        result.append((pt0x, pt0y, pt0z,),)
     result.sort()
-    return result
+    # Clean up
+    bpy.data.meshes.remove(me)
+    # Timing and return
+    tt = time() - t0
+    return result, tt
 
-def get_center(ob):
+def get_center(context, ob):
     """Return object center in global coordinates"""
-    return [(ob.location[0], ob.location[1], ob.location[2]), ]
+    return [(ob.location[0], ob.location[1], ob.location[2],), ], 0.
 
-def get_boxels(ob, voxel_size, solid):
-    """Return object boxels by summing voxels in as big as possible boxes"""
-    # Get voxels
-    voxels = _voxelize(ob, voxel_size, solid)
-    # Timing
-    t0 = time()
-    # Init boxes and start. boxes is now in integer voxel coordinates
-    boxes = list()
-    while voxels:
-        # Get a voxel and init the corresponding box
-        voxel = voxels.pop()
-        box = [voxel[0], voxel[0], voxel[1], voxel[1], voxel[2], voxel[2]]
-        # Now box size is 1*1*1
-        # Expand box in +x direction
-        while True:
-            voxels_desired = set()
-            voxels_desired.add((box[1] + 1, box[2], box[4]))
-            if not voxels_desired <= voxels: break
-            voxels -= voxels_desired
+### Grow boxes
+
+def _grow_boxes_along_x(boxes):
+    """Grow boxes along x axis"""
+    boxes_grown = set()
+    while boxes:
+        box = list(boxes.pop())
+        while True: # fatten into +x direction
+            box_desired = (box[1], box[1] + 1, box[2], box[3], box[4], box[5],)
+            if box_desired not in boxes: break
+            boxes.remove(box_desired)
             box[1] += 1
-        # Expand box in -x direction
-        while True:
-            voxels_desired = set()
-            voxels_desired.add((box[0] - 1, box[2], box[4]))
-            if not voxels_desired <= voxels: break
-            voxels -= voxels_desired
+        while True: # fatten into -x direction
+            box_desired = (box[0] - 1, box[0], box[2], box[3], box[4], box[5],)
+            if box_desired not in boxes: break
+            boxes.remove(box_desired)
             box[0] -= 1
-        # Now box size is n*1*1
-        # Expand box in +y direction
-        while True:
-            voxels_desired = set()
-            for idx in range(box[0], box[1] + 1):
-                voxels_desired.add((idx, box[3] + 1, box[4]))
-            if not voxels_desired <= voxels: break
-            voxels -= voxels_desired
+        boxes_grown.add(tuple(box))
+    return boxes_grown
+
+def _grow_boxes_along_y(boxes):
+    """Grow boxes along y axis"""
+    boxes_grown = set()
+    while boxes:
+        box = list(boxes.pop())
+        while True: # fatten into +y direction
+            box_desired = (box[0], box[1], box[3], box[3] + 1, box[4], box[5],)
+            if box_desired not in boxes: break
+            boxes.remove(box_desired)
             box[3] += 1
-        # Expand box in -y direction
-        while True:
-            voxels_desired = set()
-            for idx in range(box[0], box[1] + 1):
-                voxels_desired.add((idx, box[2] - 1, box[4]))
-            if not voxels_desired <= voxels: break
-            voxels -= voxels_desired
+        while True: # fatten into -y direction
+            box_desired = (box[0], box[1], box[2] - 1, box[2], box[4], box[5],)
+            if box_desired not in boxes: break
+            boxes.remove(box_desired)
             box[2] -= 1
-        # Now box size is n*m*1
-        # Expand box in +z direction
-        while True:
-            voxels_desired = set()
-            for idx in range(box[0], box[1] + 1):
-                for idy in range(box[2], box[3] + 1):
-                    voxels_desired.add((idx, idy, box[5] + 1))
-            if not voxels_desired <= voxels: break
-            voxels -= voxels_desired
+        boxes_grown.add(tuple(box))
+    return boxes_grown
+    
+def _grow_boxes_along_z(boxes): # currently not used
+    """Grow boxes along z axis"""
+    boxes_grown = set()
+    while boxes:
+        box = list(boxes.pop())
+        while True: # fatten into +z direction
+            box_desired = (box[0], box[1], box[2], box[3], box[5], box[5] + 1,)
+            if box_desired not in boxes: break
+            boxes.remove(box_desired)
             box[5] += 1
-        # Expand box in -z direction
-        while True:
-            voxels_desired = set()
-            for idx in range(box[0], box[1] + 1):
-                for idy in range(box[2], box[3] + 1):
-                    voxels_desired.add((idx, idy, box[4] - 1))
-            if not voxels_desired <= voxels: break
-            voxels -= voxels_desired
+        while True: # fatten into -z direction
+            box_desired = (box[0], box[1], box[2], box[3], box[4] - 1, box[4],)
+            if box_desired not in boxes: break
+            boxes.remove(box_desired)
             box[4] -= 1
-        # Now box size is n*m*l
-        # Append as big as possible box to boxes list
-        boxes.append(box)
-    # Sort boxes and export boxes in global coos
-    boxes.sort()
-    print("   boxelize:", time()-t0)
-    return [((box[0]-.5) * voxel_size[0], (box[1]+.5) * voxel_size[0],
-             (box[2]-.5) * voxel_size[1], (box[3]+.5) * voxel_size[1],
-             (box[4]-.5) * voxel_size[2], (box[5]+.5) * voxel_size[2]) for box in boxes]
+        boxes_grown.add(tuple(box))
+    return boxes_grown
 
 ### Manage mesh cells for FDS MESH object
-# input:  ob
-# output: [...]
 
 def _factor(n):
     """Generator for prime factors of n.
@@ -418,14 +319,17 @@ def _n_for_poisson(n):
         else: break
     return n
 
-def get_mesh_cells(ob):
-    """Calc optimized and valid value for MESH IJK from voxel size"""
-    cell_size = ob.bf_cell_size
-    bbminx, bbmaxx, bbminy, bbmaxy, bbminz, bbmaxz = get_bbox(ob)[0]
-    ijk = (int(round((bbmaxx - bbminx) / cell_size[0])),
-           _n_for_poisson(int(round((bbmaxy - bbminy) / cell_size[1]))),
-           _n_for_poisson(int(round((bbmaxz - bbminz) / cell_size[2]))) )
-    quantity = ijk[0] * ijk[1] * ijk[2] 
-    cell_size = ((bbmaxx - bbminx) / ijk[0], (bbmaxy - bbminy) / ijk[1], (bbmaxz - bbminz) / ijk[2] )
-    return {"ijk": ijk, "quantity": quantity, "cell_size": cell_size}
+def get_good_ijk(ob):
+    """Get a good IJK near the desired"""
+    return ob.bf_ijk_n[0], _n_for_poisson(ob.bf_ijk_n[1]), _n_for_poisson(ob.bf_ijk_n[2])
 
+def get_cell_size(ob):
+    """Calc cell size"""
+    return (ob.dimensions[0] / ob.bf_ijk_n[0] or .001,
+            ob.dimensions[1] / ob.bf_ijk_n[1] or .001,
+            ob.dimensions[2] / ob.bf_ijk_n[2] or .001
+           )
+
+def get_cell_number(ob):
+    """Calc cell number"""
+    return ob.bf_ijk_n[0] * ob.bf_ijk_n[1] * ob.bf_ijk_n[2]

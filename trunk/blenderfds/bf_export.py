@@ -17,19 +17,24 @@
 # ##### END GPL LICENSE BLOCK #####
 
 from . import bf_geometry, bf_config
+import bpy
+from bpy.path import abspath, clean_name
 from time import time, strftime, localtime
-from bpy.path import abspath
+from sys import modules
 
-### Helper functions: format namelists
-#
-#
+# Remember:
+# a = ("OBST",("ID","example"),)
+# a += (("SAWTOOTH",True),)
+# a
+# ('OBST', ('ID', 'example'), ('SAWTOOTH', True))
+
+### Helper functions: format parameters and namelists, check strings
 
 def pa(arg):
     """Format parameter.
     arg[0]: the parameter name
     arg[1]: the parameter value"""
-    if len(arg) == 1:
-        return arg[0]
+    if len(arg) == 1: return arg[0]
     name, value = arg[0], arg[1]
     if isinstance(value,bool):
         if value:
@@ -54,9 +59,9 @@ def pa(arg):
         return "{0}='{1}'".format(name,value)
     if isinstance(value,int):
         return "{0}={1}".format(name,value)
-
-    print("BlenderFDS: error while formatting parameter:",name, value)
-    raise Exception
+    # Error management
+    text = "BlenderFDS: ERROR: pa() error while formatting parameter: {0}, {1}".format(name, value)
+    raise TypeError(text)
 
 def nl(args):
     """Format full namelist and manages carriage returns.
@@ -64,18 +69,19 @@ def nl(args):
     args[1:]: parameters as lists, eg. ("ID","example")
     """
     if len(args) == 1:
-        return "&" + args[0] + " /\n"
+        return "&{0} /\n".format(args[0])
     else:
-        result = "&" + args[0] + " " + pa(args[1])
+        result = "&{0} {1}".format(args[0], pa(args[1]))
         col_max = bf_config.col_max
         row = 0 # start row
         for arg in args[2:]:
-            if len(result) // col_max > row: # exceeds max row columns
+            pa_tmp = pa(arg)
+            if (len(result) + len(pa_tmp)) // col_max > row: # exceeds max row columns
                 row += 1
-                result += ",\n      " + pa(arg) # new line
+                result += ",\n      {0}".format(pa_tmp) # new line
             else:
-                result += ", " + pa(arg) # append parameter
-        return result + ", /\n"
+                result += ", {0}".format(pa_tmp) # append parameter
+        return "{0}, /\n".format(result)
 
 def h1(value):
     """Format heading1"""
@@ -89,199 +95,216 @@ def sp():
     """Format separator"""
     return "\n"
 
-### Helper functions: build object namelist
-#
-#
+def has_quotes(string):
+    """Check if string contains quotes"""
+    return "'" in string or '"' in string or "`" in string or "“" in string or "”" in string or "‘" in string or "’‌" in string
 
-def include_object(context, ob):
-    """Build object namelists"""
-    out = tuple()
-    nl_params = bf_config.nl_params
-    bf_nl = ob.bf_nl
-    print("BlenderFDS:     ", ob.name)
-    
-    # Remember:
-    # pa = ("OBST",("ID", "Cube"),("XB", (1.,2.,3.,4.,5.,6.)),("NO", 3),)
-    # pa += (("NO",3),)
-    
+def has_unmatched_quotes(string):
+    """Check if string does not contain an even number of single quotes only"""
+    return string.count("'") % 2 != 0 or '"' in string or "`" in string or "“" in string or "”" in string or "‘" in string or "’‌" in string
+
+### Helper functions: build object and material namelists
+
+def _include_element(context, el):
+    """Build element namelist"""
+    # Init
+    el_name = el.name
+    print("BlenderFDS:     ", el_name)
+    out = tuple() # ( ("OBST",("ID", "Cube"),("XB", (1.,2.,3.,4.,5.,6.)), ...), other namelist )
+    nl_params = bf_config.nl_params.get(el.bf_nl,"")
+    # Prepare comment and group name
+    comment = el_name
+    gr = (el.bf_nl,) # ("OBST", )
     # Prepare single parameters
-    pa = (bf_nl,)
-    if bf_nl in nl_params["ID"]: pa += (("ID",ob.name),)
-    if ob.bf_fyi: pa += (("FYI",ob.bf_fyi),)
-    if bf_nl in nl_params["SURF_ID"] and ob.active_material and ob.active_material.bf_export: pa += (("SURF_ID",ob.active_material.name),)
-    if bf_nl in nl_params["SAWTOOTH"] and ob.bf_sawtooth: pa += (("SAWTOOTH",False),)
-    if bf_nl in nl_params["IJK"]: pa += (("IJK",bf_geometry.get_mesh_cells(ob)["ijk"]),)
-    if ob.bf_custom_param: pa += ((ob.bf_custom_param,),)
-        
-    # prepare multiple parameters
-    multiple = ""
-    xbs = False
-    bf_xb = ob.bf_xb
-    if bf_nl in nl_params["XB"] and bf_xb != "NONE":
-        if   bf_xb == "VOXELS" and bf_geometry.is_manifold(ob.data):
-            multiple = "XB"
-            xbs = bf_geometry.get_boxels(ob, context.scene.bf_voxel_size, solid=True)
-        elif bf_xb == "BBOX":
-            xbs = bf_geometry.get_bbox(ob)
-        elif bf_xb == "FACES":
-            multiple = "XB"
-            xbs = bf_geometry.get_faces(ob)
-        elif bf_xb == "EDGES":
-            multiple = "XB"
-            xbs = bf_geometry.get_edges(ob)
-
-    xyzs = False
-    bf_xyz = ob.bf_xyz
-    if bf_nl in nl_params["XYZ"] and bf_xyz != "NONE":
-        if   bf_xyz == "CENTER":
-            xyzs = bf_geometry.get_center(ob)
-        elif bf_xyz == "VERTS" and not multiple:
-            multiple = "XYZ"
-            xyzs = bf_geometry.get_vertices(ob)
-
-    pbs = False
-    if bf_nl in nl_params["PB"] and ob.bf_pb == "FACES" and not multiple:
-        multiple = "PB"
-        pbs = bf_geometry.get_planes(ob) # special treatment for PBX PBY PBZ
-
-    geo_pa = tuple() # tuple of geometric parameter
-    geo_multiple_pas = tuple() # tuple of tuples of geometric parameters
-
-    if multiple == "XB":
-        if xyzs: geo_pa += (("XYZ",xyzs[0]),)
-        if pbs:  geo_pa += (("PB" + pbs[0][0],pbs[0][1]),)
-        for xb in xbs:
-            geo_multiple_pas += (geo_pa + (("XB",xb),),)
-    elif multiple == "XYZ":
-        if xbs:  geo_pa += (("XB",xbs[0]),)
-        if pbs:  geo_pa += (("PB" + pbs[0][0],pbs[0][1]),)
-        for xyz in xyzs:
-            geo_multiple_pas += (geo_pa + (("XYZ",xyz),),)
-    elif multiple == "PB":
-        if xbs:  geo_pa += (("XB",xbs[0]),)
-        if xyzs: geo_pa += (("XYZ",xyzs[0]),)
-        for pb in pbs:
-            geo_multiple_pas += (geo_pa + (("PB" + pb[0],pb[1]),),)
-    else:
-        if xbs:  geo_pa += (("XB",xbs[0]),)
-        if xyzs: geo_pa += (("XYZ",xyzs[0]),)
-        if pbs:  geo_pa += (("PB" + pbs[0][0],pbs[0][1]),)            
-        geo_multiple_pas += (geo_pa,)
-
-    # send out
-    if multiple: out += (h2(ob.name),)
-    for geo_multiple_pa in geo_multiple_pas:
-        out += (nl(pa + geo_multiple_pa),)
+    pas = tuple() # ( ("FYI", "for your info"), ("SAWTOOTH", False), other parameter )
+    if "FYI" in nl_params and el.bf_fyi and not has_quotes(el.bf_fyi):
+        pas += (("FYI",el.bf_fyi),)
+    if "SURF_ID" in nl_params and el.active_material and el.active_material.bf_export:
+        pas += (("SURF_ID",el.active_material.name),)
+    if "SAWTOOTH" in nl_params and el.bf_sawtooth:
+        pas += (("SAWTOOTH",False),)
+    if "THICKEN" in nl_params and el.bf_thicken:
+        pas += (("THICKEN",True),)
+    if "IJK" in nl_params:
+        comment += ", {0} cells, cell size is {1[0]:.3f} x {1[1]:.3f} x {1[2]:.3f}".format(bf_geometry.get_cell_number(el), bf_geometry.get_cell_size(el))
+        pas += (("IJK",(el.bf_ijk_n[0],el.bf_ijk_n[1],el.bf_ijk_n[2])),)
+    if "RGB" in nl_params:
+        pas += (("RGB",(int(el.diffuse_color[0]*255.),int(el.diffuse_color[1]*255.),int(el.diffuse_color[2]*255.)) ),)
+    if "TRANSPARENCY" in nl_params and el.use_transparency:
+        pas += (("TRANSPARENCY",el.alpha),)
+    if "OUTLINE" in nl_params and el.draw_type == "Wire":
+        pas += (("OUTLINE",True),)
+    if el.bf_custom_param and not has_unmatched_quotes(el.bf_custom_param):
+        pas += ((el.bf_custom_param,),)
+    # Prepare geometric parameters:
+    is_multiple = False # does a multiple param exist already?
+    xbs, xyzs, pbs = False, False, False # tuples of coordinates
+    ges_single = tuple() # single nl geom params: (("XB", (1.2,1.3,1.4,1.5,1.6)), ("XYZ", (1.2,1.3,1.4)), ... )
+    ges_multiple = tuple() # multi nl geom params, eg. voxels: (("XB", (1.2,1.3,1.4,1.5,1.6)), ("XB", (1.2,1.3,1.4,1.5,1.6)), ...)
+    # Is XB set? then is it VOXELS, BBOX, ... ?
+    if "XB" in nl_params and el.bf_xb != "NONE":
+        if   el.bf_xb == "VOXELS":
+            is_multiple = True
+            xbs, tt, dimension_too_large = bf_geometry.get_voxels(context, el)
+            for xb in xbs: ges_multiple += (("XB",xb),)
+            comment += ", from voxelization ({0} voxels, voxel size is {1:.3f}), in {2:.3f} s".format(len(xbs), el.bf_voxel_size, tt)
+            if dimension_too_large:
+                out += (h2("WARNING: {} object size too large, voxel size not guaranteed".format(el_name)), )
+        elif el.bf_xb == "BBOX":
+            xbs, tt = bf_geometry.get_bbox(context, el)
+            ges_single += (("XB",xbs[0]),)
+            comment += ", from bounding box, in {0:.3f} s".format(tt)
+        elif el.bf_xb == "FACES":
+            is_multiple = True
+            xbs, tt = bf_geometry.get_faces(context, el)
+            for xb in xbs: ges_multiple += (("XB",xb),)
+            comment += ", from {0} faces, in {1:.3f} s".format(len(xbs), tt)
+        elif el.bf_xb == "EDGES":
+            is_multiple = True
+            xbs, tt = bf_geometry.get_edges(context, el)
+            for xb in xbs: ges_multiple += (("XB",xb),)
+            comment += ", from {0} edges, in {1:.3f} s".format(len(xbs), tt)
+    # Is XYZ set? then is it CENTER, VERTS and the only multiple?
+    if "XYZ" in nl_params and el.bf_xyz != "NONE":
+        if   el.bf_xyz == "CENTER":
+            xyzs, tt = bf_geometry.get_center(context, el)
+            ges_single += (("XYZ",xyzs[0]),)
+            comment += ", from center point, in {0:.3f} s".format(tt)
+        elif el.bf_xyz == "VERTS" and not is_multiple:
+            is_multiple = True
+            xyzs, tt = bf_geometry.get_vertices(context, el)
+            for xyz in xyzs: ges_multiple += (("XYZ",xyz),)
+            comment += ", from {0} vertices, in {1:.3f} s".format(len(xyzs), tt)
+    # Is PB set to FACES and the only multiple?
+    if "PB" in nl_params and el.bf_pb != "NONE":
+        if   el.bf_pb == "FACES" and not is_multiple:
+            is_multiple = True
+            pbs, tt = bf_geometry.get_planes(context, el)
+            for pb in pbs: ges_multiple += (("PB{}".format(pb[0]),pb[1]),)
+            comment += ", from {0} faces, in {1:.3f} s".format(len(pbs), tt)
+    # Send out the comment and the full namelist
+    out += (h2(comment),)
+    len_ges_multiple = len(ges_multiple)
+    if len_ges_multiple > 1:
+        if "ID" in nl_params and not has_quotes(el_name):
+            for index, ge_multiple in enumerate(ges_multiple):
+                id = (("ID", "{0}_{1}".format(el_name, index)),)
+                line = gr + id + pas + ges_single + (ge_multiple,)
+                # DEBUG print("m>1,id: {}".format(line))
+                out += (nl(line),)
+        else:
+            for ge_multiple in ges_multiple:
+                line = gr + pas + ges_single + (ge_multiple,)
+                # DEBUG print("m>1: {}".format(line))
+                out += (nl(line),)
+    elif len_ges_multiple == 1:
+        if "ID" in nl_params and not has_quotes(el_name):
+            id = (("ID", el_name),)
+            line = gr + id + pas + ges_single + (ges_multiple[0],)
+            # DEBUG print("m=1,id: {}".format(line))
+            out += (nl(line),)
+        else:
+            line = gr + pas + ges_single + (ges_multiple[0],)
+            # DEBUG print("m=1: {}".format(line))
+            out += (nl(line),)
+    else: # len_ges_multiple == 0
+        if "ID" in nl_params and not has_quotes(el_name):
+            id = (("ID", el_name),)
+            line = gr + id + pas + ges_single
+            # DEBUG print("m=0,id: {}".format(line))
+            out += (nl(line),)
+        else:
+            line = gr + pas + ges_single
+            # DEBUG print("m=0: {}".format(line))
+            out += (nl(line),)
     return out
 
-###
-#
-#
-
-def include_config(context):
-    """Include auto config or config file"""
-    sc = context.scene
+def _include_elements(context, els):
+    """Include Blender materials and Blender objects in FDS """
     out = tuple()
-    # Log message and HEAD
-    out += (h1("Generated by BlenderFDS"),
-            h2(strftime("%a, %d %b %Y %H:%M:%S", localtime()) ),
-            h2("Voxel Size: {0[0]:.3f}, {0[1]:.3f}, {0[2]:.3f}".format(sc.bf_voxel_size) ),
+    for nl_group in bf_config.nl_groups:
+        # group elements, remainings in last empty group
+        if nl_group[1]:
+            els_group = {el for el in els if el.bf_nl in nl_group[1]}
+            els -= els_group
+        else:
+            els_group = els
+        # sort grouped elements
+        els_group = [(el.name, el) for el in els_group]
+        els_group.sort()
+        # include title and each object
+        out += (h1(nl_group[0]),)
+        for el in els_group:
+            out += _include_element(context,el[-1])
+    return out
+
+### Main
+
+def save(operator, context, filepath=""):
+    """Export Blender current scene to FDS case file"""
+    # Init, clean sc.name and sc.bf_title
+    sc = context.scene
+    sc_name = clean_name(sc.name)
+    bf_title = sc.bf_title
+    if has_quotes(bf_title): bf_title = False
+    out = tuple()
+    t0 = time()
+    print("\nBlenderFDS: Start exporting to FDS case file, current scene:", sc_name)
+    # Create FDS predefined entities, if not already done
+    if not set(bf_config.mas_predefined) <= set(bpy.data.materials.keys()):
+        bpy.ops.material.bf_create_predefined()
+    # Update BlenderFDS version in scene
+    sc.bf_version = modules.get("blenderfds").bl_info["version"]
+    # Prepare file name
+    if not filepath.lower().endswith('.fds'):
+        filepath += '.fds'
+    # Try to write to file
+    print("BlenderFDS: Check if FDS case file is writable")
+    try:
+        with open(filepath, "w") as out_file:
+            out_file.write("Test")
+    except IOError:
+        operator.report({"ERROR"}, "Output file not writable, cannot export")
+        return {'CANCELLED'}
+    # Include log message and HEAD
+    print("BlenderFDS: Include log message and HEAD")
+    text = "Generated by BlenderFDS {0} on Blender {1}".format(".".join(str(x) for x in modules.get("blenderfds").bl_info["version"]),bpy.app.version_string)
+    out += (h1(text),
+            h2("Blender file: {0}".format(bpy.data.filepath)),
+            h2(strftime("Date: %a, %d %b %Y %H:%M:%S", localtime())),
             sp(),
-            nl(("HEAD",("CHID",sc.name),("TITLE",sc.bf_title or sc.name))),
-            )
-    # External config file
+            nl(("HEAD", ("CHID", sc_name),("TITLE", bf_title or sc_name))),
+           )
+    # Include config file
     if sc.bf_config_type == "FILE":
+        print("BlenderFDS: Include external config file")
         try:
             with open(abspath(sc.bf_config_filepath)) as in_file:
                 out += (h1("External config file"),)
                 out += tuple([line for line in in_file])
         except IOError:
-            out += (h1("ERROR: Config file not found"),)
-    return out
-
-def include_materials(context, obs):
-    """Include Blender materials as SURFs"""
-    out = tuple()
-    # Select Blender materials linked to objects, exclude predefined by FDS
-    mas_predefined = bf_config.mas_predefined
-    mas = {ob.active_material for ob in obs if ob.active_material and ob.active_material.bf_export and ob.active_material.name not in mas_predefined}
-    # Include them
-    out += (h1("Boundary condition definitions"),)
-    for ma in mas:
-        print("BlenderFDS:     ", ma.name)
-        # Prepare parameters
-        pa = ("SURF",("ID",ma.name),)
-        if ma.bf_fyi: pa += (("FYI",ma.bf_fyi),)
-        pa += (("RGB",(int(ma.diffuse_color[0]*255.),int(ma.diffuse_color[1]*255.),int(ma.diffuse_color[2]*255.)) ),)
-        if ma.use_transparency: pa += (("TRANSPARENCY",ma.alpha),)
-        if ma.bf_custom_param: pa += ((ma.bf_custom_param,),)
-        out += (nl(pa),)
-    return out
-
-def include_objects(context, obs):
-    """Include Blender objects as grouped namelists"""
-    sc = context.scene
-    out = tuple()
-    # Group selected Blender objects by namelist group
-    obs_groups = tuple() # ((ob1, ob2, ...), ...)
-    nl_groups = bf_config.nl_groups # (("Computational domain", ("MESH", "INIT", "ZONE")), ...)
-    for nl_group in nl_groups[:-1]: # -1 as the last row collects remainings
-        obs_selection = {ob for ob in obs if ob.bf_nl in nl_group[1]}
-        obs_groups += (obs_selection, )
-        obs -= obs_selection # remove selected obs from the pile
-    obs_groups += (obs, ) # remaining obs assigned to last group
-    # Include Blender objects as FDS namelists
-    for index, obs_group in enumerate(obs_groups):
-        out += (h1(nl_groups[index][0]),) # insert group name 
-        for ob in obs_group:
-            out += include_object(context,ob)
-    return out
-
-###
-#
-#
-
-def save(operator, context, filepath="", export_visible=False):
-    """Export Blender data to FDS case file"""
-    sc = context.scene
-    out = tuple()
-    print("BlenderFDS: Start exporting to FDS case file")
-    
-    # Include auto config or config file
-    print("BlenderFDS: Include auto config or config file")
-    out += include_config(context)
-
-    # Select Blender objects
-    print("BlenderFDS: Select Blender objects")
-    if export_visible:
-        obs = {ob for ob in sc.objects if ob.type == "MESH" and ob.bf_export and ob.is_visible(sc)}
-    else:
-        obs = {ob for ob in sc.objects if ob.type == "MESH" and ob.bf_export}
-    
-    # Include Blender materials as FDS SURFs
-    print("BlenderFDS: Include Blender materials as FDS SURFs")
-    out += include_materials(context, obs)
-
-    # Include Blender objects as grouped FDS namelists
-    print("BlenderFDS: Include Blender objects as grouped FDS namelists")
-    out += include_objects(context, obs)
-    
+            operator.report({"ERROR"}, "External config file not readable, cannot export")
+            return {'CANCELLED'}
+    else: # bf_config_type == "AUTO"
+        out += nl(("TIME",("T_END",0.0),)),
+    # Select Blender objects and materials to be exported, then include them
+    print("BlenderFDS: Export Blender materials and objects")
+    obs = {ob for ob in sc.objects if ob.type == "MESH" and ob.bf_export and not ob.bf_is_voxels}
+    mas = {ob.active_material for ob in obs if ob.bf_export and not ob.bf_is_voxels and ob.active_material and ob.active_material.bf_export and (ob.active_material.name not in bf_config.mas_predefined)}
+    out += _include_elements(context, mas | obs)
     # Close FDS case
     print("BlenderFDS: Close FDS case")
-    out += (sp(), nl(["TAIL",]),)
-    
-    # Write to file
+    out += (sp(), nl(("TAIL",)),)
+    out += (h2("Generated in {0:.3f} s.".format(time()-t0)),)
+    # Write results to file
     print("BlenderFDS: Writing to FDS case file")
-    if not filepath.lower().endswith('.fds'):
-        filepath += '.fds'
     try:
         with open(filepath, "w") as out_file:
             for line in out:
                 out_file.write(line)
     except IOError:
-        print("BlenderFDS: ERROR - Could not write to output file", filepath)
+        operator.report({"ERROR"}, "Output file not writable, cannot export")
         return {'CANCELLED'}
-        
     # End
-    print("BlenderFDS: Exporting to FDS case file completed.")   
+    print("BlenderFDS: Exporting to FDS case file completed.")
     return {'FINISHED'}
