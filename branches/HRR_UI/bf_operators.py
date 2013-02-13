@@ -18,6 +18,12 @@
 
 from . import bf_geometry
 import bpy
+from bpy.props import *
+import bgl
+import mathutils
+from bpy_extras.view3d_utils import region_2d_to_origin_3d
+
+length = 0.0
 
 class OBJECT_OT_bf_select_non_manifold(bpy.types.Operator):
     bl_label = "Select Non Manifold Edges"
@@ -179,3 +185,101 @@ def update_voxels(self, context):
         bpy.ops.object.bf_hide_voxels()
         bpy.ops.object.bf_show_voxels()
 
+def bg_scale_draw_callback_px(self, context):
+
+    # 50% alpha, 2 pixel width line
+    bgl.glEnable(bgl.GL_BLEND)
+    bgl.glColor4f(0.0, 1.0, 0.0, 0.5)
+    bgl.glLineWidth(2)
+    #bgl.glLineStipple(1,0xAAAA)
+    #bgl.glEnable(bgl.GL_LINE_STIPPLE)
+    
+    bgl.glBegin(bgl.GL_LINE_STRIP)
+    for x, y in self.mouse_path:
+        bgl.glVertex2i(x, y)
+
+    bgl.glEnd()
+
+    # restore opengl defaults
+    bgl.glLineWidth(1)
+    bgl.glDisable(bgl.GL_BLEND)
+    #bgl.glDisable(bgl.GL_LINE_STIPPLE)
+    bgl.glColor4f(0.0, 0.0, 0.0, 1.0)
+    
+
+class ScaleBackgroundOperator(bpy.types.Operator):
+    """Modal operator used to scale a background image based on a dimension on the image."""
+    bl_idname = "background_image.scale_background"
+    bl_label = "Scale Background Image"
+    bg_index = IntProperty()
+    
+    def modal(self, context, event):
+        global length
+        context.area.tag_redraw()
+
+        '''if event.type in {'MIDDLEMOUSE', 'WHEELUPMOUSE', 'WHEELDOWNMOUSE'}:
+            # allow navigation
+            return {'PASS_THROUGH'}'''
+        
+        if event.type == 'MOUSEMOVE':
+            if len(self.mouse_path) == 0:
+                return{'RUNNING_MODAL'}
+            elif len(self.mouse_path) < 2:
+                self.mouse_path.append((event.mouse_region_x, event.mouse_region_y))
+            else:
+                self.mouse_path[1] = (event.mouse_region_x, event.mouse_region_y)
+
+        elif event.type == 'LEFTMOUSE':
+            if len(self.mouse_path) == 0:
+                self.mouse_path.append((event.mouse_region_x, event.mouse_region_y))
+                return{'RUNNING_MODAL'}
+            elif len(self.mouse_path) == 2:
+                length = (region_2d_to_origin_3d(bpy.context.region,bpy.context.region_data,self.mouse_path[1]) - region_2d_to_origin_3d(bpy.context.region,bpy.context.region_data,self.mouse_path[0])).magnitude
+                print(length)
+                bpy.ops.background_image.scale_dialog('INVOKE_DEFAULT',bg_index = self.bg_index)
+                context.region.callback_remove(self._handle)
+                return {'FINISHED'}
+
+        elif event.type in {'RIGHTMOUSE', 'ESC'}:
+            context.region.callback_remove(self._handle)
+            return {'CANCELLED'}
+
+        return {'RUNNING_MODAL'}
+
+    def invoke(self, context, event):
+        if context.area.type == 'VIEW_3D':
+            context.window_manager.modal_handler_add(self)
+
+            # Add the region OpenGL drawing callback
+            # draw in view space with 'POST_VIEW' and 'PRE_VIEW'
+            self._handle = context.region.callback_add(bg_scale_draw_callback_px, (self, context), 'POST_PIXEL')
+
+            self.mouse_path = []
+
+            return {'RUNNING_MODAL'}
+        else:
+            self.report({'WARNING'}, "View3D not found, cannot run operator")
+            return {'CANCELLED'}
+
+class ScaleBackgroundDialog(bpy.types.Operator):
+    bl_idname = "background_image.scale_dialog"
+    bl_label = "Background Scaling Tool"
+    scale_dim = FloatProperty(name="Measurement [m]", min=0.0)
+    bg_index = IntProperty()
+ 
+    def execute(self, context):
+        global length
+        area = bpy.context.area
+        area.spaces[0].background_images[self.bg_index].size = area.spaces[0].background_images[self.bg_index].size * self.scale_dim / length
+        return{'FINISHED'}
+ 
+    def draw(self,context):
+        layout = self.layout
+        row = layout.row()
+        row.prop(self,'scale_dim')
+        
+    
+    def invoke(self, context, event):
+        self.scale_dim = 0.0
+        return bpy.context.window_manager.invoke_props_dialog(self, width=300)
+        

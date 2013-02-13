@@ -270,7 +270,7 @@ def register():
     bpy.types.Material.bf_tsquared_alpha = FloatProperty(
         name="Custom growth coefficient",
         description = "The fire growth rate coefficient specified by the user.",
-        step=0.1,precision=4,min=0.,
+        step=0.1,precision=4,min=0., max=2.0,
         default = 0.00293)
         
     items_list = [("SLOW", "Slow", "Slow t-squared fire"),
@@ -298,9 +298,18 @@ def register():
     bpy.types.Material.bf_custom_param = StringProperty(
         name="Custom SURF parameters",
         description="Custom parameters are appended verbatim to the namelist, use single quotes")
-
+    
+    bpy.types.BackgroundImage.scale_factor = FloatProperty(
+        name = "Background Image Scale Factor",
+        description = "Factor used in re-scaling a background image based on a measurement on the image",
+        precision = 4, step = 0.1, min = 0.0,
+        default = 1.0)
+    
     # export menu
     bpy.types.INFO_MT_file_export.append(menu_func_export)
+    
+    #override the background image draw method
+    bpy.types.VIEW3D_PT_background_image.draw = bf_ui.bg_panel_draw
 
 def unregister():
     bpy.utils.unregister_module(__name__)
@@ -339,6 +348,9 @@ def unregister():
     del bpy.types.Material.bf_nl
     del bpy.types.Material.bf_fyi
     del bpy.types.Material.bf_custom_param
+    
+    # BackgroundImage properties
+    del bpy.types.BackgroundImage.scale_factor
 
     # export menu
     bpy.types.INFO_MT_file_export.remove(menu_func_export)

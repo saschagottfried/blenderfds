@@ -19,11 +19,11 @@
 from . import bf_config, bf_geometry, bf_export
 import bpy
 from bpy.path import clean_name
+from bpy.props import *
 
 # FIXME show bf_export in Blender outliner
 
 ### Various recurrent checks
-
 def _detect_predefined_mas(context, layout):
     """Detect predefined entities and propose creation"""
     if not set(bf_config.mas_predefined) <= set(bpy.data.materials.keys()):
@@ -42,6 +42,94 @@ def _detect_old_bf_version_voxel_size(context, layout):
     if tuple(context.scene.bf_version) < (2,0,0):
         row = layout.row()
         row.label(text="New: «voxel size» is now specific to each object", icon="HELP")
+        
+### UI: Background panel draw override
+
+def bg_panel_draw(self, context):
+    '''Override the default background panel in the properties area.
+       Used to add in the scaling tool UI elements'''
+    layout = self.layout
+
+    view = context.space_data
+    col = layout.column()
+    col.operator("view3d.background_image_add", text="Add Image")
+
+    for i, bg in enumerate(view.background_images):
+        layout.active = view.show_background_images
+        box = layout.box()
+        row = box.row(align=True)
+        row.prop(bg, "show_expanded", text="", emboss=False)
+        if bg.source == 'IMAGE' and bg.image:
+            row.prop(bg.image, "name", text="", emboss=False)
+        elif bg.source == 'MOVIE_CLIP' and bg.clip:
+            row.prop(bg.clip, "name", text="", emboss=False)
+        else:
+            row.label(text="Not Set")
+
+        if bg.show_background_image:
+            row.prop(bg, "show_background_image", text="", emboss=False, icon='RESTRICT_VIEW_OFF')
+        else:
+            row.prop(bg, "show_background_image", text="", emboss=False, icon='RESTRICT_VIEW_ON')
+
+        row.operator("view3d.background_image_remove", text="", emboss=False, icon='X').index = i
+
+        box.prop(bg, "view_axis", text="Axis")
+
+        if bg.show_expanded:
+            row = box.row()
+            row.prop(bg, "source", expand=True)
+
+            has_bg = False
+            if bg.source == 'IMAGE':
+                row = box.row()
+                row.template_ID(bg, "image", open="image.open")
+                if (bg.image):
+                    box.template_image(bg, "image", bg.image_user, compact=True)
+                    has_bg = True
+
+            elif bg.source == 'MOVIE_CLIP':
+                box.prop(bg, "use_camera_clip")
+
+                column = box.column()
+                column.active = not bg.use_camera_clip
+                column.template_ID(bg, "clip", open="clip.open")
+
+                if bg.clip:
+                    column.template_movieclip(bg, "clip", compact=True)
+
+                if bg.use_camera_clip or bg.clip:
+                    has_bg = True
+
+                column = box.column()
+                column.active = has_bg
+                column.prop(bg.clip_user, "proxy_render_size", text="")
+                column.prop(bg.clip_user, "use_render_undistorted")
+
+            if has_bg:
+                col = box.column()
+                col.prop(bg, "opacity", slider=True)
+
+                rowsub = col.row()
+                rowsub.prop(bg, "draw_depth", expand=True)
+
+                if bg.view_axis in {'CAMERA', 'ALL'}:
+                    rowsub = col.row()
+                    rowsub.prop(bg, "frame_method", expand=True)
+
+                row = col.row(align=True)
+                row.prop(bg, "offset_x", text="X")
+                row.prop(bg, "offset_y", text="Y")
+
+                if bg.view_axis != 'CAMERA':
+                    col.prop(bg, "size")
+                
+                box = box.box()
+                row = box.row()
+                row.label(text="Re-scale Image")
+                #row = box.row()
+                #row.prop(bg, "scale_factor", text='Scale Factor')
+                row = box.row()
+                row.operator("background_image.scale_background", text="Re-Scale").bg_index = i
 
 ### UI: scene panel
 
@@ -313,7 +401,7 @@ class MATERIAL_PT_bf(MaterialButtonsPanel, bpy.types.Panel):
             
         if "HRRPUA" in nl_params:
             if ma.users > 1:
-                layout.label(text="Material assigned to more than 1 object", icon="ERROR")
+                layout.label(text="Changes affect more than 1 object.", icon="ERROR")
             box = layout.box()            
             row=box.row()
             col1, col2 = row.column(), row.column()
@@ -324,7 +412,7 @@ class MATERIAL_PT_bf(MaterialButtonsPanel, bpy.types.Panel):
                 for p in ob.data.polygons:
                     facearea += p.area
                 col1.label(text="Object Surface Area: " + str(round(facearea,2)) + "sq.m")
-                col1.label(text="HRR/Area : " + str(round(ma.bf_hrrpua,2)) + "kW")
+                col1.label(text="HRR/Area : " + str(round(ma.bf_hrrpua,2)) + "kW/sq.m")
                 
                 col2.prop(ma, "bf_UseHRRRamp", text="HRR Ramp")
                 if ma.bf_UseHRRRamp:
@@ -347,5 +435,4 @@ class MATERIAL_PT_bf(MaterialButtonsPanel, bpy.types.Panel):
         col.prop(ma, "bf_custom_param", text="")
         if bf_export.has_unmatched_quotes(ma.bf_custom_param): 
             col.label(text="Use matched single straight quotes", icon="ERROR")
-        
-
+       
