@@ -21,7 +21,7 @@ import bpy
 from bpy.props import *
 import bgl
 import mathutils
-from bpy_extras.view3d_utils import region_2d_to_origin_3d
+from bpy_extras.view3d_utils import region_2d_to_origin_3d, location_3d_to_region_2d
 
 length = 0.0
 
@@ -185,27 +185,156 @@ def update_voxels(self, context):
         bpy.ops.object.bf_hide_voxels()
         bpy.ops.object.bf_show_voxels()
 
-def bg_scale_draw_callback_px(self, context):
-
+def bg_center_draw_callback_px(self, context):
+    if self.center_pt is None:
+        return
     # 50% alpha, 2 pixel width line
     bgl.glEnable(bgl.GL_BLEND)
-    bgl.glColor4f(0.0, 1.0, 0.0, 0.5)
+    bgl.glColor4f(0.0, 0.8, 0.0, 1.0)
     bgl.glLineWidth(2)
+    bgl.glPointSize(2.0)
+    bgl.glEnable(bgl.GL_POINT_SMOOTH);
+    bgl.glHint(bgl.GL_POINT_SMOOTH_HINT, bgl.GL_NICEST);
+
     #bgl.glLineStipple(1,0xAAAA)
     #bgl.glEnable(bgl.GL_LINE_STIPPLE)
     
+    x, y = location_3d_to_region_2d(bpy.context.region,bpy.context.region_data,self.center_pt)
+    bgl.glBegin(bgl.GL_POINTS)
+    bgl.glVertex2i(int(x), int(y))
+    bgl.glVertex2i(int(x)+5, int(y)+5)
+    bgl.glVertex2i(int(x)+5, int(y)-5)
+    bgl.glVertex2i(int(x)-5, int(y)+5)
+    bgl.glVertex2i(int(x)-5, int(y)-5)
+    bgl.glEnd()
+    
     bgl.glBegin(bgl.GL_LINE_STRIP)
-    for x, y in self.mouse_path:
-        bgl.glVertex2i(x, y)
+    bgl.glVertex2i(int(x)-5, int(y)-5)
+    bgl.glVertex2i(int(x)+5, int(y)+5)
+    bgl.glEnd()
 
+    bgl.glBegin(bgl.GL_LINE_STRIP)
+    bgl.glVertex2i(int(x)+5, int(y)-5)
+    bgl.glVertex2i(int(x)-5, int(y)+5)
     bgl.glEnd()
 
     # restore opengl defaults
     bgl.glLineWidth(1)
     bgl.glDisable(bgl.GL_BLEND)
+    bgl.glDisable(bgl.GL_POINT_SMOOTH);
     #bgl.glDisable(bgl.GL_LINE_STIPPLE)
     bgl.glColor4f(0.0, 0.0, 0.0, 1.0)
     
+def bg_scale_draw_callback_px(self, context):
+    if len(self.scaling_pts) == 0:
+        return
+    # 50% alpha, 2 pixel width line
+    bgl.glEnable(bgl.GL_BLEND)
+    bgl.glColor4f(0.0, 0.8, 0.0, 1.0)
+    bgl.glLineWidth(2)
+    bgl.glPointSize(2.0)
+    bgl.glEnable(bgl.GL_POINT_SMOOTH);
+    bgl.glHint(bgl.GL_POINT_SMOOTH_HINT, bgl.GL_NICEST);
+
+    #bgl.glLineStipple(1,0xAAAA)
+    #bgl.glEnable(bgl.GL_LINE_STIPPLE)
+    
+    x, y = location_3d_to_region_2d(bpy.context.region,bpy.context.region_data,self.scaling_pts[0])
+    bgl.glBegin(bgl.GL_POINTS)
+    bgl.glVertex2i(int(x), int(y))
+    bgl.glVertex2i(int(x)+5, int(y)+5)
+    bgl.glVertex2i(int(x)+5, int(y)-5)
+    bgl.glVertex2i(int(x)-5, int(y)+5)
+    bgl.glVertex2i(int(x)-5, int(y)-5)
+    bgl.glEnd()
+    
+    bgl.glBegin(bgl.GL_LINE_STRIP)
+    bgl.glVertex2i(int(x)-5, int(y)-5)
+    bgl.glVertex2i(int(x)+5, int(y)+5)
+    bgl.glEnd()
+
+    bgl.glBegin(bgl.GL_LINE_STRIP)
+    bgl.glVertex2i(int(x)+5, int(y)-5)
+    bgl.glVertex2i(int(x)-5, int(y)+5)
+    bgl.glEnd()
+    
+    bgl.glBegin(bgl.GL_LINE_STRIP)
+    for pt in self.scaling_pts:
+        x, y = location_3d_to_region_2d(bpy.context.region,bpy.context.region_data,pt)
+        bgl.glVertex2i(int(x), int(y))
+
+    bgl.glEnd()
+    
+    if len(self.scaling_pts)>1:
+        x, y = location_3d_to_region_2d(bpy.context.region,bpy.context.region_data,self.scaling_pts[-1])
+
+        bgl.glBegin(bgl.GL_POINTS)
+        bgl.glVertex2i(int(x), int(y))
+        bgl.glVertex2i(int(x)+5, int(y)+5)
+        bgl.glVertex2i(int(x)+5, int(y)-5)
+        bgl.glVertex2i(int(x)-5, int(y)+5)
+        bgl.glVertex2i(int(x)-5, int(y)-5)
+        bgl.glEnd()
+    
+        bgl.glBegin(bgl.GL_LINE_STRIP)
+        bgl.glVertex2i(int(x)-5, int(y)-5)
+        bgl.glVertex2i(int(x)+5, int(y)+5)
+        bgl.glEnd()
+    
+        bgl.glBegin(bgl.GL_LINE_STRIP)
+        bgl.glVertex2i(int(x)+5, int(y)-5)
+        bgl.glVertex2i(int(x)-5, int(y)+5)
+        bgl.glEnd()
+
+    # restore opengl defaults
+    bgl.glLineWidth(1)
+    bgl.glDisable(bgl.GL_BLEND)
+    bgl.glDisable(bgl.GL_POINT_SMOOTH);
+    #bgl.glDisable(bgl.GL_LINE_STIPPLE)
+    bgl.glColor4f(0.0, 0.0, 0.0, 1.0)
+    
+class CenterBackgroundOperator(bpy.types.Operator):
+    """Modal operator used to center a background image based on user input."""
+    bl_idname = "background_image.center_background"
+    bl_label = "Center Background Image"
+    bg_index = IntProperty()
+    
+    def modal(self, context, event):
+        context.area.tag_redraw()
+        if event.type in {'MIDDLEMOUSE', 'WHEELUPMOUSE', 'WHEELDOWNMOUSE'}:
+            # allow navigation
+            return {'PASS_THROUGH'}
+        
+        if event.type == 'MOUSEMOVE':
+            self.center_pt = region_2d_to_origin_3d(bpy.context.region,bpy.context.region_data,(event.mouse_region_x, event.mouse_region_y))
+
+        elif event.type == 'LEFTMOUSE':
+            print(self.center_pt)
+            area = bpy.context.area
+            bg_image = area.spaces[0].background_images[self.bg_index]
+            aspect_ratio =  float(bg_image.image.size[0])/float(bg_image.image.size[1])
+            bg_image.offset_x = bg_image.offset_x - self.center_pt[0]
+            bg_image.offset_y = bg_image.offset_y - self.center_pt[1] * aspect_ratio
+            context.region.callback_remove(self._handle)
+            return {'FINISHED'}
+
+        elif event.type in {'RIGHTMOUSE', 'ESC'}:
+            context.region.callback_remove(self._handle)
+            return {'CANCELLED'}
+
+        return {'RUNNING_MODAL'}
+
+    def invoke(self, context, event):
+        if context.area.type == 'VIEW_3D':
+            context.window_manager.modal_handler_add(self)
+            # Add the region OpenGL drawing callback
+            # draw in view space with 'POST_VIEW' and 'PRE_VIEW'
+            self._handle = context.region.callback_add(bg_center_draw_callback_px, (self, context), 'POST_PIXEL')
+            self.center_pt = None
+            return {'RUNNING_MODAL'}
+        else:
+            self.report({'WARNING'}, "View3D not found, cannot run operator")
+            return {'CANCELLED'}
 
 class ScaleBackgroundOperator(bpy.types.Operator):
     """Modal operator used to scale a background image based on a dimension on the image."""
@@ -217,24 +346,24 @@ class ScaleBackgroundOperator(bpy.types.Operator):
         global length
         context.area.tag_redraw()
 
-        '''if event.type in {'MIDDLEMOUSE', 'WHEELUPMOUSE', 'WHEELDOWNMOUSE'}:
+        if event.type in {'MIDDLEMOUSE', 'WHEELUPMOUSE', 'WHEELDOWNMOUSE'}:
             # allow navigation
-            return {'PASS_THROUGH'}'''
+            return {'PASS_THROUGH'}
         
         if event.type == 'MOUSEMOVE':
-            if len(self.mouse_path) == 0:
+            if len(self.scaling_pts) == 0:
                 return{'RUNNING_MODAL'}
-            elif len(self.mouse_path) < 2:
-                self.mouse_path.append((event.mouse_region_x, event.mouse_region_y))
+            elif len(self.scaling_pts) < 2:
+                self.scaling_pts.append(region_2d_to_origin_3d(bpy.context.region,bpy.context.region_data,(event.mouse_region_x, event.mouse_region_y)))
             else:
-                self.mouse_path[1] = (event.mouse_region_x, event.mouse_region_y)
+                self.scaling_pts[1] = region_2d_to_origin_3d(bpy.context.region,bpy.context.region_data,(event.mouse_region_x, event.mouse_region_y))
 
         elif event.type == 'LEFTMOUSE':
-            if len(self.mouse_path) == 0:
-                self.mouse_path.append((event.mouse_region_x, event.mouse_region_y))
+            if len(self.scaling_pts) == 0:
+                self.scaling_pts.append(region_2d_to_origin_3d(bpy.context.region,bpy.context.region_data,(event.mouse_region_x, event.mouse_region_y)))
                 return{'RUNNING_MODAL'}
-            elif len(self.mouse_path) == 2:
-                length = (region_2d_to_origin_3d(bpy.context.region,bpy.context.region_data,self.mouse_path[1]) - region_2d_to_origin_3d(bpy.context.region,bpy.context.region_data,self.mouse_path[0])).magnitude
+            elif len(self.scaling_pts) == 2:
+                length = (self.scaling_pts[1] - self.scaling_pts[0]).magnitude
                 print(length)
                 bpy.ops.background_image.scale_dialog('INVOKE_DEFAULT',bg_index = self.bg_index)
                 context.region.callback_remove(self._handle)
@@ -254,7 +383,7 @@ class ScaleBackgroundOperator(bpy.types.Operator):
             # draw in view space with 'POST_VIEW' and 'PRE_VIEW'
             self._handle = context.region.callback_add(bg_scale_draw_callback_px, (self, context), 'POST_PIXEL')
 
-            self.mouse_path = []
+            self.scaling_pts = []
 
             return {'RUNNING_MODAL'}
         else:

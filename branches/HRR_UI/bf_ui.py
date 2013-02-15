@@ -125,11 +125,12 @@ def bg_panel_draw(self, context):
                 
                 box = box.box()
                 row = box.row()
-                row.label(text="Re-scale Image")
-                #row = box.row()
-                #row.prop(bg, "scale_factor", text='Scale Factor')
+                row.label(text="Image Scale & Location")
                 row = box.row()
                 row.operator("background_image.scale_background", text="Re-Scale").bg_index = i
+                row = box.row()
+                row.operator("background_image.center_background", text="Relocate Origin").bg_index = i
+               
 
 ### UI: scene panel
 
