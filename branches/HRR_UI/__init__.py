@@ -183,6 +183,11 @@ def register():
         items=items_list,
         default="NONE")
     
+    bpy.types.Object.bf_SURF_ID = StringProperty(
+        name="Surf_ID Method",
+        description="Set the method for specifying surface materials",
+        default="SURF_ID")
+
     bpy.types.Object.bf_voxel_size = FloatProperty(
         name="Voxel Size",
         description="Minimum resolution for object voxelization",
@@ -327,6 +332,7 @@ def unregister():
     del bpy.types.Object.bf_xb
     del bpy.types.Object.bf_xyz
     del bpy.types.Object.bf_pb
+    del bpy.types.Object.bf_SURF_ID
     del bpy.types.Object.bf_voxel_size
     del bpy.types.Object.bf_sawtooth
     del bpy.types.Object.bf_ijk_n

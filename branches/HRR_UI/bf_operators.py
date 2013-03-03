@@ -178,7 +178,53 @@ class OBJECT_OT_bf_hide_voxels(bpy.types.Operator):
             ob.hide = False
         self.report({"INFO"}, "All object voxels hidden")
         return{'FINISHED'}
-        
+
+class OBJECT_OT_bf_next_surf_id_method(bpy.types.Operator):
+    bl_label = "Next SURF_ID method"
+    bl_idname = "object.bf_next_surf_id_method"
+    bl_description = "Change to the next Surf_ID method (i.e. SURF_ID, SURF_ID3, SURF_ID6)"
+
+    def execute(self, context):
+        # Init
+        ob = context.active_object
+        if ob.bf_SURF_ID == "SURF_ID":
+            ob.bf_SURF_ID = "SURF_ID3"
+            while len(ob.material_slots) < 3:
+                bpy.ops.object.material_slot_add()
+            while len(ob.material_slots) > 3:
+                bpy.ops.object.material_slot_remove()
+        elif ob.bf_SURF_ID == "SURF_ID3":
+            ob.bf_SURF_ID = "SURF_ID6"
+            while len(ob.material_slots) < 6:
+                bpy.ops.object.material_slot_add()
+            while len(ob.material_slots) > 6:
+                bpy.ops.object.material_slot_remove()
+        self.report({"INFO"}, "SURF_ID method changed")
+        return{'FINISHED'}        
+
+class OBJECT_OT_bf_prev_surf_id_method(bpy.types.Operator):
+    bl_label = "Previous SURF_ID method"
+    bl_idname = "object.bf_prev_surf_id_method"
+    bl_description = "Change to the previous Surf_ID method (i.e. SURF_ID, SURF_ID3, SURF_ID6)"
+
+    def execute(self, context):
+        # Init
+        ob = context.active_object
+        if ob.bf_SURF_ID == "SURF_ID6":
+            ob.bf_SURF_ID = "SURF_ID3"
+            while len(ob.material_slots) < 3:
+                bpy.ops.object.material_slot_add()
+            while len(ob.material_slots) > 3:
+                bpy.ops.object.material_slot_remove()
+        elif ob.bf_SURF_ID == "SURF_ID3":
+            ob.bf_SURF_ID = "SURF_ID"
+            while len(ob.material_slots) < 1:
+                bpy.ops.object.material_slot_add()
+            while len(ob.material_slots) > 1:
+                bpy.ops.object.material_slot_remove()
+        self.report({"INFO"}, "SURF_ID method changed")
+        return{'FINISHED'}        
+
 def update_voxels(self, context):
     ob = context.active_object
     if ob.bf_has_voxels_shown:

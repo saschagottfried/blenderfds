@@ -53,6 +53,11 @@ def pa(arg):
                 return "{0}={1[0]},{1[1]},{1[2]}".format(name,value)
             if lenght == 6:
                 return "{0}={1[0]},{1[1]},{1[2]},{1[3]},{1[4]},{1[5]}".format(name,value)
+        if isinstance(value[0],str):
+            if lenght == 3:
+                return "{0}='{1[0]}','{1[1]}','{1[2]}'".format(name,value)
+            if lenght == 6:
+                return "{0}='{1[0]}','{1[1]}','{1[2]}','{1[3]}','{1[4]}','{1[5]}'".format(name,value)
     if isinstance(value,float):
         return "{0}={1:.3f}".format(name,value)
     if isinstance(value,str):
@@ -119,8 +124,12 @@ def _include_element(context, el):
     pas = tuple() # ( ("FYI", "for your info"), ("SAWTOOTH", False), other parameter )
     if "FYI" in nl_params and el.bf_fyi and not has_quotes(el.bf_fyi):
         pas += (("FYI",el.bf_fyi),)
-    if "SURF_ID" in nl_params and el.active_material and el.active_material.bf_export:
+    if "SURF_ID" in nl_params and el.active_material and el.active_material.bf_export and len(el.material_slots) ==1:
         pas += (("SURF_ID",el.active_material.name),)
+    if "SURF_ID3" in nl_params and el.active_material and el.active_material.bf_export and len(el.material_slots) ==3:
+        pas += (("SURF_ID3",[slot.name for slot in el.material_slots]),)
+    if "SURF_ID6" in nl_params and el.active_material and el.active_material.bf_export and len(el.material_slots) ==6:
+        pas += (("SURF_ID6",[slot.name for slot in el.material_slots]),)
     if "SAWTOOTH" in nl_params and el.bf_sawtooth:
         pas += (("SAWTOOTH",False),)
     if "THICKEN" in nl_params and el.bf_thicken:

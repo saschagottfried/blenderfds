@@ -243,10 +243,23 @@ class OBJECT_PT_bf(ObjectButtonsPanel, bpy.types.Panel):
         row.prop(ob, "show_transparent", text="Show transparency")
                    
         # SURF_ID
-        if "SURF_ID" in nl_params and ob.active_material and ob.active_material.bf_export:
+        if "SURF_ID" in nl_params:
             row = layout.row()
-            row.label(text="SURF_ID='{0}'".format(ob.active_material.name))
-
+            row.label(text=ob.bf_SURF_ID)
+            row = layout.row()
+            row.template_ID(ob, "active_material", new="material.new")
+            row=layout.row()
+            if ob.bf_SURF_ID == "SURF_ID":
+                row.template_list(ob, "material_slots", ob, "active_material_index", rows=1)
+            if ob.bf_SURF_ID == "SURF_ID3":
+                row.template_list(ob, "material_slots", ob, "active_material_index", rows=3)
+            if ob.bf_SURF_ID == "SURF_ID6":
+                row.template_list(ob, "material_slots", ob, "active_material_index", rows=6)
+            
+            col = row.column(align=True)
+            col.operator("object.bf_next_surf_id_method", icon="TRIA_UP", text="")
+            col.operator("object.bf_prev_surf_id_method", icon="TRIA_DOWN", text="")
+                
         # IJK
         if "IJK" in nl_params:
             split = layout.row().split(percentage=.80)

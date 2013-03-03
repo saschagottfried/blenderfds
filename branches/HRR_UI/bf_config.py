@@ -43,7 +43,7 @@ nls = {"OBST": "Obstruction",
 
 # Namelist parameters
 # Possible choices: "ID","FYI","SURF_ID","SAWTOOTH","IJK","XB","XYZ","PB","RGB","HRRPUA","TAU_Q","TRANSPARENCY","OUTLINE"
-nl_params = {"OBST": ("ID","FYI","SURF_ID","SAWTOOTH","THICKEN","XB","OUTLINE"),
+nl_params = {"OBST": ("ID","FYI","SURF_ID","SURF_ID3","SURF_ID6","SAWTOOTH","THICKEN","XB","OUTLINE"),
              "HOLE": (     "FYI","XB",),
              "VENT": ("ID","FYI","SURF_ID","XB","XYZ","PB","OUTLINE"),
              "DEVC": ("ID","FYI","SURF_ID","XB","XYZ","PB",),
