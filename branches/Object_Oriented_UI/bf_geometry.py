@@ -56,12 +56,15 @@ def calc_remesh(context, dimension, voxel_size):
     return octree_depth, scale, voxel_size, dimension_too_large
 
 ### Extracting coordinates from objects
-# input:  ob
-# output: [(x0,x1,y0,y1,z0,z1, ), ] or
-#         [(x0,y0,z0, ), ]
+# input:  context,ob
+# output for XB:  ((x0,x1,y0,y1,z0,z1,), ...)
+#              or  (x0,x1,y0,y1,z0,z1,)
+# output for XYZ: ((x0,y0,z0,), ...)
+#              or  (x0,y0,z0,)
+# output for PB:  (("X",x0,), ("X",x1,), ("Y",y0,), ...)
 
 def get_voxels(context, ob):
-    """Return object voxels"""
+    """Return a list of object voxels XBs, time, and error"""
     # Init
     t0 = time()
     sc = context.scene
@@ -80,16 +83,13 @@ def get_voxels(context, ob):
     mo.octree_depth, mo.scale, voxel_size, dimension_too_large = calc_remesh(context, dimension, voxel_size)
     mo.mode = 'BLOCKS'
     mo.remove_disconnected_pieces = False
-    t1 = time()
     # Extract tessfaces from the object mesh as modified by Remesh (modifiers applied)
     me_new = _get_global_mesh(context, ob_new)
     tessfaces = _get_tessfaces(context, me_new)
-    t2 = time()
     # Clean unneeded tmp object
     ob_new.modifiers.remove(mo)
     sc.objects.unlink(ob_new)
     bpy.data.objects.remove(ob_new)
-    t3 = time()
     # Classify tessfaces
     voxel_size_half = voxel_size / 2.
     origin = me_new.vertices[0].co
@@ -104,7 +104,6 @@ def get_voxels(context, ob):
                 facezs[(ix, iy)].append(iz)
             else:
                 facezs[(ix, iy)] = [iz,]
-    t4 = time()
     # Create boxes along z axis, then grow them in x and y direction
     boxes = set()
     while facezs:
@@ -128,15 +127,15 @@ def get_voxels(context, ob):
     return result, tt, dimension_too_large
 
 def get_bbox(context, ob):
-    """Return object bounding box in global coordinates"""
+    """Return a tuple of object bounding box XBs, and time"""
     # Init
     t0 = time()
     me = _get_global_mesh(context, ob)
     # Check at least one vertex
     if not me.vertices:
         bpy.data.meshes.remove(me)
-        l = ob.location
-        return [(l[0], l[0], l[1], l[1], l[2], l[2],), ]
+        location = ob.location
+        return [(location[0], location[0], location[1], location[1], location[2], location[2],), ]
     # Calc the bounding box in global coordinates and clean
     bbminx, bbminy, bbminz = me.vertices[0].co
     bbmaxx, bbmaxy, bbmaxz = me.vertices[0].co
@@ -148,10 +147,10 @@ def get_bbox(context, ob):
     bpy.data.meshes.remove(me)
     # Timing and return
     tt = time() - t0
-    return ((bbminx, bbmaxx, bbminy, bbmaxy, bbminz, bbmaxz,), ), tt
+    return ((bbminx, bbmaxx, bbminy, bbmaxy, bbminz, bbmaxz,),), tt
 
 def get_faces(context, ob):
-    """Return object face straightened bounding boxes in global coordinates"""
+    """Return a list of object faces straightened bounding boxes XBs, and time"""
     # Init
     t0 = time()
     result = list()
@@ -181,7 +180,7 @@ def get_faces(context, ob):
     return result, tt
 
 def get_planes(context, ob):
-    """Return object planes with orientation and coordinate"""
+    """Return a list of object planes with orientation and coordinate for PB, and time"""
     # Init
     t0 = time()
     result = list()
@@ -198,7 +197,7 @@ def get_planes(context, ob):
     return result, tt
 
 def get_edges(context, ob):
-    """Return object edges in global coordinates"""
+    """Return a list of object edges XBs, and time"""
     # Init
     t0 = time()
     result = list()
@@ -216,7 +215,7 @@ def get_edges(context, ob):
     return result, tt
 
 def get_vertices(context, ob):
-    """Return object vertices in global coordinates"""
+    """Return a list of object vertices XYZs, and time"""
     # Init
     t0 = time()
     result = list()
@@ -233,8 +232,8 @@ def get_vertices(context, ob):
     return result, tt
 
 def get_center(context, ob):
-    """Return object center in global coordinates"""
-    return [(ob.location[0], ob.location[1], ob.location[2],), ], 0.
+    """Return a tuple of object center XYZ, and time"""
+    return ((ob.location[0], ob.location[1], ob.location[2],),), 0.
 
 ### Grow boxes
 
@@ -325,10 +324,11 @@ def get_good_ijk(ob):
 
 def get_cell_size(ob):
     """Calc cell size"""
-    return (ob.dimensions[0] / ob.bf_ijk_n[0] or .001,
-            ob.dimensions[1] / ob.bf_ijk_n[1] or .001,
-            ob.dimensions[2] / ob.bf_ijk_n[2] or .001
-           )
+    return (
+        ob.dimensions[0] / ob.bf_ijk_n[0] or .001,
+        ob.dimensions[1] / ob.bf_ijk_n[1] or .001,
+        ob.dimensions[2] / ob.bf_ijk_n[2] or .001
+       )
 
 def get_cell_number(ob):
     """Calc cell number"""
