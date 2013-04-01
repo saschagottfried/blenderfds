@@ -320,16 +320,16 @@ def _n_for_poisson(n):
 
 def get_good_ijk(ob):
     """Get a good IJK near the desired"""
-    return ob.bf_ijk_n[0], _n_for_poisson(ob.bf_ijk_n[1]), _n_for_poisson(ob.bf_ijk_n[2])
+    return ob.bf_mesh_ijk[0], _n_for_poisson(ob.bf_mesh_ijk[1]), _n_for_poisson(ob.bf_mesh_ijk[2])
 
 def get_cell_size(ob):
     """Calc cell size"""
     return (
-        ob.dimensions[0] / ob.bf_ijk_n[0] or .001,
-        ob.dimensions[1] / ob.bf_ijk_n[1] or .001,
-        ob.dimensions[2] / ob.bf_ijk_n[2] or .001
+        ob.dimensions[0] / ob.bf_mesh_ijk[0] or .001,
+        ob.dimensions[1] / ob.bf_mesh_ijk[1] or .001,
+        ob.dimensions[2] / ob.bf_mesh_ijk[2] or .001
        )
 
 def get_cell_number(ob):
     """Calc cell number"""
-    return ob.bf_ijk_n[0] * ob.bf_ijk_n[1] * ob.bf_ijk_n[2]
+    return ob.bf_mesh_ijk[0] * ob.bf_mesh_ijk[1] * ob.bf_mesh_ijk[2]

@@ -17,12 +17,10 @@
 # ##### END GPL LICENSE BLOCK #####
 """BlenderFDS, an open tool for the NIST Fire Dynamics Simulator"""
 
-from .bf_types import BFError, BFResult, bf_file
-
+from .bf_objects import *
 from os import path
 import bpy
 from bpy_extras.io_utils import ExportHelper
-from .bf_objects import bf_namelists, bf_params
 
 ### Export to .fds menu
 
@@ -46,43 +44,50 @@ class ExportFDS(bpy.types.Operator,ExportHelper):
     filename_ext = ".fds"
     filter_glob = bpy.props.StringProperty(default="*.fds", options={'HIDDEN'})
 
-    def execute(self, context):
+    def execute(self,context):
         return save(self,context,**self.as_keywords(ignore=("check_existing", "filter_glob")))
 
-def save(operator, context, filepath=""):
+def save(operator,context,filepath=""):
     """Export current Blender Scene to an FDS case file"""
-    print("\nBlenderFDS: save(): Start exporting current scene to FDS case file:", context.scene.name)
+    print("BlenderFDS: save(): Start exporting current scene to FDS case file: {}".format(context.scene.name))
 
     # FIXME predefined materials and case file version
-        
     # Prepare file name
     if not filepath.lower().endswith('.fds'): filepath += '.fds'
     # Check output file is writable
-    print("BlenderFDS: save(): Check if the file is writable")
+    print("BlenderFDS: save(): Check if the file is writable: {}".format(filepath))
+    # FIXME expand filepath //test/test.fds is not good
+    filepath = bpy.path.abspath(filepath)
+    #
     try:
         with open(filepath, "w") as out_file:
             out_file.write("Test")
     except IOError:
+        bf_osd.clean()
         operator.report({"ERROR"}, "Output file not writable, cannot export")
         return {'CANCELLED'}
     # Get results and check
     print("BlenderFDS: save(): Get results")
     try: result = bf_file.to_fds(context)
     except BFError:
+        bf_osd.clean()
         operator.report({"ERROR"}, "Untrapped errors reported, cannot export")
         return {'CANCELLED'}
     if not result or not result.value:
+        bf_osd.clean()
         operator.report({"ERROR"}, "Nothing to export")
         return {'CANCELLED'}
     # FIXME use file msgs???
     # Write to file
-    print("BlenderFDS: save(): Write to path:", filepath)
+    print("BlenderFDS: save(): Write to path:".format(filepath))
     try:
         with open(filepath, "w") as out_file:
             out_file.write(result.value)
     except IOError:
+        bf_osd.clean()
         operator.report({"ERROR"}, "Output file not writable, cannot export")
         return {'CANCELLED'}
     # End
     print("BlenderFDS: save(): End.")
+    bf_osd.clean()
     return {'FINISHED'}

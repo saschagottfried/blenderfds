@@ -16,32 +16,19 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+from .bf_osd import bf_osd
 from .bf_geometry import get_good_ijk, get_voxels
 import bpy
 
 # FIXME create UI
-class OBJECT_OT_bf_select_non_manifold(bpy.types.Operator):
-    bl_label = "Select Non-Manifold Edges"
-    bl_idname = "object.bf_select_non_manifold"
-    bl_description = "Go to edit mode and select non-manifold edges"
-
-    def invoke(self, context, event):
-        bpy.ops.object.mode_set(mode='EDIT', toggle=False)
-        context.scene.tool_settings.mesh_select_mode = False, True, False # Vertices, edges, faces
-        bpy.ops.mesh.remove_doubles()
-        bpy.ops.mesh.select_all(action="DESELECT")
-        bpy.ops.mesh.select_non_manifold()
-        self.report({"INFO"}, "Non-manifold edges selected")
-        return{'FINISHED'}
-
 class OBJECT_OT_bf_correct_ijk(bpy.types.Operator):
     bl_label = "Correct IJK"
     bl_idname = "object.bf_correct_ijk"
     bl_description = "Correct IJK for FDS Poisson solver"
 
-    def invoke(self, context, event):
+    def execute(self,context):
         ob = context.active_object
-        ob.bf_ijk_n = get_good_ijk(ob)
+        ob.bf_mesh_ijk = get_good_ijk(ob)
         self.report({"INFO"}, "IJK corrected")
         return{'FINISHED'}
 
@@ -52,7 +39,7 @@ class OBJECT_OT_bf_copy_active_FDS_properties_to_sel_obs(bpy.types.Operator):
     bl_idname = "object.bf_fds_props_to_sel_obs"
     bl_description = "Copy these FDS properties to other selected objects"
 
-    def invoke(self, context, event):
+    def execute(self,context):
         bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
         ob_active = context.active_object
         obs = {ob for ob in context.selected_objects if ob.type == "MESH"}
@@ -78,20 +65,20 @@ class OBJECT_OT_bf_copy_active_FDS_properties_to_sel_obs(bpy.types.Operator):
         self.report({"INFO"}, "FDS properties copied")
         return{'FINISHED'}
 
-def create_material(name):
+def _create_material(name):
     '''Create material and return it'''
     if name not in bpy.data.materials:
         bpy.data.materials.new(name)
     return bpy.data.materials[name]
-        
+
 class MATERIAL_OT_bf_set_predefined(bpy.types.Operator):
     bl_label = "Set INERT, OPEN, MIRROR"
     bl_idname = "material.bf_set_predefined"
     bl_description = "Set INERT, OPEN, MIRROR predefined SURFs"
 
-    def invoke(self, context, event):
+    def execute(self,context):
         # Set INERT
-        if "INERT" not in bpy.data.materials.keys(): ma = create_material('INERT')
+        if "INERT" not in bpy.data.materials.keys(): ma = _create_material('INERT')
         else: ma = bpy.data.materials['INERT']
         ma.type = 'SURFACE'
         ma.diffuse_color = (.8,.8,.2)
@@ -99,9 +86,9 @@ class MATERIAL_OT_bf_set_predefined(bpy.types.Operator):
         ma.alpha = 1.
         ma.use_fake_user = True
         ma.bf_fyi = "This is a predefined SURF"
-        ma.bf_export = True
+        ma.bf_namelist_export = True
         # Set OPEN
-        if "OPEN" not in bpy.data.materials.keys(): ma = create_material('OPEN')
+        if "OPEN" not in bpy.data.materials.keys(): ma = _create_material('OPEN')
         else: ma = bpy.data.materials['OPEN']
         ma.type = 'SURFACE'
         ma.diffuse_color = (.2,.8,.8)
@@ -109,9 +96,9 @@ class MATERIAL_OT_bf_set_predefined(bpy.types.Operator):
         ma.alpha = .2
         ma.use_fake_user = True
         ma.bf_fyi = "This is a predefined SURF"
-        ma.bf_export = True
+        ma.bf_namelist_export = True
         # Set MIRROR
-        if "MIRROR" not in bpy.data.materials.keys(): ma = create_material('MIRROR')
+        if "MIRROR" not in bpy.data.materials.keys(): ma = _create_material('MIRROR')
         else: ma = bpy.data.materials['MIRROR']
         ma.type = 'SURFACE'
         ma.diffuse_color = (.2,.2,.8)
@@ -119,12 +106,27 @@ class MATERIAL_OT_bf_set_predefined(bpy.types.Operator):
         ma.alpha = 1.
         ma.use_fake_user = True
         ma.bf_fyi = "This is a predefined SURF"
-        ma.bf_export = True
+        ma.bf_namelist_export = True
         # Info
         self.report({"INFO"}, "Predefined SURFs ok")
         return{'FINISHED'}
 
-# FIXME create UI
+# FIXME currently not used as the new voxelization algorithm
+# is much more robust towards non manifold objects
+class OBJECT_OT_bf_select_non_manifold(bpy.types.Operator):
+    bl_label = "Select Non-Manifold Edges"
+    bl_idname = "object.bf_select_non_manifold"
+    bl_description = "Go to edit mode and select non-manifold edges"
+
+    def execute(self,context):
+        bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+        context.scene.tool_settings.mesh_select_mode = False, True, False # Vertices, edges, faces
+        bpy.ops.mesh.remove_doubles()
+        bpy.ops.mesh.select_all(action="DESELECT")
+        bpy.ops.mesh.select_non_manifold()
+        self.report({"INFO"}, "Non-manifold edges selected")
+        return{'FINISHED'}
+
 class OBJECT_OT_bf_show_voxels(bpy.types.Operator):
     bl_label = "Show Voxels"
     bl_idname = "object.bf_show_voxels"
@@ -149,22 +151,18 @@ class OBJECT_OT_bf_show_voxels(bpy.types.Operator):
         me_new = bpy.data.meshes.new("tmp_voxels")
         me_new.from_pydata(verts, edges, faces)
         # Create a new temporary voxel object, link new mesh
-        ob_new = bpy.data.objects.new("{}_tmp_voxels".format(ob.name), me_new)
-        ob_new.bf_export = ob.bf_export
-        ob_new.bf_nl = "Temporary Voxel Object"
+        ob_new = bpy.data.objects.new("_tmp_object", me_new)
+        ob_new.bf_namelist = "TMP"
         ob_new.bf_is_voxels = True
         ob_new.active_material = ob.active_material
         ob_new.layers = ob.layers
         ob_new.show_wire = True
         sc.objects.link(ob_new)
         sc.update()
-        if dimension_too_large:
-            self.report({"WARNING"}, "Object size too large, voxel size not guaranteed")
-        else:
-            self.report({"INFO"}, "Object voxels shown")
+        if dimension_too_large: self.report({"WARNING"}, "Object size too large, voxel size not guaranteed")
+        else: self.report({"INFO"}, "Object voxels shown")
         return{'FINISHED'}
 
-# FIXME create UI
 class OBJECT_OT_bf_hide_voxels(bpy.types.Operator):
     bl_label = "Hide All Voxels"
     bl_idname = "object.bf_hide_voxels"
@@ -186,8 +184,10 @@ class OBJECT_OT_bf_hide_voxels(bpy.types.Operator):
 
 # FIXME set in update voxel size         
 def update_voxels(self, context):
+    bf_osd.show("BlenderFDS: Updating voxels")
     ob = context.active_object
     if ob.bf_has_voxels_shown:
         bpy.ops.object.bf_hide_voxels()
         bpy.ops.object.bf_show_voxels()
+    bf_osd.clean()
 

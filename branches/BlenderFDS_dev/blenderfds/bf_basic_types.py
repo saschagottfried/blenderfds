@@ -130,30 +130,22 @@ class BFResult():
     msgs -- list of msg
     operator -- name of the operator that can help fixing the error
     """
-    def __init__(self,sender=None,value=None,msg=None,msgs=list(),operator=None):
+    def __init__(self,sender=None,value=None,msg=None,msgs=None,operator=None):
         self.sender = sender
         self.value = value
-        self.msgs = msgs
-        if msg: self.msg = msg
+        if msg: self.msgs = list((msg,))
+        elif msgs: self.msgs = list(msgs)
+        else: self.msgs = list()
         self.operator = operator
 
     def __str__(self):
-        return "\n".join(self.labels or tuple())
-
-    def get_msg(self):
-        return "\n".join(self.msgs or tuple())
-
-    def set_msg(self,msg):
-        if isinstance(msg,str): self.msgs = list((msg,))
-        else: self.msgs = msg
-    
-    msg = property(get_msg,set_msg)
+        return "\n".join(self.labels)
 
     def get_labels(self):
         if self.sender:
-            name = getattr(self.sender,"f_name",None) or self.sender.name
+            name = getattr(self.sender,"f_name",None) or getattr(self.sender,"name",None)
             return tuple("{}: {}".format(name,msg) for msg in self.msgs or tuple())
-        else: return tuple("".join((msg)) for msg in self.msgs or tuple())
+        else: return tuple(self.msgs or tuple())
     
     labels = property(get_labels)
 
@@ -166,7 +158,7 @@ class BFResult():
             row.label(icon=icon,text=msg)
             if i == 0 and self.operator:
                 row.operator(self.operator)
-            
+                
 class BFError(BFResult,Exception):
     """Exception returned by all exporting methods
     
@@ -175,10 +167,10 @@ class BFError(BFResult,Exception):
     msgs -- list of msg
     operator -- name of the operator that can help fixing the error
     """
-    def __init__(self,sender=None,msg=None,msgs=list(),operator=None):
+    def __init__(self,sender=None,msg=None,msgs=None,operator=None):
         BFResult.__init__(self,sender=sender,msg=msg,msgs=msgs,operator=operator)
         del(self.value)
-    
+
 ### Test classes and show functionality
 
 if __name__ == "__main__":
@@ -207,15 +199,13 @@ if __name__ == "__main__":
     
     bf_results.append(BFResult(bf_items["John"],42))
     bf_results.append(BFResult(bf_items["Mac"],43,"This is a message"))
-    bf_results.append(BFResult(bf_items["Bob"],44,("This is a message","This is a second")))
+    bf_results.append(BFResult(bf_items["Bob"],44,msgs=("This is a message","This is a second")))
     bf_results.append(BFResult(bf_items["John"],42,None))
     bf_results.append(BFResult(None,43,"This is a message"))
 
     for bf_result in bf_results:
-        print("Start:",bf_result)
-        print(bf_result.sender,bf_result.value,bf_result.msg,bf_result.msgs,bf_result.labels)
-        bf_result.msg = "Changed message!"
-        print(bf_result.sender,bf_result.value,bf_result.msg,bf_result.msgs,bf_result.labels)
+        print(bf_result)
+        print(bf_result.sender,bf_result.value,bf_result.msgs,bf_result.labels)
 
 #    raise BFError(bf_items["John"],"Not good!")
     raise BFError(bf_items["John"],("Not good!","Really not!"))

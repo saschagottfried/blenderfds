@@ -43,25 +43,7 @@ def format_section_title(name):
 def format_namelist_title(name):
     return format_comment("{}:".format(name))
 
-def format_bf_param(f_name,value):
-    """Format f_name=value, return str()"""
-    if value is None: return None
-    elif not f_name: return str(value)
-    elif isinstance(value,bool): value = value and ".TRUE." or ".FALSE."
-    elif isinstance(value,int): value = str(value)
-    elif isinstance(value,str): value = "'{}'".format(value)
-    elif isinstance(value,float): value = "{:.3f}".format(value)
-    elif isinstance(value[0],bool):
-        value = ",".join((value and ".TRUE." or ".FALSE." for item in value))
-    elif isinstance(value[0],int):
-        value = ",".join((str(item) for item in value))
-    elif isinstance(value[0],str):
-        value = ",".join(("'{}'".format(item) for item in value))
-    elif isinstance(value[0],float):
-        value = ",".join(("{:.3f}".format(item) for item in value))
-    else: raise TypeError("Unrecognized type {} in {}={}".format(value.__class__,f_name,value))
-    return "{}={}".format(f_name,value)
-
+# FIXME Move to bf_objects.py
 def format_xb(value):
     return "XB={0[0]:.3f},{0[1]:.3f},{0[2]:.3f},{0[3]:.3f},{0[4]:.3f},{0[5]:.3f}".format(value)
 

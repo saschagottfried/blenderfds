@@ -17,7 +17,7 @@
 # ##### END GPL LICENSE BLOCK #####
 """BlenderFDS, an open tool for the NIST Fire Dynamics Simulator"""
 
-from .bf_types import bf_namelists
+from .bf_export import *
 from bpy.types import Panel
 
 ### Scene panels
@@ -27,25 +27,34 @@ class SceneButtonsPanel():
     bl_region_type = "WINDOW"
     bl_context = "scene"
     bl_label = "FDS Scene"
-    nl = "Unknown"
+    nl = None
 
     def draw_header(self,context):
         layout = self.layout
         element = context.scene
         nl = type(self).nl # access Class variable
-        self.bl_label = bf_namelists.get(nl,bf_namelists["Unknown"]).draw_header(context,element,layout)
+        self.bl_label = bf_namelists[nl].draw_header(context,element,layout)
 
     def draw(self,context):
         layout = self.layout
         element = context.scene
         nl = type(self).nl # access Class variable
-        bf_namelists.get(nl,bf_namelists["Unknown"]).draw(context,element,layout)
+        bf_namelists[nl].draw(context,element,layout)
 
 class SCENE_PT_bf_HEAD(SceneButtonsPanel,Panel):
     nl = "HEAD"
+
+class SCENE_PT_bf_TIME(SceneButtonsPanel,Panel):
+    nl = "TIME"
+    
+class SCENE_PT_bf_MISC(SceneButtonsPanel,Panel):
+    nl = "MISC"
     
 class SCENE_PT_bf_REAC(SceneButtonsPanel,Panel):
     nl = "REAC"
+
+class SCENE_PT_bf_DUMP(SceneButtonsPanel,Panel):
+    nl = "DUMP"
 
 ### Object panels
 
@@ -66,40 +75,38 @@ class OBJECT_PT_bf(ObjectButtonsPanel,Panel):
         layout = self.layout
         element = context.active_object
         nl = element.bf_namelist     
-        self.bl_label = bf_namelists.get(nl,bf_namelists["Unknown"]).draw_header(context,element,layout)
+        self.bl_label = bf_namelists[nl].draw_header(context,element,layout)
 
     def draw(self,context):
         layout = self.layout
         element = context.active_object
         nl = element.bf_namelist
-        bf_namelists.get(nl,bf_namelists["Unknown"]).draw(context,element,layout)
+        bf_namelists[nl].draw(context,element,layout)
 
-### Material panels
+### Material panel
 
 class MaterialButtonsPanel():
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
     bl_context = "material"
-    bl_label = "FDS Material"
-    nl = "Unknown"
 
     @classmethod    
-    def poll(cls, context):
+    def poll(cls,context):
         ma = context.material
         ob = context.active_object
         return ma and ob and ob.type == "MESH" and "SURF_ID" in ob.get_bf_params() and not ob.bf_is_voxels
 
+class MATERIAL_PT_bf(MaterialButtonsPanel,Panel):
+    bl_label = "FDS Material"
+
     def draw_header(self,context):
         layout = self.layout
         element = context.material
-        nl = type(self).nl # access Class variable
-        self.bl_label = bf_namelists.get(nl,bf_namelists["Unknown"]).draw_header(context,element,layout)
+        nl = element.bf_namelist
+        self.bl_label = bf_namelists[nl].draw_header(context,element,layout)
 
     def draw(self,context):
         layout = self.layout
         element = context.material
-        nl = type(self).nl # access Class variable
-        bf_namelists.get(nl,bf_namelists["Unknown"]).draw(context,element,layout)
-
-class SCENE_PT_bf_SURF(MaterialButtonsPanel,Panel):
-    nl = "SURF"
+        nl = element.bf_namelist
+        bf_namelists[nl].draw(context,element,layout)
