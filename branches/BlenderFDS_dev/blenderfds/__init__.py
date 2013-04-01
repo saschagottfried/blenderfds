@@ -17,6 +17,7 @@
 # ##### END GPL LICENSE BLOCK #####
 """BlenderFDS, an open tool for the NIST Fire Dynamics Simulator"""
 
+
 bl_info = {
     "name": "BlenderFDS",
     "author": "Emanuele Gissi",
