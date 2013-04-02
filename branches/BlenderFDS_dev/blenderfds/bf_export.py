@@ -19,7 +19,10 @@
 
 import bpy, os
 from bpy_extras.io_utils import ExportHelper
-from .bf_objects import bf_file, bf_namelists, BFError, bf_osd
+
+from .bf_types import bf_file, bf_namelists
+from .bf_basic_types import BFError
+from .bf_osd import bf_osd
 
 ### Export to .fds menu
 

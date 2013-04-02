@@ -31,22 +31,3 @@ def load_handler(self):
 def save_handler(self):
     """This function is run each time a Blender file is saved"""
     # FIXME Use this to set BlenderFDS version
-
-# FIXME currently not registered (__init__.py) and used
-# http://blenderartists.org/forum/showthread.php?233979-how-to-run-bpy-app-handlers-load_post-every-time-after-file-loaded&p=2332342#post2332342
-# The handlers won't get called on Blender startup,
-# as the default .blend gets loaded before addons are initialized.
-# Here is a workaround to execute handlers on startup:
-@bpy.app.handlers.persistent
-def call_load_handlers(self):
-    context = bpy.context
-    scene = context.scene
-
-    for func in bpy.app.handlers.load_pre:
-        func(scene)
-
-    for func in bpy.app.handlers.load_post:
-        func(scene)
-
-    print("Remove!")
-    bpy.app.handlers.scene_update_pre.remove(call_load_handlers)

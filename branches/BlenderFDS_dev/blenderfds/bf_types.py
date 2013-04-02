@@ -20,21 +20,10 @@
 import bpy
 
 from .bf_basic_types import BFItem, BFList, BFResult, BFError
+from .bf_osd import bf_osd
 from . import bf_format, bf_config, bf_geometry
-from .bf_osd import *
 
 ### General functions
-
-def _check_items(ps,t):
-    """Check p and always return a BFList"""
-    if isinstance(ps,str): return BFList((t.bf_list[ps],))
-    if isinstance(ps,(tuple,list)): return BFList(t.bf_list[ps])
-    return BFList()    
-
-def _check_item(p,t):
-    """Check p and return a BFList of p or None"""
-    if p: return t.bf_list[p]
-    else: return None
 
 def _isiterable(p):
     """Check if p is iterable or not"""
@@ -45,6 +34,17 @@ def _isiterable(p):
     except: return False
     return True
 
+def _check_items(names,type_):
+    """Return a BFList of elements named names of type type_"""
+    if isinstance(names,str): return BFList((type_.bf_list[names],))
+    if isinstance(names,(tuple,list)): return BFList(type_.bf_list[names])
+    return BFList()
+
+def _check_item(name,type_):
+    """Return the element named p of type t or None"""
+    if name: return type_.bf_list[name]
+    else: return None
+
 ### Classes
 
 class BProp(BFItem):
@@ -53,7 +53,7 @@ class BProp(BFItem):
     name -- unique name, eg "bf_fyi"
     b_name -- Blender property name, eg "bf_fyi" or "name".
     label -- label displayed by Blender UI, eg "FYI".
-    has_ui -- True/False if it has automatic UI
+    has_ui -- True/False if it has an automatic UI
     description -- help text displayed by Blender UI, eg "For your information"
     bpy_prop -- Blender property, eg bpy.props.StringProperty. If None, refer to existing Blender property
     other -- optional dict of additional Blender property settings, eg {"maxlen":60, "default"="OBST"}
@@ -135,7 +135,7 @@ class BFHavingUI():
         return True
 
     def _draw_error(self,context,element,layout):
-        """Draw one Blender panel row of errors and messages in the provided layout."""
+        """Draw errors and messages for element in the provided layout."""
         try: res = self._evaluate(context,element)
         except BFError as err: err.draw(layout)
         else: res and res.draw(layout) # check res existence before...    
@@ -182,24 +182,26 @@ class BFParam(BFItem,BFHavingUI):
                 raise BFError(sender=self,msg="Quote characters not allowed")
 
     def _value(self,context,element):
-        """Get self value and check it. Raise BFError if not good."""
+        """Get self value. Raise BFError if not good."""
         try: value = self.b_props[0].value(context,element)
         except KeyError: value = None # Eg: no self.b_props
         self._check(value)
         return value
     
     def _evaluate(self,context,element):
-        """Get value, check it, and return a BFResult or None."""
-        return BFResult(sender=self,value=self._value(context,element),msg="msg from "+self.name)
+        """Check self for errors and return a BFResult or None.
+        Raise a BFError exception if self cannot return a valid result.
+        """
+        return BFResult(sender=self,value=self._value(context,element),msg="test msg from "+self.name)
 
     def _get_precision(self):
-        """Get self precision. Default to self.b_props[0].precision"""
+        """Get self precision."""
         return self.b_props[0].precision
 
     precision = property(_get_precision)
 
     def _format(self,value):
-        """Format self, return str()"""
+        """Format self for to_fds, return a string"""
         # Insert value into an iterable, if it's not already
         if not _isiterable(value): value = tuple((value,))
         # Check each element of the iterable
@@ -223,7 +225,7 @@ class BFParam(BFItem,BFHavingUI):
         return res
 
     def _get_layout_export(self,context,element,layout):
-        """Draw one Blender panel row of errors and messages in the provided layout."""
+        """Prepare double-column Blender panel layout for element if self has a b_prop_export."""
         if self.b_prop_export:
             # Set two distinct colums: layout_export and layout_ui
             row = layout.row()
@@ -233,7 +235,7 @@ class BFParam(BFItem,BFHavingUI):
         return layout
 
     def _draw_b_props(self,context,element,layout):
-        """Draw one Blender panel row of errors and messages in the provided layout."""
+        """Draw self b_props for element in the layout."""
         for b_prop in self.b_props:
             if b_prop.has_ui:
                 row = layout.row()
@@ -241,11 +243,11 @@ class BFParam(BFItem,BFHavingUI):
                 if b_prop.operator: row.operator(b_prop.operator)
 
     def _draw_extra(self,context,element,layout):
-        """"""
+        """Draw extra customized widgets for element in the layout"""
         pass
         
     def draw(self,context,element,layout):
-        """Draw one Blender panel row of Blender element in the provided layout."""
+        """Draw Blender panel widgets for self in the provided layout."""
         layout = self._get_layout_export(context,element,layout)
         self._draw_b_props(context,element,layout)
         self._draw_extra(context,element,layout)
@@ -321,16 +323,19 @@ class BFNamelist(BFItem,BFHavingUI,BFHavingChildren):
         pass    
 
     def _value(self,context,element):
-        """Get the value"""
+        """Get self value. Raise BFError if not good."""
         value = None
         self._check(value)
         return value
 
     def _evaluate(self,context,element):
-        """Get value, check it, and return a BFResult or None."""
-        return BFResult(sender=self,value=self._value(context,element),msg="msg from "+self.name)
+        """Check self for errors and return a BFResult or None.
+        Raise a BFError exception if self cannot return a valid result.
+        """
+        return BFResult(sender=self,value=self._value(context,element),msg="test msg from "+self.name)
 
     def _format(self,context,element,values,msgs):
+        """Format self for to_fds, return a string"""
         # Extract one multivalues from values
         multivalues = None
         for i, value in enumerate(values):
@@ -362,31 +367,31 @@ class BFNamelist(BFItem,BFHavingUI,BFHavingChildren):
         # Export
         res = self._evaluate(context,element) # Do not trap exceptions, pass them upward
         children_values, children_msgs = self._to_fds_children(children=self.bf_params,context=context,element=element)
-         # res.value from self._evaluate() is used then replaced with new content
+        # res.value from self._evaluate() is used then replaced with new content
         res.value = self._format(context,element,children_values,children_msgs)
         return res
 
     def draw_header(self,context,element,layout):
-        """Draw Blender panel header of Blender element in the provided layout."""
+        """Draw Blender panel header for element in the provided layout."""
         if self.b_prop_export: layout.prop(element,self.b_prop_export.b_name,text="")
         return "FDS {} ({})".format(self.label,self.description)
 
     def _get_layout_export(self,context,element,layout):
-        """Draw one Blender panel row of errors and messages in the provided layout."""
+        """Prepare Blender panel layout if self has a b_prop_export."""
         layout.active = self._has_active_ui(context,element)
         return layout
 
     def _draw_bf_params(self,context,element,layout):
-        """Draw bf_params in the provided layout."""
+        """Draw self bf_params for element in the layout."""
         for bf_param in self.bf_params:
             bf_param.draw(context,element,layout)
 
     def _draw_extra(self,context,element,layout):
-        """"""
+        """Draw extra customized widgets for element in the layout"""
         pass
 
     def draw(self,context,element,layout):
-        """Draw Blender panel for Blender element in the provided layout."""
+        """Draw Blender panel for element in the layout"""
         layout = self._get_layout_export(context,element,layout)
         self._draw_extra(context,element,layout)
         self._draw_error(context,element,layout)
@@ -407,21 +412,22 @@ class BFSection(BFItem,BFHavingChildren):
         BFItem.__init__(self,name)
         self.bf_namelists = _check_items(bf_namelists,BFNamelist)
 
-    def _is_exported(self,*args,**kwargs):
+    def _is_exported(self,*args,**kwargs): # *args and **kwargs are for compatibility with other classes
         """If self is going to be exported return True, else False"""
         return True
 
-    def _evaluate(self,*args,**kwargs):
+    def _evaluate(self,*args,**kwargs): # *args and **kwargs are for compatibility with other classes
         """Check self for errors and return a BFResult or None.
         Raise a BFError exception if self cannot return a valid result.
         """
-        return BFResult(sender=self,value=None,msg="msg from "+self.name)
+        return BFResult(sender=self,value=None,msg="test msg from "+self.name)
 
     def _format(self,values,msgs):
-        """Format self, return str()"""
+        """Format self, return a string"""
         return "".join((bf_format.format_section_title(self.name),bf_format.format_comment(msgs),"\n",bf_format.format_body(values),"\n"))
 
-    def to_fds(self,context,*args,**kwargs):
+    def to_fds(self,context,*args,**kwargs): # *args and **kwargs are for compatibility with other classes
+        """Export self in FDS notation. Return a BFResult() or None."""
         print("BlenderFDS: > BFSection.to_fds: {}".format(self.name))
         # Check
         if not self._is_exported(): return None
@@ -453,22 +459,24 @@ class BFFile(BFItem,BFHavingChildren):
         print("BlenderFDS: BFFile.init: {}".format(name))
         BFItem.__init__(self,name)
 
-    def _is_exported(self,*args,**kwargs):
+    def _is_exported(self,*args,**kwargs): # *args and **kwargs are for compatibility with other classes
+        """If self is going to be exported return True, else False"""
         return True
 
-    def _evaluate(self,*args,**kwargs):
+    def _evaluate(self,*args,**kwargs): # *args and **kwargs are for compatibility with other classes
         """Check self for errors and return a BFResult or None.
         Raise a BFError exception if self cannot return a valid result.
         """
-        return BFResult(sender=self,value=None,msg="msg from "+self.name)
+        return BFResult(sender=self,value=None,msg="test msg from "+self.name)
 
     def _format(self,values,msgs,error=False):
-        """Format self, return str()"""
-        values.append("&TAIL /") # Closing FDS file FIXME FDS6?
+        """Format self, return a string"""
+        values.append("&TAIL /") # Closing FDS file
         if error: return "".join((bf_format.format_file_title(),"\n",bf_format.format_section_title("ERRORS"),bf_format.format_comment(msgs),))
         else: return "".join((bf_format.format_file_title(),bf_format.format_comment(msgs),"\n",bf_format.format_body(values),))
 
     def to_fds(self,context,*args,**kwargs):
+        """Export self in FDS notation. Return a BFResult() or None."""
         print("BlenderFDS: BFFile.to_fds")
         # Check
         if not self._is_exported(): return None
@@ -482,6 +490,14 @@ class BFFile(BFItem,BFHavingChildren):
             # res.value from self._evaluate() is used then replaced with new content
             res.value = self._format(children_values,children_msgs)
             return res
+
+### Global names
+
+b_props = BProp.bf_list
+bf_params = BFParam.bf_list
+bf_namelists = BFNamelist.bf_list
+bf_sections = BFSection.bf_list
+bf_file = BFFile("Case")
 
 ### Class bpy.types.*, add methods
 
@@ -504,7 +520,7 @@ def bpy_types_has_bf_param(self,bf_param):
     return bf_param in (bf_param for bf_namelist in bf_namelists for bf_param in bf_namelist.bf_params)
 
 def bpy_types_to_fds(self,context=None,element=None): # element is kept for compatibility, self is the element itself.
-    """Export self to FDS notation. Return a BFResult()."""
+    """Export self to FDS notation. Return a BFResult() or None."""
     print("BlenderFDS: > > {}.to_fds: {}".format(self.__class__.__name__,self.name))
     bf_osd.show("BlenderFDS exporting {} {}".format(self.__class__.__name__,self.name))
     if not context: context = bpy.context
@@ -512,6 +528,7 @@ def bpy_types_to_fds(self,context=None,element=None): # element is kept for comp
     values, msgs = self._to_fds_children(children=self.get_bf_namelists(),context=context,element=self)
     return BFResult(sender=self,value=bf_format.format_body(values),msgs=msgs)
 
+# Assign methods to Scene, Object, and Material
 bpy.types.Scene._to_fds_children = BFHavingChildren._to_fds_children
 bpy.types.Scene.get_bf_namelists = bpy_types_get_bf_namelists
 bpy.types.Scene.get_bf_params = bpy_types_get_bf_params
@@ -529,11 +546,3 @@ bpy.types.Material.get_bf_namelists = bpy_types_get_bf_namelists
 bpy.types.Material.get_bf_params = bpy_types_get_bf_params
 bpy.types.Material.has_bf_param = bpy_types_has_bf_param
 bpy.types.Material.to_fds = bpy_types_to_fds
-
-### Global names
-
-b_props = BProp.bf_list
-bf_params = BFParam.bf_list
-bf_namelists = BFNamelist.bf_list
-bf_sections = BFSection.bf_list
-bf_file = BFFile("Case")

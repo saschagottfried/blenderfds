@@ -34,60 +34,36 @@ bl_info = {
     "category": "Import-Export",
 }
 
-# Reload if changed FIXME does not work
-#if "bpy" in locals():
-#    import imp
-#    imp.reload(bf_operators)
-#    imp.reload(bf_ui)  
-#else:
-#    from .bf_operators import * # Define operators
-#    from .bf_handlers import * # Define handlers
-#    from .bf_ui import *  # Define UI
-#    import bpy
-
-import bpy
-from .bf_ui import *
-from .bf_handlers import *
+# Reload if changed
+if "bpy" in locals():
+    import imp
+    imp.reload(bf_ui)
+    imp.reload(bf_export)
+    imp.reload(bf_operators)
+    imp.reload(bf_handlers)
+    imp.reload(bf_types)
+    imp.reload(bf_objects)
+else:
+    import bpy
+    from . import bf_ui, bf_export, bf_operators, bf_handlers, bf_types, bf_objects
 
 ### Registration/Unregistration
 
 def register():
     bpy.utils.register_module(__name__)
-    for bf_namelist in bf_namelists: bf_namelist.register()
+    for bf_namelist in bf_types.bf_namelists: bf_namelist.register()
     bpy.types.INFO_MT_file_export.append(bf_export.export_fds_menu)
     bpy.app.handlers.load_post.append(bf_handlers.load_handler)
     bpy.app.handlers.save_post.append(bf_handlers.save_handler)
-    # Here is a workaround to execute handlers on startup, see bf_handlers.py: FIXME
-    # bpy.app.handlers.scene_update_pre.append(call_load_handlers)
-    ### Update bf_namelist menus FIXME
-
-    items = list((bf_namelist.name,"{} ({})".format(bf_namelist.name,bf_namelist.description),bf_namelist.description,) for bf_namelist in bf_namelists if bf_namelist.bpy_type == bpy.types.Object)
-    items.sort()
-    print("items:",items)
-    bpy.types.Object.bf_namelist = bpy.props.EnumProperty(
-        name="Namelist",
-        description="Description",
-        items=items,
-        default="OBST",
-        )
-    items = list((bf_namelist.name,"{} ({})".format(bf_namelist.name,bf_namelist.description),bf_namelist.description,) for bf_namelist in bf_namelists if bf_namelist.bpy_type == bpy.types.Material)
-    items.sort()
-    print("items:",items)
-    bpy.types.Material.bf_namelist = bpy.props.EnumProperty(
-        name="Namelist",
-        description="Description",
-        items=items,
-        default="SURF",
-        )
+    ### Update bf_namelist menus FIXME improve
+    bf_objects.update_menu()
 
 def unregister():
     bpy.utils.unregister_module(__name__)
-    for bf_namelist in bf_namelists: bf_namelist.unregister()
+    for bf_namelist in bf_types.bf_namelists: bf_namelist.unregister()
     bpy.types.INFO_MT_file_export.remove(bf_export.export_fds_menu)
     bpy.app.handlers.load_post.remove(bf_handlers.load_handler)
     bpy.app.handlers.save_post.remove(bf_handlers.save_handler)
-    # Here is a workaround to execute handlers on startup, see bf_handlers.py: FIXME
-    # bpy.app.handlers.scene_update_pre.remove(call_load_handlers)
 
 if __name__ == "__main__":
     register()

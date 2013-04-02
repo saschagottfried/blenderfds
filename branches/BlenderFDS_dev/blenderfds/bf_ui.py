@@ -18,7 +18,7 @@
 """BlenderFDS, an open tool for the NIST Fire Dynamics Simulator"""
 
 import bpy
-from .bf_export import *
+from .bf_types import bf_namelists
 
 ### Scene panels
 

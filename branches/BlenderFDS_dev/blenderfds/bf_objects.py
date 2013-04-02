@@ -9,7 +9,7 @@
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 #  GNU General Public License for more details.
-#
+#na
 #  You should have received a copy of the GNU General Public License
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
@@ -18,8 +18,9 @@
 """BlenderFDS, an open tool for the NIST Fire Dynamics Simulator"""
 
 import bpy, os
-from .bf_types import *
-from . import bf_operators, bf_handlers
+from .bf_types import BProp, BFParam, BFNamelist, BFSection, BFFile, bf_namelists
+from .bf_basic_types import BFResult, BFError
+from . import bf_operators, bf_geometry, bf_config
 
 ### Default BFNamelist and BFParam
 
@@ -35,6 +36,27 @@ BFParam(
     b_props = "bf_namelist",
 )
 
+# FIXME improve improve!
+def update_menu():
+    items = list((bf_namelist.name,"{} ({})".format(bf_namelist.name,bf_namelist.description),bf_namelist.description,) for bf_namelist in bf_namelists if bf_namelist.bpy_type == bpy.types.Object)
+    items.sort()
+    print("items:",items)
+    bpy.types.Object.bf_namelist = bpy.props.EnumProperty(
+        name="Namelist",
+        description="Description",
+        items=items,
+        default="OBST",
+        )
+    items = list((bf_namelist.name,"{} ({})".format(bf_namelist.name,bf_namelist.description),bf_namelist.description,) for bf_namelist in bf_namelists if bf_namelist.bpy_type == bpy.types.Material)
+    items.sort()
+    print("items:",items)
+    bpy.types.Material.bf_namelist = bpy.props.EnumProperty(
+        name="Namelist",
+        description="Description",
+        items=items,
+        default="SURF",
+        )
+    
 class BFNamelist_TMP(BFNamelist):
     def draw_header(self,context,element,layout):
         return "BlenderFDS Temporary Object"
