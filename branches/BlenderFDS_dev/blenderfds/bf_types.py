@@ -17,13 +17,11 @@
 # ##### END GPL LICENSE BLOCK #####
 """BlenderFDS, specific types"""
 
-from .bf_basic_types import BFItem, BFList, BFResult, BFError
-from .bf_format import *
-from . import bf_config
-from .bf_geometry import *
-from .bf_osd import bf_osd
-
 import bpy
+
+from .bf_basic_types import BFItem, BFList, BFResult, BFError
+from . import bf_format, bf_config, bf_geometry
+from .bf_osd import *
 
 ### General functions
 
@@ -242,7 +240,7 @@ class BFParam(BFItem,BFHavingUI):
                 row.prop(element,b_prop.b_name,text=b_prop.label)
                 if b_prop.operator: row.operator(b_prop.operator)
 
-    def _draw_post(self,context,element,layout):
+    def _draw_extra(self,context,element,layout):
         """"""
         pass
         
@@ -250,7 +248,7 @@ class BFParam(BFItem,BFHavingUI):
         """Draw one Blender panel row of Blender element in the provided layout."""
         layout = self._get_layout_export(context,element,layout)
         self._draw_b_props(context,element,layout)
-        self._draw_post(context,element,layout)
+        self._draw_extra(context,element,layout)
         self._draw_error(context,element,layout)
 
 class BFHavingChildren():
@@ -324,7 +322,9 @@ class BFNamelist(BFItem,BFHavingUI,BFHavingChildren):
 
     def _value(self,context,element):
         """Get the value"""
-        pass
+        value = None
+        self._check(value)
+        return value
 
     def _evaluate(self,context,element):
         """Get value, check it, and return a BFResult or None."""
@@ -352,7 +352,7 @@ class BFNamelist(BFItem,BFHavingUI,BFHavingChildren):
             namelist = "".join("{}{}{} /\n".format(namelist,separator,value) for value in multivalues)
         else:
             namelist = "".join((namelist," /\n"))
-        return "".join((format_namelist_title(element.name),format_comment(msgs),namelist))
+        return "".join((bf_format.format_namelist_title(element.name),bf_format.format_comment(msgs),namelist))
 
     def to_fds(self,context,element):
         """Export self in FDS notation for element. Return a BFResult() or None."""
@@ -381,13 +381,17 @@ class BFNamelist(BFItem,BFHavingUI,BFHavingChildren):
         for bf_param in self.bf_params:
             bf_param.draw(context,element,layout)
 
+    def _draw_extra(self,context,element,layout):
+        """"""
+        pass
+
     def draw(self,context,element,layout):
         """Draw Blender panel for Blender element in the provided layout."""
         layout = self._get_layout_export(context,element,layout)
+        self._draw_extra(context,element,layout)
         self._draw_error(context,element,layout)
         self._draw_bf_params(context,element,layout)
-        # Return layout for further additions
-        return layout
+        self._draw_extra(context,element,layout)
 
 class BFSection(BFItem,BFHavingChildren):
     """BlenderFDS section, used for grouping FDS namelists.
@@ -415,7 +419,7 @@ class BFSection(BFItem,BFHavingChildren):
 
     def _format(self,values,msgs):
         """Format self, return str()"""
-        return "".join((format_section_title(self.name),format_comment(msgs),"\n",format_body(values),"\n"))
+        return "".join((bf_format.format_section_title(self.name),bf_format.format_comment(msgs),"\n",bf_format.format_body(values),"\n"))
 
     def to_fds(self,context,*args,**kwargs):
         print("BlenderFDS: > BFSection.to_fds: {}".format(self.name))
@@ -431,7 +435,7 @@ class BFSection(BFItem,BFHavingChildren):
                 if ob.type == "MESH" and ob.bf_namelist_export and ob.bf_namelist in self.bf_namelists) # Get objects
         if bpy.types.Material in bpy_types:
             children.extend(ma for ma in bpy.data.materials \
-                if ma.bf_namelist_export and (ma.name not in bf_config.mas_predefined)) # Get materials
+                if ma.bf_namelist_export and (ma.name not in bf_config.predefined_material_names)) # Get materials
         # Alphabetic order by element name
         children.sort(key=lambda k:k.name)
         # Export
@@ -461,8 +465,8 @@ class BFFile(BFItem,BFHavingChildren):
     def _format(self,values,msgs,error=False):
         """Format self, return str()"""
         values.append("&TAIL /") # Closing FDS file FIXME FDS6?
-        if error: return "".join((format_file_title(),"\n",format_section_title("ERRORS"),format_comment(msgs),))
-        else: return "".join((format_file_title(),format_comment(msgs),"\n",format_body(values),))
+        if error: return "".join((bf_format.format_file_title(),"\n",bf_format.format_section_title("ERRORS"),bf_format.format_comment(msgs),))
+        else: return "".join((bf_format.format_file_title(),bf_format.format_comment(msgs),"\n",bf_format.format_body(values),))
 
     def to_fds(self,context,*args,**kwargs):
         print("BlenderFDS: BFFile.to_fds")
@@ -478,13 +482,6 @@ class BFFile(BFItem,BFHavingChildren):
             # res.value from self._evaluate() is used then replaced with new content
             res.value = self._format(children_values,children_msgs)
             return res
-
-### Global names
-
-bf_namelists = BFNamelist.bf_list
-bf_params = BFParam.bf_list
-bf_sections = BFSection.bf_list
-bf_file = BFFile("Case")
 
 ### Class bpy.types.*, add methods
 
@@ -513,7 +510,7 @@ def bpy_types_to_fds(self,context=None,element=None): # element is kept for comp
     if not context: context = bpy.context
     # Get children: get values and msgs for each of my BFNamelist
     values, msgs = self._to_fds_children(children=self.get_bf_namelists(),context=context,element=self)
-    return BFResult(sender=self,value=format_body(values),msgs=msgs)
+    return BFResult(sender=self,value=bf_format.format_body(values),msgs=msgs)
 
 bpy.types.Scene._to_fds_children = BFHavingChildren._to_fds_children
 bpy.types.Scene.get_bf_namelists = bpy_types_get_bf_namelists
@@ -532,3 +529,11 @@ bpy.types.Material.get_bf_namelists = bpy_types_get_bf_namelists
 bpy.types.Material.get_bf_params = bpy_types_get_bf_params
 bpy.types.Material.has_bf_param = bpy_types_has_bf_param
 bpy.types.Material.to_fds = bpy_types_to_fds
+
+### Global names
+
+b_props = BProp.bf_list
+bf_params = BFParam.bf_list
+bf_namelists = BFNamelist.bf_list
+bf_sections = BFSection.bf_list
+bf_file = BFFile("Case")

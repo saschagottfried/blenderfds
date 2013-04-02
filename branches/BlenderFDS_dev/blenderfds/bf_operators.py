@@ -16,11 +16,9 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-from .bf_osd import bf_osd
-from .bf_geometry import get_good_ijk, get_voxels
+from . import bf_osd, bf_geometry
 import bpy
 
-# FIXME create UI
 class OBJECT_OT_bf_correct_ijk(bpy.types.Operator):
     bl_label = "Correct IJK"
     bl_idname = "object.bf_correct_ijk"
@@ -28,7 +26,7 @@ class OBJECT_OT_bf_correct_ijk(bpy.types.Operator):
 
     def execute(self,context):
         ob = context.active_object
-        ob.bf_mesh_ijk = get_good_ijk(ob)
+        ob.bf_mesh_ijk = bf_geometry.get_good_ijk(ob)
         self.report({"INFO"}, "IJK corrected")
         return{'FINISHED'}
 
@@ -142,7 +140,7 @@ class OBJECT_OT_bf_show_voxels(bpy.types.Operator):
         ob.bf_has_voxels_shown = True
         # Create voxels, put them in a new mesh
         edges, verts, faces, = tuple(), tuple(), tuple()
-        xbs, tt, dimension_too_large = get_voxels(context, ob)
+        xbs, tt, dimension_too_large = bf_geometry.get_voxels(context, ob)
         for i, xb in enumerate(xbs):
             x0,x1,y0,y1,z0,z1 = xb
             j = i * 8
@@ -182,7 +180,6 @@ class OBJECT_OT_bf_hide_voxels(bpy.types.Operator):
         self.report({"INFO"}, "All object voxels hidden")
         return{'FINISHED'}
 
-# FIXME set in update voxel size         
 def update_voxels(self, context):
     bf_osd.show("BlenderFDS: Updating voxels")
     ob = context.active_object

@@ -18,17 +18,16 @@
 """BlenderFDS, an open tool for the NIST Fire Dynamics Simulator"""
 
 import bpy
-from bpy.app.handlers import persistent
 from . import bf_config
 
-@persistent
+@bpy.app.handlers.persistent
 def load_handler(self):
     """This function is run each time a Blender file is loaded"""
     # Init FDS default materials
-    if not set(bf_config.mas_predefined) <= set(bpy.data.materials.keys()):
+    if not set(bf_config.predefined_material_names) <= set(bpy.data.materials.keys()):
         bpy.ops.material.bf_set_predefined()
 
-@persistent
+@bpy.app.handlers.persistent
 def save_handler(self):
     """This function is run each time a Blender file is saved"""
     # FIXME Use this to set BlenderFDS version
@@ -38,7 +37,7 @@ def save_handler(self):
 # The handlers won't get called on Blender startup,
 # as the default .blend gets loaded before addons are initialized.
 # Here is a workaround to execute handlers on startup:
-@persistent
+@bpy.app.handlers.persistent
 def call_load_handlers(self):
     context = bpy.context
     scene = context.scene

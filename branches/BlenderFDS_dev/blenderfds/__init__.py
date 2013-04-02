@@ -35,24 +35,28 @@ bl_info = {
 }
 
 # Reload if changed FIXME does not work
-if "bpy" in locals():
-    import imp
-    imp.reload(bf_operators)
-    imp.reload(bf_ui)  
-else:
-    from .bf_operators import * # Define operators
-    from .bf_handlers import * # Define handlers
-    from .bf_ui import *  # Define UI
-    import bpy
+#if "bpy" in locals():
+#    import imp
+#    imp.reload(bf_operators)
+#    imp.reload(bf_ui)  
+#else:
+#    from .bf_operators import * # Define operators
+#    from .bf_handlers import * # Define handlers
+#    from .bf_ui import *  # Define UI
+#    import bpy
+
+import bpy
+from .bf_ui import *
+from .bf_handlers import *
 
 ### Registration/Unregistration
 
 def register():
     bpy.utils.register_module(__name__)
     for bf_namelist in bf_namelists: bf_namelist.register()
-    bpy.types.INFO_MT_file_export.append(export_fds_menu)
-    bpy.app.handlers.load_post.append(load_handler)
-    bpy.app.handlers.save_post.append(save_handler)
+    bpy.types.INFO_MT_file_export.append(bf_export.export_fds_menu)
+    bpy.app.handlers.load_post.append(bf_handlers.load_handler)
+    bpy.app.handlers.save_post.append(bf_handlers.save_handler)
     # Here is a workaround to execute handlers on startup, see bf_handlers.py: FIXME
     # bpy.app.handlers.scene_update_pre.append(call_load_handlers)
     ### Update bf_namelist menus FIXME
@@ -76,14 +80,12 @@ def register():
         default="SURF",
         )
 
-
-    
 def unregister():
     bpy.utils.unregister_module(__name__)
     for bf_namelist in bf_namelists: bf_namelist.unregister()
-    bpy.types.INFO_MT_file_export.remove(export_fds_menu)
-    bpy.app.handlers.load_post.remove(load_handler)
-    bpy.app.handlers.save_post.remove(save_handler)
+    bpy.types.INFO_MT_file_export.remove(bf_export.export_fds_menu)
+    bpy.app.handlers.load_post.remove(bf_handlers.load_handler)
+    bpy.app.handlers.save_post.remove(bf_handlers.save_handler)
     # Here is a workaround to execute handlers on startup, see bf_handlers.py: FIXME
     # bpy.app.handlers.scene_update_pre.remove(call_load_handlers)
 

@@ -21,9 +21,6 @@
 right_margin_position = 80
 
 # Predefined FDS SURF boundary conditions (Blender materials)
-mas_predefined = ("INERT", "OPEN", "MIRROR")
 # They are created by the hardcoded operator:
 # class MATERIAL_OT_bf_create_predefined(bpy.types.Operator):
-
-if __name__ == "__main__":
-    pass
+predefined_material_names = ("INERT", "OPEN", "MIRROR")

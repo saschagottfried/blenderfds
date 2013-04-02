@@ -17,18 +17,17 @@
 # ##### END GPL LICENSE BLOCK #####
 """BlenderFDS, an open tool for the NIST Fire Dynamics Simulator"""
 
-from .bf_objects import *
-from os import path
-import bpy
+import bpy, os
 from bpy_extras.io_utils import ExportHelper
+from .bf_objects import bf_file, bf_namelists, BFError, bf_osd
 
 ### Export to .fds menu
 
 def export_fds_menu(self,context):
     # Prepare default filepath
-    filepath ="{0}.fds".format(path.splitext(bpy.data.filepath)[0])
-    directory = path.dirname(filepath)
-    basename = path.basename(filepath)
+    filepath ="{0}.fds".format(os.path.splitext(bpy.data.filepath)[0])
+    directory = os.path.dirname(filepath)
+    basename = os.path.basename(filepath)
     # If the context scene contains path and basename, use them
     sc = context.scene # FIXME no BFError management!
     if sc.bf_case_directory: directory = sc.bf_case_directory
@@ -68,12 +67,12 @@ def save(operator,context,filepath=""):
         return {'CANCELLED'}
     # Get results and check
     print("BlenderFDS: save(): Get results")
-    try: result = bf_file.to_fds(context)
+    try: res = bf_file.to_fds(context)
     except BFError:
         bf_osd.clean()
         operator.report({"ERROR"}, "Untrapped errors reported, cannot export")
         return {'CANCELLED'}
-    if not result or not result.value:
+    if not res or not res.value:
         bf_osd.clean()
         operator.report({"ERROR"}, "Nothing to export")
         return {'CANCELLED'}
@@ -82,7 +81,7 @@ def save(operator,context,filepath=""):
     print("BlenderFDS: save(): Write to path:".format(filepath))
     try:
         with open(filepath, "w") as out_file:
-            out_file.write(result.value)
+            out_file.write(res.value)
     except IOError:
         bf_osd.clean()
         operator.report({"ERROR"}, "Output file not writable, cannot export")

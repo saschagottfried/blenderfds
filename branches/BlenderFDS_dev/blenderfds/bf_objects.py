@@ -17,15 +17,9 @@
 # ##### END GPL LICENSE BLOCK #####
 """BlenderFDS, an open tool for the NIST Fire Dynamics Simulator"""
 
+import bpy, os
 from .bf_types import *
-from . import bf_operators
-
-from bpy.props import StringProperty, EnumProperty, BoolProperty, IntProperty, IntVectorProperty, FloatProperty, FloatVectorProperty
-from bpy.types import Scene, Object, Material
-import bpy
-import os
-
-
+from . import bf_operators, bf_handlers
 
 ### Default BFNamelist and BFParam
 
@@ -33,7 +27,7 @@ BProp(
     name = "bf_namelist",
     label = "Namelist",
     description = "Type of FDS namelist",
-    bpy_prop = StringProperty,
+    bpy_prop = bpy.props.StringProperty,
 )
 
 BFParam(
@@ -51,7 +45,7 @@ class BFNamelist_TMP(BFNamelist):
 BFNamelist_TMP(
     name = "TMP",
     description = "Temporary object",
-    bpy_type = Object,
+    bpy_type = bpy.types.Object,
 )
 
 ### Generic BFParam
@@ -78,7 +72,7 @@ BProp(
     name = "bf_fyi",
     label = "FYI",
     description = "Free text description",
-    bpy_prop = StringProperty,
+    bpy_prop = bpy.props.StringProperty,
     other = {"maxlen":60},
 )
 
@@ -106,7 +100,7 @@ BProp(
     name = "bf_custom",
     label = "Custom parameters:",
     description = "Custom parameters are appended verbatim to namelist parameters. Use matched single quotes.",
-    bpy_prop = StringProperty,
+    bpy_prop = bpy.props.StringProperty,
     other = {"maxlen":1024},
 )
 
@@ -138,7 +132,7 @@ BProp(
     name = "bf_head_title",
     label = "TITLE",
     description = "Case description",
-    bpy_prop = StringProperty,
+    bpy_prop = bpy.props.StringProperty,
     other = {"maxlen":64},
 )
 
@@ -156,7 +150,7 @@ BProp(
     name = "bf_case_directory",
     label = "Case Directory",
     description = "Case directory",
-    bpy_prop = StringProperty,
+    bpy_prop = bpy.props.StringProperty,
     other = {"subtype":"DIR_PATH","maxlen":1024},
 )
 
@@ -169,7 +163,7 @@ BProp(
     name = "bf_config_filepath",
     label = "Config File",
     description = "Path to external configuration file",
-    bpy_prop = StringProperty,
+    bpy_prop = bpy.props.StringProperty,
     other = {"default":"config.fds","subtype":"FILE_PATH","maxlen":1024},
 )
 
@@ -183,7 +177,7 @@ BProp(
     name = "bf_version",
     label = "Version",
     description = "BlenderFDS version used for file creation and exporting",
-    bpy_prop = IntVectorProperty,
+    bpy_prop = bpy.props.IntVectorProperty,
     other = {"default":(0,0,0),"size":3},
 )
 
@@ -197,7 +191,7 @@ BFNamelist(
     name = "HEAD",
     description = "Header and Case Config",
     f_name = "HEAD",
-    bpy_type = Scene,
+    bpy_type = bpy.types.Scene,
     bf_params = ("CHID","TITLE","Case Directory","Config File","Version"),
 )
 
@@ -207,7 +201,7 @@ BProp(
     name = "bf_time_t_begin",
     label = "T_BEGIN",
     description = "Simulation starting time",
-    bpy_prop = FloatProperty,
+    bpy_prop = bpy.props.FloatProperty,
     other = {"step":100.,"precision":1,"min":0.,"default":0.},
 )
 
@@ -221,7 +215,7 @@ BProp(
     name = "bf_time_t_end",
     label = "T_END",
     description = "Simulation ending time",
-    bpy_prop = FloatProperty,
+    bpy_prop = bpy.props.FloatProperty,
     other = {"step":100.,"precision":1,"min":0.,"default":0.},
 )
 
@@ -235,7 +229,7 @@ BProp(
     name = "bf_time_custom",
     label = "Custom",
     description = "Custom parameters are appended verbatim to namelist parameters. Use matched single quotes.",
-    bpy_prop = StringProperty,
+    bpy_prop = bpy.props.StringProperty,
     other = {"maxlen":1024},
 )
 
@@ -248,7 +242,7 @@ BFNamelist(
     name = "TIME",
     description = "Time",
     f_name = "TIME",
-    bpy_type = Scene,
+    bpy_type = bpy.types.Scene,
     bf_params = ("T_BEGIN","T_END","TIME_Custom"),
     b_default_export = True,
 )
@@ -261,7 +255,7 @@ BProp(
     name = "bf_misc_custom",
     label = "Custom",
     description = "Custom parameters are appended verbatim to namelist parameters. Use matched single quotes.",
-    bpy_prop = StringProperty,
+    bpy_prop = bpy.props.StringProperty,
     other = {"maxlen":1024},
 )
 
@@ -274,7 +268,7 @@ BFNamelist(
     name = "MISC",
     description = "Miscellaneous parameters",
     f_name = "MISC",
-    bpy_type = Scene,
+    bpy_type = bpy.types.Scene,
     bf_params = ("MISC_Custom",),
     b_default_export = True,
 )
@@ -285,7 +279,7 @@ BProp(
     name = "bf_reac_fuel",
     label = "FUEL",
     description = "Identificator of fuel species for the reaction",
-    bpy_prop = StringProperty,
+    bpy_prop = bpy.props.StringProperty,
     other = {"maxlen":32},
 )
 
@@ -299,7 +293,7 @@ BProp(
     name = "bf_reac_formula",
     label = "FORMULA",
     description = "Chemical formula of the fuel species for the reaction, it can only contain C, H, O, or N",
-    bpy_prop = StringProperty,
+    bpy_prop = bpy.props.StringProperty,
     other = {"maxlen":32},
 )
 
@@ -314,7 +308,7 @@ BProp(
     name = "bf_reac_co_yield",
     label = "CO_YIELD",
     description = "Fraction of fuel mass converted into carbon monoxide",
-    bpy_prop = FloatProperty,
+    bpy_prop = bpy.props.FloatProperty,
     other = {"step":1.,"precision":2,"min":0.,"max":1.,"default":0.},
 )
 
@@ -329,7 +323,7 @@ BProp(
     name = "bf_reac_soot_yield",
     label = "SOOT_YIELD",
     description = "Fraction of fuel mass converted into smoke particulate",
-    bpy_prop = FloatProperty,
+    bpy_prop = bpy.props.FloatProperty,
     other = {"step":1.,"precision":2,"min":0.,"max":1.,"default":0.},
 )
 
@@ -344,7 +338,7 @@ BProp(
     name = "bf_reac_heat_of_combustion",
     label = "HEAT_OF_COMBUSTION",
     description = "Fuel heat of combustion",
-    bpy_prop = FloatProperty,
+    bpy_prop = bpy.props.FloatProperty,
     other = {"step":100000.,"precision":1,"min":0.,"default":0.},
 )
 
@@ -359,7 +353,7 @@ BProp(
     name = "bf_reac_custom",
     label = "Custom",
     description = "Custom parameters are appended verbatim to namelist parameters. Use matched single quotes.",
-    bpy_prop = StringProperty,
+    bpy_prop = bpy.props.StringProperty,
     other = {"maxlen":1024},
 )
 
@@ -372,7 +366,7 @@ BFNamelist(
     name = "REAC",
     description = "Reaction",
     f_name = "REAC",
-    bpy_type = Scene,
+    bpy_type = bpy.types.Scene,
     bf_params = ("FUEL","FORMULA","CO_YIELD","SOOT_YIELD","HEAT_OF_COMBUSTION","REAC_Custom"),
     b_default_export = True,
 )
@@ -385,7 +379,7 @@ BProp(
     name = "bf_dump_nframes",
     label = "NFRAMES",
     description = "Number of output dumps per calculation",
-    bpy_prop = IntProperty,
+    bpy_prop = bpy.props.IntProperty,
     other = {"min":1,"default":1000},
 )
 
@@ -400,7 +394,7 @@ BProp(
     name = "bf_dump_custom",
     label = "Custom",
     description = "Custom parameters are appended verbatim to namelist parameters. Use matched single quotes.",
-    bpy_prop = StringProperty,
+    bpy_prop = bpy.props.StringProperty,
     other = {"maxlen":1024},
 )
 
@@ -413,7 +407,7 @@ BFNamelist(
     name = "DUMP",
     description = "Output parameters",
     f_name = "DUMP",
-    bpy_type = Scene,
+    bpy_type = bpy.types.Scene,
     bf_params = ("NFRAMES","DUMP_Custom"),
     b_default_export = True,
 )
@@ -425,10 +419,10 @@ class BFParam_XB(BFParam):
     def _value(self,context,element):
         value = element.bf_xb
         if value == "VOXELS":
-            xbs = get_bbox(context,element)[0]
+            xbs = bf_geometry.get_bbox(context,element)[0]
             (bbminx, bbmaxx, bbminy, bbmaxy, bbminz, bbmaxz,) = xbs[0]
             dimension = max(bbmaxx-bbminx, bbmaxy-bbminy, bbmaxz-bbminz)
-            dimension_too_large = calc_remesh(context, dimension, element.bf_voxel_size)[3]
+            dimension_too_large = bf_geometry.calc_remesh(context, dimension, element.bf_voxel_size)[3]
             if dimension_too_large: raise BFError(self,"Object too large, voxel size not guaranteed")
         return value
 
@@ -440,25 +434,27 @@ class BFParam_XB(BFParam):
             if element.bf_has_voxels_shown: row.operator("object.bf_hide_voxels") 
             else: row.operator("object.bf_show_voxels")
 
-# FIXME could use _format?
+    def _format(self,value):
+        return "XB={0[0]:.3f},{0[1]:.3f},{0[2]:.3f},{0[3]:.3f},{0[4]:.3f},{0[5]:.3f}".format(value)
+    
     def to_fds(self,context,element):
         # Check and init
         if not self._is_exported(context,element): return None
         res = self._evaluate(context,element)
         # Select case
         if res.value == "BBOX":
-            xbs, tt = get_bbox(context,element)
+            xbs, tt = bf_geometry.get_bbox(context,element)
         elif res.value == "VOXELS":
-            xbs, tt, dimension_too_large = get_voxels(context,element)
+            xbs, tt, dimension_too_large = bf_geometry.get_voxels(context,element)
             res.msgs.append("{0} voxels of size {1:.3f}, in {2:.3f} s".format(len(xbs),element.bf_voxel_size,tt))
         elif res.value == "FACES":
-            xbs, tt = get_faces(context,element)
+            xbs, tt = bf_geometry.get_faces(context,element)
             res.msgs.append("{0} faces, in {1:.3f} s".format(len(xbs),tt))
         elif res.value == "EDGES":
-            xbs, tt = get_edges(context,element)
+            xbs, tt = bf_geometry.get_edges(context,element)
             res.msgs.append("{0} edges, in {1:.3f} s".format(len(xbs),tt))
         else: raise Exception("XB type unknown")
-        res.value = tuple((format_xb(xb) for xb in xbs))
+        res.value = tuple((self._format(xb) for xb in xbs))
         return res
 
 items = (
@@ -472,7 +468,7 @@ BProp(
     name = "bf_xb",
     label = "XB",
     description = "XB",
-    bpy_prop = EnumProperty,
+    bpy_prop = bpy.props.EnumProperty,
     other = {"items":items,"default":"BBOX"},
 )
 
@@ -481,7 +477,7 @@ BProp(
     label = "Voxel Size",
     has_ui = False,
     description = "Minimum resolution for object voxelization",
-    bpy_prop = FloatProperty,
+    bpy_prop = bpy.props.FloatProperty,
     other = {"step":1,"precision":3,"min":.01,"max":2.,"default":.10,"update":bf_operators.update_voxels},
 )
 
@@ -490,7 +486,7 @@ BProp(
     label = "Is a Voxel Object",
     has_ui = False,
     description = "This is a voxel temporary object",
-    bpy_prop = BoolProperty,
+    bpy_prop = bpy.props.BoolProperty,
     other = {"default":False},
 )
 
@@ -499,7 +495,7 @@ BProp(
     label = "Has Voxel Shown",
     has_ui = False,
     description = "This object has a visible voxel object companion",
-    bpy_prop = BoolProperty,
+    bpy_prop = bpy.props.BoolProperty,
     other = {"default":False},
 )
 
@@ -517,19 +513,22 @@ class BFParam_XYZ(BFParam):
         if element.has_bf_param("XYZ") and element.bf_xyz_export: bf_xyz = element.bf_xyz
         if bf_xyz == "VERTICES" and bf_xb in ("VOXELS","FACES","EDGES"): raise BFError(self,"Conflicting with XB")
         return bf_xyz
-    
+
+    def _format(self,value):
+        return "XYZ={0[0]:.3f},{0[1]:.3f},{0[2]:.3f}".format(value)
+        
     def to_fds(self,context,element):
         # Check and init
         if not self._is_exported(context,element): return None
         res = self._evaluate(context,element)
         # Select case
         if res.value == "CENTER":
-            xyzs, tt = get_center(context,element)
+            xyzs, tt = bf_geometry.get_center(context,element)
         elif res.value == "VERTICES":
-            xyzs, tt = get_vertices(context,element)
+            xyzs, tt = bf_geometry.get_vertices(context,element)
             res.msgs.append("{0} vertices, in {1:.3f} s".format(len(xyzs),tt))
         else: raise Exception("XYZ type unknown")
-        res.value = tuple((format_xyz(xyz) for xyz in xyzs))
+        res.value = tuple((self._format(xyz) for xyz in xyzs))
         return res
 
 items = [
@@ -541,7 +540,7 @@ BProp(
     name = "bf_xyz",
     label = "XYZ",
     description = "Set points",
-    bpy_prop = EnumProperty,
+    bpy_prop = bpy.props.EnumProperty,
     other = {"items":items,"default":"CENTER"},
 )
 
@@ -567,16 +566,20 @@ class BFParam_PB(BFParam):
         # Errors?
         if err.msgs: raise err
         return bf_pb
+
+    def _format(self,value):
+        return "PB{0[0]}={0[1]:.3f}".format(value)
+    
     def to_fds(self,context,element):
         # Check and init
         if not self.is_exported(context,element): return None
         res = self.evaluate(context,element)
         # Select case
         if res.value == "PLANES":
-            pbs, tt = get_planes(context,element)
+            pbs, tt = bf_geometry.get_planes(context,element)
             res.msgs.append("{0} planes, in {1:.3f} s".format(len(pbs),tt))
         else: raise Exception("PB type unknown")
-        res.value = tuple((format_pb(pb) for pb in pbs))
+        res.value = tuple((self._format(pb) for pb in pbs))
         return res
 
 items = [("PLANES","Planes","Planes, one for each face of this object"),]
@@ -585,7 +588,7 @@ BProp(
     name = "bf_pb",
     label = "PB*",
     description = "Set planes",
-    bpy_prop = EnumProperty,
+    bpy_prop = bpy.props.EnumProperty,
     other = {"items":items,"default":"PLANES"},
 ),
 
@@ -605,7 +608,7 @@ BProp(
     name = "bf_devc_id",
     label = "DEVC_ID",
     description = "DEVC_ID",
-    bpy_prop = StringProperty,
+    bpy_prop = bpy.props.StringProperty,
 )
 
 BFParam_DEVC_ID(
@@ -635,7 +638,7 @@ BProp(
     name = "bf_devc_quantity",
     label = "QUANTITY",
     description = "Output quantity",
-    bpy_prop = StringProperty,
+    bpy_prop = bpy.props.StringProperty,
     other = {"maxlen":32},
 )
 
@@ -649,7 +652,7 @@ BProp(
     name = "bf_slcf_vector",
     label = "VECTOR",
     description = "Create animated vectors",
-    bpy_prop = BoolProperty,
+    bpy_prop = bpy.props.BoolProperty,
     other = {"default":False},
 )
 
@@ -665,7 +668,7 @@ BProp(
     name = "bf_mesh_ijk",
     label = "IJK",
     description = "Cell number in x, y, and z direction",
-    bpy_prop = IntVectorProperty,
+    bpy_prop = bpy.props.IntVectorProperty,
     other = {"default":(10,10,10),"size":3},
     operator = "object.bf_correct_ijk",
 )
@@ -674,7 +677,7 @@ BProp(
 class BFParam_IJK(BFParam):
     def _evaluate(self,context,element):
         value = element.bf_mesh_ijk
-        msg = "{0} mesh cells of size {1[0]:.3f} x {1[1]:.3f} x {1[2]:.3f}".format(get_cell_number(element),get_cell_size(element))
+        msg = "{0} mesh cells of size {1[0]:.3f} x {1[1]:.3f} x {1[2]:.3f}".format(bf_geometry.get_cell_number(element),bf_geometry.get_cell_size(element))
         return BFResult(sender=self,value=value,msg=msg)
         
 BFParam_IJK(
@@ -737,7 +740,7 @@ BProp(
 BFNamelist(
     name = "Other",
     description = "Other Namelist",
-    bpy_type = Object,
+    bpy_type = bpy.types.Object,
     bf_params = ("Namelist","FYI","Custom",),
     b_prop_export = "bf_namelist_export",
 )
@@ -746,7 +749,7 @@ BFNamelist(
     name = "OBST",
     description = "Obstruction",
     f_name = "OBST",
-    bpy_type = Object,
+    bpy_type = bpy.types.Object,
     bf_params = ("Namelist","ID","FYI","SURF_ID","XB","DEVC_ID","Custom",),
     b_prop_export = "bf_namelist_export",
 )
@@ -755,7 +758,7 @@ BFNamelist(
     name = "HOLE",
     description = "Obstruction Cutout",
     f_name = "HOLE",
-    bpy_type = Object,
+    bpy_type = bpy.types.Object,
     bf_params = ("Namelist","ID_no_export","FYI","XB","DEVC_ID","Custom",),
     b_prop_export = "bf_namelist_export",
 )
@@ -764,7 +767,7 @@ BFNamelist(
     name = "VENT",
     description = "Boundary Condition Patch",
     f_name = "VENT",
-    bpy_type = Object,
+    bpy_type = bpy.types.Object,
     bf_params = ("Namelist","ID","FYI","SURF_ID","XB","XYZ","PB","DEVC_ID","Custom",),
     b_prop_export = "bf_namelist_export",
 )
@@ -774,7 +777,7 @@ BFNamelist(
     name = "DEVC",
     description = "Device",
     f_name = "DEVC",
-    bpy_type = Object,
+    bpy_type = bpy.types.Object,
     bf_params = ("Namelist","ID","FYI","QUANTITY","XB","XYZ","DEVC_ID","Custom",),
     b_prop_export = "bf_namelist_export",
 )
@@ -783,7 +786,7 @@ BFNamelist(
     name = "SLCF",
     description = "Slice File",
     f_name = "SLCF",
-    bpy_type = Object,
+    bpy_type = bpy.types.Object,
     bf_params = ("Namelist","ID_no_export","FYI","QUANTITY","VECTOR","XB","PB","DEVC_ID","Custom",),
     b_prop_export = "bf_namelist_export",
 )
@@ -793,7 +796,7 @@ BFNamelist(
     name = "PROF",
     description = "Wall Profile Output",
     f_name = "PROF",
-    bpy_type = Object,
+    bpy_type = bpy.types.Object,
     bf_params = ("Namelist","ID","FYI","QUANTITY","XYZ","Custom",),
     b_prop_export = "bf_namelist_export",
 )
@@ -803,7 +806,7 @@ BFNamelist(
     name = "MESH",
     description = "Domain of simulation",
     f_name = "MESH",
-    bpy_type = Object,
+    bpy_type = bpy.types.Object,
     bf_params = ("Namelist","ID","FYI","IJK","XB","Custom",),
     b_prop_export = "bf_namelist_export",
 )
@@ -812,7 +815,7 @@ BFNamelist(
     name = "INIT",
     description = "Initial condition",
     f_name = "INIT",
-    bpy_type = Object,
+    bpy_type = bpy.types.Object,
     bf_params = ("Namelist","ID","FYI","XB","XYZ","DEVC_ID","Custom",),
     b_prop_export = "bf_namelist_export",
 )
@@ -821,7 +824,7 @@ BFNamelist(
     name = "ZONE",
     description = "Pressure zone",
     f_name = "ZONE",
-    bpy_type = Object,
+    bpy_type = bpy.types.Object,
     bf_params = ("Namelist","ID","FYI","XB","Custom",),
     b_prop_export = "bf_namelist_export",
 )
@@ -830,14 +833,14 @@ BFNamelist(
 
 class BFNamelist_SURF(BFNamelist):
     def _check(self,value):
-        if not set(bf_config.mas_predefined) <= set(bpy.data.materials.keys()):
+        if not set(bf_config.predefined_material_names) <= set(bpy.data.materials.keys()):
             raise BFError(sender=self,msg="Predefined SURFs unset",operator="material.bf_set_predefined")
 
 BFNamelist_SURF(
     name = "SURF",
     description = "Boundary Condition",
     f_name = "SURF",
-    bpy_type = Material,
+    bpy_type = bpy.types.Material,
     bf_params = ("Namelist","ID","FYI","RGB","TRANSPARENCY","Custom",),
     b_prop_export = "bf_namelist_export",
 )
@@ -847,7 +850,7 @@ BFNamelist_SURF(
     name = "SURF2",
     description = "Boundary Condition second",
     f_name = "SURF",
-    bpy_type = Material,
+    bpy_type = bpy.types.Material,
     bf_params = ("Namelist","ID","FYI","Custom",),
     b_prop_export = "bf_namelist_export",
 )

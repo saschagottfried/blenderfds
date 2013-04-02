@@ -17,8 +17,8 @@
 # ##### END GPL LICENSE BLOCK #####
 """BlenderFDS, an open tool for the NIST Fire Dynamics Simulator"""
 
+import bpy
 from .bf_export import *
-from bpy.types import Panel
 
 ### Scene panels
 
@@ -41,19 +41,19 @@ class SceneButtonsPanel():
         nl = type(self).nl # access Class variable
         bf_namelists[nl].draw(context,element,layout)
 
-class SCENE_PT_bf_HEAD(SceneButtonsPanel,Panel):
+class SCENE_PT_bf_HEAD(SceneButtonsPanel,bpy.types.Panel):
     nl = "HEAD"
 
-class SCENE_PT_bf_TIME(SceneButtonsPanel,Panel):
+class SCENE_PT_bf_TIME(SceneButtonsPanel,bpy.types.Panel):
     nl = "TIME"
     
-class SCENE_PT_bf_MISC(SceneButtonsPanel,Panel):
+class SCENE_PT_bf_MISC(SceneButtonsPanel,bpy.types.Panel):
     nl = "MISC"
     
-class SCENE_PT_bf_REAC(SceneButtonsPanel,Panel):
+class SCENE_PT_bf_REAC(SceneButtonsPanel,bpy.types.Panel):
     nl = "REAC"
 
-class SCENE_PT_bf_DUMP(SceneButtonsPanel,Panel):
+class SCENE_PT_bf_DUMP(SceneButtonsPanel,bpy.types.Panel):
     nl = "DUMP"
 
 ### Object panels
@@ -68,7 +68,7 @@ class ObjectButtonsPanel():
         ob = context.active_object
         return ob and ob.type == "MESH"
 
-class OBJECT_PT_bf(ObjectButtonsPanel,Panel):
+class OBJECT_PT_bf(ObjectButtonsPanel,bpy.types.Panel):
     bl_label = "FDS Object"
 
     def draw_header(self,context):
@@ -96,7 +96,7 @@ class MaterialButtonsPanel():
         ob = context.active_object
         return ma and ob and ob.type == "MESH" and "SURF_ID" in ob.get_bf_params() and not ob.bf_is_voxels
 
-class MATERIAL_PT_bf(MaterialButtonsPanel,Panel):
+class MATERIAL_PT_bf(MaterialButtonsPanel,bpy.types.Panel):
     bl_label = "FDS Material"
 
     def draw_header(self,context):
