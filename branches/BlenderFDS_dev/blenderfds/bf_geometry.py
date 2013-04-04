@@ -35,12 +35,17 @@ def _get_tessfaces(context, me):
 
 def is_manifold(context, me):
     """Check if mesh me is manifold"""
-    bme = bmesh.new()
-    bme.from_mesh(me)
-    for edge in bme.edges:
-        if not edge.is_manifold: return False
-    for vert in bme.verts:
-        if not vert.is_manifold: return False
+    bm = bmesh.new()
+    bm.from_mesh(me)
+    for edge in bm.edges:
+        if not edge.is_manifold:
+            bm.free()
+            return False
+    for vert in bm.verts:
+        if not vert.is_manifold:
+            bm.free()
+            return False
+    bm.free()
     return True
 
 def calc_remesh(context, dimension, voxel_size):

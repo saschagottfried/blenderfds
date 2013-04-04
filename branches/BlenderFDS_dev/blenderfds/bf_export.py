@@ -20,19 +20,20 @@
 import bpy, os
 from bpy_extras.io_utils import ExportHelper
 
-from .bf_types import bf_file, bf_namelists
+from .bf_types import bf_file
 from .bf_basic_types import BFError
 from .bf_osd import bf_osd
 
 ### Export to .fds menu
 
 def export_fds_menu(self,context):
+    """Export FDS menu funtion"""
     # Prepare default filepath
-    filepath ="{0}.fds".format(os.path.splitext(bpy.data.filepath)[0])
+    filepath = "{0}.fds".format(os.path.splitext(bpy.data.filepath)[0])
     directory = os.path.dirname(filepath)
     basename = os.path.basename(filepath)
     # If the context scene contains path and basename, use them
-    sc = context.scene # FIXME no BFError management!
+    sc = context.scene
     if sc.bf_case_directory: directory = sc.bf_case_directory
     if sc.name: basename = "{0}.fds".format(bpy.path.clean_name(sc.name))
     # Call the exporter operator
@@ -40,6 +41,7 @@ def export_fds_menu(self,context):
     self.layout.operator(ExportFDS.bl_idname, text="Fire Dynamics Simulator Case (.fds)").filepath = filepath
 
 class ExportFDS(bpy.types.Operator,ExportHelper):
+    """Export FDS operator"""
     bl_label = "Export scene as FDS case"
     bl_idname = "export_scene.nist_fds"
     bl_description = "Export current Blender Scene as an FDS file"
@@ -54,13 +56,12 @@ def save(operator,context,filepath=""):
     print("BlenderFDS: save(): Start exporting current scene to FDS case file: {}".format(context.scene.name))
 
     # FIXME predefined materials and case file version
+    # FIXME Config file
     # Prepare file name
     if not filepath.lower().endswith('.fds'): filepath += '.fds'
     # Check output file is writable
     print("BlenderFDS: save(): Check if the file is writable: {}".format(filepath))
-    # FIXME expand filepath //test/test.fds is not good
     filepath = bpy.path.abspath(filepath)
-    #
     try:
         with open(filepath, "w") as out_file:
             out_file.write("Test")

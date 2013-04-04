@@ -32,6 +32,7 @@ class BFList(list):
         self.extend(list_)
 
     def __check(self,item):
+        """Check item for name attribute and unicity"""
         # Check name attribute
         if not hasattr(item,"name"): raise ValueError("{} has no 'name' attribute".format(item))
         # Check unique name

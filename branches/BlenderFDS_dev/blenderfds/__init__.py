@@ -24,7 +24,6 @@ bl_info = {
     "version": (9, 9, 9),
     "blender": (2, 6, 4),
     "api": 35622,
-    "category": "Export",
     "location": "File > Export > FDS Case (.fds)",
     "description": "BlenderFDS, an open graphical editor for the NIST Fire Dynamics Simulator",
     "warning": "",
@@ -37,7 +36,6 @@ bl_info = {
 # Reload if changed
 if "bpy" in locals():
     import imp
-    imp.reload(bf_ui)
     imp.reload(bf_export)
     imp.reload(bf_operators)
     imp.reload(bf_handlers)
@@ -45,13 +43,15 @@ if "bpy" in locals():
     imp.reload(bf_objects)
 else:
     import bpy
-    from . import bf_ui, bf_export, bf_operators, bf_handlers, bf_types, bf_objects
+    from . import bf_export, bf_operators, bf_handlers, bf_types, bf_objects
 
 ### Registration/Unregistration
 
 def register():
+    """Register Blender types"""
     bpy.utils.register_module(__name__)
     for bf_namelist in bf_types.bf_namelists: bf_namelist.register()
+    for bf_namelist in bf_types.bf_namelists: bf_namelist.register_panel()
     bpy.types.INFO_MT_file_export.append(bf_export.export_fds_menu)
     bpy.app.handlers.load_post.append(bf_handlers.load_handler)
     bpy.app.handlers.save_post.append(bf_handlers.save_handler)
@@ -59,8 +59,10 @@ def register():
     bf_objects.update_menu()
 
 def unregister():
+    """Unregister Blender types"""
     bpy.utils.unregister_module(__name__)
     for bf_namelist in bf_types.bf_namelists: bf_namelist.unregister()
+    for bf_namelist in bf_types.bf_namelists: bf_namelist.unregister_panel()
     bpy.types.INFO_MT_file_export.remove(bf_export.export_fds_menu)
     bpy.app.handlers.load_post.remove(bf_handlers.load_handler)
     bpy.app.handlers.save_post.remove(bf_handlers.save_handler)

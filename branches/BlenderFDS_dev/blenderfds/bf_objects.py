@@ -18,7 +18,7 @@
 """BlenderFDS, an open tool for the NIST Fire Dynamics Simulator"""
 
 import bpy, os
-from .bf_types import BProp, BFParam, BFNamelist, BFSection, BFFile, bf_namelists
+from .bf_types import BProp, BFParam, BFNamelist, BFSection, bf_namelists, bf_params
 from .bf_basic_types import BFResult, BFError
 from . import bf_operators, bf_geometry, bf_config
 
@@ -164,9 +164,19 @@ BFParam(
     b_props = "bf_head_title",
 )
 
+BFNamelist(
+    name = "HEAD",
+    description = "Header",
+    f_name = "HEAD",
+    bpy_type = bpy.types.Scene,
+    bf_params = ("CHID","TITLE"),
+)
+
+### Case Config
+
 class BFParam_path_exists(BFParam):
     def _check(self,value):
-        if not os.path.exists(bpy.path.abspath(value)): raise BFError(self,"Path does not exists")
+        if not os.path.exists(bpy.path.abspath(value)): raise BFError(self,"Path does not exist")
 
 BProp(
     name = "bf_case_directory",
@@ -182,16 +192,16 @@ BFParam_path_exists(
 )
 
 BProp(
-    name = "bf_config_filepath",
-    label = "Config File",
+    name = "bf_ext_config_filepath",
+    label = "Ext Config File",
     description = "Path to external configuration file",
     bpy_prop = bpy.props.StringProperty,
     other = {"default":"config.fds","subtype":"FILE_PATH","maxlen":1024},
 )
 
 BFParam_path_exists(
-    name = "Config File",
-    b_props = "bf_config_filepath",
+    name = "External Config File",
+    b_props = "bf_ext_config_filepath",
     b_default_export = True,
 )
 
@@ -210,11 +220,9 @@ BFParam(
 # FIXME bl_info["version"]
 
 BFNamelist(
-    name = "HEAD",
-    description = "Header and Case Config",
-    f_name = "HEAD",
+    name = "Case Configuration",
     bpy_type = bpy.types.Scene,
-    bf_params = ("CHID","TITLE","Case Directory","Config File","Version"),
+    bf_params = ("Case Directory","External Config File","Version"),
 )
 
 ### TIME
@@ -462,7 +470,7 @@ class BFParam_XB(BFParam):
     def to_fds(self,context,element):
         # Check and init
         if not self._is_exported(context,element): return None
-        res = self._evaluate(context,element)
+        res = self.evaluate(context,element)
         # Select case
         if res.value == "BBOX":
             xbs, tt = bf_geometry.get_bbox(context,element)
@@ -542,7 +550,7 @@ class BFParam_XYZ(BFParam):
     def to_fds(self,context,element):
         # Check and init
         if not self._is_exported(context,element): return None
-        res = self._evaluate(context,element)
+        res = self.evaluate(context,element)
         # Select case
         if res.value == "CENTER":
             xyzs, tt = bf_geometry.get_center(context,element)
@@ -594,7 +602,7 @@ class BFParam_PB(BFParam):
     
     def to_fds(self,context,element):
         # Check and init
-        if not self.is_exported(context,element): return None
+        if not self._is_exported(context,element): return None
         res = self.evaluate(context,element)
         # Select case
         if res.value == "PLANES":
@@ -612,7 +620,7 @@ BProp(
     description = "Set planes",
     bpy_prop = bpy.props.EnumProperty,
     other = {"items":items,"default":"PLANES"},
-),
+)
 
 BFParam_PB(
     name = "PB",
@@ -643,7 +651,7 @@ BFParam_DEVC_ID(
 class BFParam_SURF_ID(BFParam):
     def _draw_b_props(self,context,element,layout):
         row = layout.row()
-        row.prop_search(element,"active_material",bpy.data,"materials",text="SURF_ID")
+        row.prop_search(element,"active_material",bpy.data,"materials",text="SURF_ID:")
     def _is_exported(self,context,element):
         return element.active_material and element.active_material.bf_namelist_export or False
     def _has_active_ui(self,context,element):
@@ -697,7 +705,7 @@ BProp(
 
 # FIXME check number for Poisson and inform user
 class BFParam_IJK(BFParam):
-    def _evaluate(self,context,element):
+    def evaluate(self,context,element):
         value = element.bf_mesh_ijk
         msg = "{0} mesh cells of size {1[0]:.3f} x {1[1]:.3f} x {1[2]:.3f}".format(bf_geometry.get_cell_number(element),bf_geometry.get_cell_size(element))
         return BFResult(sender=self,value=value,msg=msg)
@@ -882,6 +890,30 @@ BFNamelist_SURF(
 BFSection(
     name = "General configuration",
     bf_namelists = ("HEAD","REAC","DUMP"),
+)
+
+# FIXME
+class BFSection_External_Config(BFSection):
+    def to_fds(self,context,element):
+        print("BlenderFDS: > BFSection.to_fds: {}".format(self.name))
+        bf_param = bf_params["External Config File"]
+        if not bf_param.b_prop_export.value(context,context.scene): return None # Nothing to send
+        # Evaluate res to get external config filepath
+        res = bf_param.evaluate(context,context.scene) # Do not trap exceptions, pass them upward
+        if res is None or res.value is None: return res # Could have msgs
+        filepath = bpy.path.abspath(res.value)
+        # Read file
+        try:
+            with open(filepath) as in_file:
+                res.value = in_file.read() + "\n"
+        except IOError: raise BFError(sender=self,msgs="External config file not readable: {}".format(filepath))
+        # Check
+        res.msgs.append(filepath)
+        res.value = self._format(res.value,res.labels)
+        return res
+
+BFSection_External_Config(
+    name = "External configuration",
 )
 
 BFSection(

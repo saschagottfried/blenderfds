@@ -20,6 +20,9 @@
 import bpy
 from .bf_types import bf_namelists
 
+#FIXME
+print("UI")
+
 ### Scene panels
 
 class SceneButtonsPanel():
@@ -41,8 +44,20 @@ class SceneButtonsPanel():
         nl = type(self).nl # access Class variable
         bf_namelists[nl].draw(context,element,layout)
 
+# FIXME automatic panel creation!
+# use type?
+#def register_panels():
+#    for index, bf_namelist in enumerate(bf_namelist for bf_namelist in bf_namelists if bf_namelist.bpy_type == bpy.types.Scene):
+#        name = "SCENE_PT_bf_{}".format(index)
+#        param = {"nl":bf_namelist.name}
+#        print("Panel:",name,param)
+#        bpy.utils.register_class(type(name,(SceneButtonsPanel,bpy.types.Panel,), param))
+
 class SCENE_PT_bf_HEAD(SceneButtonsPanel,bpy.types.Panel):
     nl = "HEAD"
+
+class SCENE_PT_bf_CC(SceneButtonsPanel,bpy.types.Panel):
+    nl = "Case Configuration"
 
 class SCENE_PT_bf_TIME(SceneButtonsPanel,bpy.types.Panel):
     nl = "TIME"

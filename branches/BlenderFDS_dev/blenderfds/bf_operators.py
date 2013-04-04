@@ -15,8 +15,10 @@
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # ##### END GPL LICENSE BLOCK #####
+"""BlenderFDS, operators"""
 
-from . import bf_osd, bf_geometry
+from . import bf_geometry
+from .bf_osd import bf_osd
 import bpy
 
 class OBJECT_OT_bf_correct_ijk(bpy.types.Operator):
