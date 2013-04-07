@@ -25,19 +25,7 @@
 from functools import total_ordering
 
 class BFList(list):
-    """List of uniquely named objects"""
-    
-    def __init__(self,list_=list()):
-        list.__init__(self,list())
-        self.extend(list_)
-
-    def __check(self,item):
-        """Check item for name attribute and unicity"""
-        # Check name attribute
-        if not hasattr(item,"name"): raise ValueError("{} has no 'name' attribute".format(item))
-        # Check unique name
-        if item.name in self.keys():
-            raise ValueError("Duplicated name '{}'".format(item.name))
+    """Enhanced list. You can get an item by its name: bf_list["example"]"""
 
     def __repr__(self):
         return "<{0}[{1}]>".format(self.__class__.__name__,len(self))
@@ -49,78 +37,35 @@ class BFList(list):
         return list.__getitem__(self,key)
 
     def __contains__(self,key):
-        if isinstance(key,str):
-            if self.get(key,False): return True
-            else: return False
+        if isinstance(key,str): return self.get(key,False) and True
         return list.__contains__(self,key)
 
-    def __setitem__(self, index, item):
-        self.__check(item)
-        list.__setitem__(self, index, item)
-
-    def extend(self, list_):
-        for item in list_: self.append(item)
-  
-    def append(self, item):
-        self.__check(item)
-        list.append(self, item)
-  
-    def insert(self, index, item):
-        self.__check(item)
-        list.insert(self,index,item)
-
     def get(self,key,default=None):
+        """Get value that has value.name = key and check duplication"""
+        result = None
         for value in self:
-            if value.name == key: return value
+            if getattr(value,"name",None) == key:
+                if result: raise KeyError("BFList: Duplicated name:",key)
+                result = value
+        if result is not None: return result
         if default is not None: return default
-        raise KeyError("'{}' not found".format(key))
-    
-    def items(self):
-        return list(((value.name,value) for value in self))
-
-    def keys(self):
-        return list((item.name for item in self))
-    
-    def values(self):
-        return list(self)
-  
-    def __add__(self,other):
-        return self.__class__(list.__add__(self,other))
-  
-    def __iadd__(self,other):
-        return self.__class__(list.__iadd__(self,other))
-
-    def __mul__(self,other):
-        return self.__class__(list.__mul__(self,other))
-  
-    def __imul__(self,other):
-        return self.__class__(list.__imul__(self,other))
-
-    def __rmul__(self,other):
-        return self.__class__(list.__rmul__(self,other))
-    
+      
 @total_ordering
-class BFObject():
-    """Generic BlenderFDS objects"""
-    
-    def __init__(self,name):
-        if not name: raise ValueError("Bad name: '{}'".format(name))
-        self.name = name
-    
-    def __repr__(self):
-        return "<{0}('{1}')>".format(self.__class__.__name__,self.name)
-    
-    def __lt__(self,other):
-        return self.name < other.name
-
-class BFItem(BFObject):
+class BFListItem():
     """BlenderFDS self-appending items of BFList"""
 
     bf_list = BFList()
 
     def __init__(self,name):
-        BFObject.__init__(self,name)
+        if not name: raise ValueError("BFListItem: Invalid name")
+        self.name = name
         self.bf_list.append(self)
+
+    def __repr__(self):
+        return "<{0}('{1}')>".format(self.__class__.__name__,self.name)
+    
+    def __lt__(self,other):
+        return self.name < other.name
 
 class BFResult():
     """Result returned by all exporting methods
@@ -176,54 +121,15 @@ class BFError(BFResult,Exception):
 
 if __name__ == "__main__":
 
-# FResult, FError
-    
-    BFItem(name="John")
-    BFItem(name="Mac")
-    BFItem(name="Bob")
-
-    bf_items = BFItem.bf_list
-
-    print("Test __lt__:", bf_items["John"] < bf_items["Mac"], bf_items["John"] > bf_items["Mac"])
-    print("Test __eq__:", bf_items["John"] == bf_items["Mac"], bf_items["John"] == bf_items["John"])
-    print("Test __ge__:", bf_items["John"] <= bf_items["Mac"], bf_items["John"] >= bf_items["Mac"])
-
-    for bf_item in bf_items:
-        print(bf_item)
-
-    bf_items.sort()
-
-    for bf_item in bf_items:
-        print(bf_item)
-    
-    bf_results = list()
-    
-    bf_results.append(BFResult(bf_items["John"],42))
-    bf_results.append(BFResult(bf_items["Mac"],43,"This is a message"))
-    bf_results.append(BFResult(bf_items["Bob"],44,msgs=("This is a message","This is a second")))
-    bf_results.append(BFResult(bf_items["John"],42,None))
-    bf_results.append(BFResult(None,43,"This is a message"))
-
-    for bf_result in bf_results:
-        print(bf_result)
-        print(bf_result.sender,bf_result.value,bf_result.msgs,bf_result.labels)
-
-#    raise BFError(bf_items["John"],"Not good!")
-    raise BFError(bf_items["John"],("Not good!","Really not!"))
-    bf_error = BFError(None)
-    bf_error.msgs.append("Worst than ever")
-    bf_error.msgs.append("Yeah")
-#    raise bf_error
-
 # Other classes
 
-    class Person(BFItem):
+    class Person(BFListItem):
         """Person"""
         
-        bf_list = BFList() # new BFList, not that from BFItem
+        bf_list = BFList() # new BFList, not that from BFListItem
         
         def __init__(self,name,age):
-            BFItem.__init__(self,name)
+            BFListItem.__init__(self,name)
             self.age = age
 
     class PersonWeighted(Person):
@@ -232,12 +138,12 @@ if __name__ == "__main__":
             Person.__init__(self,name,age)
             self.weight = weight
             
-    BFItem("Alien")
+    BFListItem("Alien")
     Person("John",40)
     
     # Test embedded bf_list and items() method
-    print(BFItem.bf_list.items())
-    print(Person.bf_list.items())
+    print(BFListItem.bf_list)
+    print(Person.bf_list)
     
     PersonWeighted("Mike",20,85) 
     PersonWeighted("Carl",20,85)
@@ -246,9 +152,9 @@ if __name__ == "__main__":
     PersonWeighted("Alex",21,80)
 
     # Test embedded bf_list
-    print(BFItem.bf_list.items())
-    print(Person.bf_list.items())
-    print(PersonWeighted.bf_list.items())
+    print(BFListItem.bf_list)
+    print(Person.bf_list)
+    print(PersonWeighted.bf_list)
     
     # Test duplication error    
     # Person("John",41)
@@ -264,12 +170,46 @@ if __name__ == "__main__":
     print("Robert" in persons)
     print("Emanuele" in persons)
 
-    # keys(), values(), items()
-    print(persons.keys())
-    print(persons.values())
-    print(persons.items())
-
     # for
     for person in persons:
         print("name:",person.name,"age:",person.age)
         if hasattr(person,"weight"): print("weight:",person.weight)
+
+
+# FResult, FError
+    
+    BFListItem("John")
+    BFListItem("Mac")
+    BFListItem("Bob")
+
+    bf_list_items = BFListItem.bf_list
+    print(bf_list_items)
+
+    for bf_item in bf_list_items:
+        print(bf_item)
+
+    bf_list_items.sort()
+
+    for bf_item in bf_list_items:
+        print(bf_item)
+
+    quit()
+    
+    bf_results = list()
+    
+    bf_results.append(BFResult(bf_list_items["John"],42))
+    bf_results.append(BFResult(bf_list_items["Mac"],43,"This is a message"))
+    bf_results.append(BFResult(bf_list_items["Bob"],44,msgs=("This is a message","This is a second")))
+    bf_results.append(BFResult(bf_list_items["John"],42,None))
+    bf_results.append(BFResult(None,43,"This is a message"))
+
+    for bf_result in bf_results:
+        print(bf_result)
+        print(bf_result.sender,bf_result.value,bf_result.msgs,bf_result.labels)
+
+#    raise BFError(bf_list_items["John"],"Not good!")
+#    raise BFError(bf_list_items["John"],("Not good!","Really not!"))
+    bf_error = BFError(None)
+    bf_error.msgs.append("Worst than ever")
+    bf_error.msgs.append("Yeah")
+#    raise bf_error

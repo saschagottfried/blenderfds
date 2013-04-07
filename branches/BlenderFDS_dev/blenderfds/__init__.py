@@ -50,19 +50,22 @@ else:
 def register():
     """Register Blender types"""
     bpy.utils.register_module(__name__)
+    # Register namelists, their properties, and the panels
     for bf_namelist in bf_types.bf_namelists: bf_namelist.register()
-    for bf_namelist in bf_types.bf_namelists: bf_namelist.register_panel()
+    # Register menu and handlers
     bpy.types.INFO_MT_file_export.append(bf_export.export_fds_menu)
     bpy.app.handlers.load_post.append(bf_handlers.load_handler)
     bpy.app.handlers.save_post.append(bf_handlers.save_handler)
-    ### Update bf_namelist menus FIXME improve
-    bf_objects.update_menu()
-
+    # Update bf_params["Namelist"] items
+    # This must be done now, after registering all other objects
+    bf_types.bf_params["Namelist"].update_bf_namelist_items()
+    
 def unregister():
     """Unregister Blender types"""
     bpy.utils.unregister_module(__name__)
+    # Unegister namelists, their properties, and the panels
     for bf_namelist in bf_types.bf_namelists: bf_namelist.unregister()
-    for bf_namelist in bf_types.bf_namelists: bf_namelist.unregister_panel()
+    # Unregister menu and handlers
     bpy.types.INFO_MT_file_export.remove(bf_export.export_fds_menu)
     bpy.app.handlers.load_post.remove(bf_handlers.load_handler)
     bpy.app.handlers.save_post.remove(bf_handlers.save_handler)

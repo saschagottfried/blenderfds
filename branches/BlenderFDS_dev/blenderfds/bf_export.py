@@ -56,7 +56,6 @@ def save(operator,context,filepath=""):
     print("BlenderFDS: save(): Start exporting current scene to FDS case file: {}".format(context.scene.name))
 
     # FIXME predefined materials and case file version
-    # FIXME Config file
     # Prepare file name
     if not filepath.lower().endswith('.fds'): filepath += '.fds'
     # Check output file is writable
