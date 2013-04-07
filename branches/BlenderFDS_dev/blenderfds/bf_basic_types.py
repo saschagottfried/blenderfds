@@ -25,7 +25,7 @@
 from functools import total_ordering
 
 class BFList(list):
-    """Enhanced list, you can get an item by its item.name
+    """Enhanced list, you can get an item by its item.name: bf_list["example"]
     
     >>> bf_list = BFList((BFListItem("first"), BFListItem("second"), BFListItem("third")))
     >>> bf_list["first"]
@@ -68,7 +68,7 @@ class BFList(list):
     
 @total_ordering
 class BFListItem():
-    """BlenderFDS self-appending items of BFList
+    """Self-appending items of BFList
     
     >>> BFListItem("first"), BFListItem("second"), BFListItem("third")
     (<BFListItem('first')>, <BFListItem('second')>, <BFListItem('third')>)

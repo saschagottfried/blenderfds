@@ -19,14 +19,18 @@
 
 import bpy
 
-from .bf_basic_types import BFListItem, BFList, BFResult, BFError
+from .bf_basic_types import BFList, BFListItem, BFResult, BFError
 from .bf_osd import bf_osd
 from . import bf_format, bf_config
 
 ### General functions
 
 def _isiterable(var):
-    """Check if var is iterable or not"""
+    """Check if var is iterable or not
+    
+    >>> _isiterable("hello"), _isiterable((1,2,3)), _isiterable({1,2,3})
+    (False, True, True)
+    """
     # A str is iterable in Py... not what I want
     if isinstance(var,str): return False
     # Let's try and fail nicely
@@ -692,3 +696,7 @@ class MaterialPanel():
         element = context.material
         bf_namelist = bf_namelists[element.bf_namelist] # get self bf_namelist object from element
         bf_namelist.draw(context,element,layout)
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
