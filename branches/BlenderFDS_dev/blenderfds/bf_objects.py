@@ -18,7 +18,7 @@
 """BlenderFDS, an open tool for the NIST Fire Dynamics Simulator"""
 
 import bpy, os
-from .bf_types import BFProp, BFParam, BFNamelist, BFSection, bf_namelists, bf_params
+from .bf_types import BFProp, BFParam, BFNamelist, BFSection, bf_namelists, bf_params, bf_sections
 from .bf_basic_types import BFResult, BFError
 from . import bf_operators, bf_geometry, bf_config
 
@@ -26,9 +26,9 @@ from . import bf_operators, bf_geometry, bf_config
 
 BFProp(
     name = "bf_id",
-    bpy_name = "name",
     label = "ID",
     description = "Element identificator",
+    bpy_name = "name",
 )
 
 BFParam(
@@ -91,9 +91,9 @@ class BFParam_filename(BFParam):
 
 BFProp(
     name = "bf_chid",
-    bpy_name = "name",
     label = "CHID",
     description = "Case identificator",
+    bpy_name = "name",
 )
 
 BFParam_filename(
@@ -274,7 +274,7 @@ BFNamelist(
 BFProp(
     name = "bf_reac_fuel",
     label = "FUEL",
-    description = "Identificator of fuel species for the reaction",
+    description = "Identificator of fuel species",
     bpy_prop = bpy.props.StringProperty,
     maxlen = 32,
 )
@@ -288,7 +288,7 @@ BFParam(
 BFProp(
     name = "bf_reac_formula",
     label = "FORMULA",
-    description = "Chemical formula of the fuel species for the reaction, it can only contain C, H, O, or N",
+    description = "Chemical formula of fuel species, it can only contain C, H, O, or N",
     bpy_prop = bpy.props.StringProperty,
     maxlen = 32,
 )
@@ -436,7 +436,7 @@ class BFParam_XB(BFParam):
             if dimension_too_large: raise BFError(self,"Object too large, voxel size not guaranteed")
         return value
 
-    def _draw_post(self,context,element,layout):
+    def _draw_extra(self,context,element,layout):
         if element.bf_xb == "VOXELS":
             row = layout.row()
             bf_prop = self.bf_props["bf_voxel_size"]
@@ -709,9 +709,9 @@ class BFParam_RGB(BFParam):
 
 BFProp(
     name = "bf_rgb",
-    bpy_name = "diffuse_color",
     label = "RGB",
     description = "RGB",
+    bpy_name = "diffuse_color",
 )
 
 BFParam_RGB(
@@ -722,16 +722,16 @@ BFParam_RGB(
 
 BFProp(
     name = "bf_transparency",
-    bpy_name = "alpha",
     label = "TRANSPARENCY",
     description = "Transparency",
+    bpy_name = "alpha",
 )
 
 BFProp(
     name = "bf_transparency_export",
-    bpy_name = "use_transparency",
     label = "Export",
     description = "Export parameter",
+    bpy_name = "use_transparency",
 )
 
 BFParam(
@@ -884,7 +884,7 @@ BFNamelist_SURF(
 
 BFSection(
     name = "General configuration",
-    bf_namelists = ("HEAD","REAC","DUMP"),
+    bf_namelists = ("HEAD","TIME","MISC","REAC","DUMP"),
 )
 
 class BFSection_External_Config(BFSection):
@@ -936,6 +936,9 @@ BFSection(
     bf_namelists = ("DEVC", "SLCF", "PROF"),
 )
 
+# FIXME TMP and so on...
+# This bf_section gets all bf_namelist left alone without a section
 BFSection(
     name = "Others",
+    bf_namelists = set(bf_namelists) - set(bf_namelist for bf_section in bf_sections for bf_namelist in bf_section.bf_namelists)
 )

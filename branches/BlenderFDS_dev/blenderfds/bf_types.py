@@ -54,8 +54,8 @@ class BFProp(BFListItem):
     label -- UI label, eg "FYI".
     description -- UI help text, eg "For your information"
     has_auto_ui -- True/False if it has an automatic UI
-    bpy_name -- Blender property name, eg "bf_fyi" or "name".
-    bpy_prop -- Blender property type, eg bpy.props.StringProperty. If None, refer to existing Blender property
+    bpy_name -- Blender property name, eg "bf_fyi" or "name". If None, use name.
+    bpy_prop -- Blender property type, eg bpy.props.StringProperty. If None, refer to existing Blender property.
     operator -- optional name of a related operator shown in the UI
     **kwargs -- other optional Blender properties
     precision -- (readonly) float precision
@@ -69,13 +69,13 @@ class BFProp(BFListItem):
         self.description = description or label or name
         self.has_auto_ui = has_auto_ui
         self.operator = operator
-        self.bpy_name = bpy_name
+        self.bpy_name = bpy_name or name
         self.bpy_prop = bpy_prop
         self.bpy_other = kwargs
 
     def register(self,bpy_type):
         """Register Blender property in Blender bpy_type"""
-        print("BlenderFDS: > > BFProp.register: {}".format(self.name))
+        print("BlenderFDS: > > BFProp.register:", self.name, self.bpy_name)
         if self.bpy_prop: setattr(bpy_type,self.bpy_name,self.bpy_prop(name=self.label,description=self.description,**self.bpy_other))
 
     def unregister(self,bpy_type):
@@ -299,7 +299,7 @@ class BFNamelist(BFListItem,BFHavingFDSName,BFHavingChildren):
         BFHavingFDSName.__init__(self,fds_name=fds_name,bf_prop_export=bf_prop_export,has_auto_export=has_auto_export)
         self.unique_id = unique_id # TODO test it is really unique
         self.label = label or name
-        self.description = description or label or name
+        self.description = description # No automatic description if None
         self.bpy_type = bpy_type or bpy.types.Object
         self.bf_params = _check_items(bf_params,BFParam)
 
@@ -312,7 +312,7 @@ class BFNamelist(BFListItem,BFHavingFDSName,BFHavingChildren):
         # Register panel
         if self.bpy_type == bpy.types.Scene:
             name = "SCENE_PT_bf_" + self.name.replace(' ', '_')
-            self._b_panel = type(name,(ScenePanel,bpy.types.Panel,),{"nl":self.name})
+            self._b_panel = type(name,(ScenePanel,bpy.types.Panel,),{"bf_namelist":self.name})
         elif self.bpy_type == bpy.types.Object:
             self._b_panel = type("OBJECT_PT_bf_common",(ObjectPanel,bpy.types.Panel,),{})       
         elif self.bpy_type == bpy.types.Material:
@@ -394,14 +394,13 @@ class BFNamelist(BFListItem,BFHavingFDSName,BFHavingChildren):
         layout.active = self._has_active_ui(context,element)
         return layout
 
-    def _draw_bf_params(self,context,element,layout):
-        """Draw self bf_params for element in the layout."""
-        for bf_param in self.bf_params:
-            bf_param.draw(context,element,layout)
-
     def _draw_extra(self,context,element,layout):
         """Draw extra customized widgets for element in the layout"""
         pass
+
+    def _draw_bf_params(self,context,element,layout):
+        """Draw self bf_params for element in the layout."""
+        for bf_param in self.bf_params: bf_param.draw(context,element,layout)
 
     def draw(self,context,element,layout):
         """Draw Blender panel for element in the layout"""
@@ -409,7 +408,6 @@ class BFNamelist(BFListItem,BFHavingFDSName,BFHavingChildren):
         self._draw_extra(context,element,layout)
         self._draw_error(context,element,layout)
         self._draw_bf_params(context,element,layout)
-        self._draw_extra(context,element,layout)
 
 class BFSection(BFListItem,BFHavingChildren):
     """BlenderFDS section, used for grouping FDS namelists.
@@ -575,12 +573,15 @@ BFProp(
 )
 
 class BFParam_namelist(BFParam):
+    """Self has a special method to update self menus"""
     def _update_bf_namelist(self,bpy_type,default):
-        items = (bf_namelist for bf_namelist in bf_namelists if bf_namelist.bpy_type == bpy_type)
-        items = list((item.name,"{} ({})".format(item.label,item.description),item.description,item.unique_id) \
-            for item in items)
+        items = list()
+        for bf_namelist in bf_namelists:
+            if not bf_namelist.bpy_type == bpy_type: continue
+            if bf_namelist.description: description = "{} ({})".format(bf_namelist.label,bf_namelist.description)
+            else: description = bf_namelist.label
+            items.append((bf_namelist.name,description,description,bf_namelist.unique_id,))
         items.sort()
-        print("items",items)
         bpy_type.bf_namelist = bpy.props.EnumProperty(
             name="Namelist",
             description="Type of FDS namelist",
@@ -590,14 +591,8 @@ class BFParam_namelist(BFParam):
             
     def update_bf_namelist_items(self):
         print("BlenderFDS: update_bf_namelist_items")
-        # namelists for Object
-        bpy_type = bpy.types.Object
-        default = "OBST"
-        self._update_bf_namelist(bpy_type,default)
-        # namelists for Material
-        bpy_type = bpy.types.Material
-        default = "SURF"
-        self._update_bf_namelist(bpy_type,default)
+        self._update_bf_namelist(bpy.types.Object,"OBST")
+        self._update_bf_namelist(bpy.types.Material,"SURF")
 
 BFParam_namelist(
     name = "Namelist",
@@ -607,6 +602,7 @@ BFParam_namelist(
 class BFNamelist_TMP(BFNamelist):
     def draw_header(self,context,element,layout):
         return "BlenderFDS Temporary Object"
+    
     def draw(self,context,element,layout):
         row = layout.row()
         row.operator("object.bf_hide_voxels")
@@ -627,19 +623,18 @@ class ScenePanel():
     bl_region_type = "WINDOW"
     bl_context = "scene"
     bl_label = "BlenderFDS Scene"
-    nl = None
 
     def draw_header(self,context):
         layout = self.layout
         element = context.scene
-        nl = type(self).nl # access Class variable
-        self.bl_label = bf_namelists[nl].draw_header(context,element,layout)
+        bf_namelist = bf_namelists[type(self).bf_namelist] # access Class variable and get self bf_namelist object
+        self.bl_label = bf_namelist.draw_header(context,element,layout)
 
     def draw(self,context):
         layout = self.layout
         element = context.scene
-        nl = type(self).nl # access Class variable
-        bf_namelists[nl].draw(context,element,layout)
+        bf_namelist = bf_namelists[type(self).bf_namelist] # access Class variable and get self bf_namelist object
+        bf_namelist.draw(context,element,layout)
 
 # Object panel
 
@@ -657,14 +652,14 @@ class ObjectPanel():
     def draw_header(self,context):
         layout = self.layout
         element = context.active_object
-        nl = element.bf_namelist     
-        self.bl_label = bf_namelists[nl].draw_header(context,element,layout)
+        bf_namelist = bf_namelists[element.bf_namelist] # get self bf_namelist object from element
+        self.bl_label = bf_namelist.draw_header(context,element,layout)
 
     def draw(self,context):
         layout = self.layout
         element = context.active_object
-        nl = element.bf_namelist
-        bf_namelists[nl].draw(context,element,layout)
+        bf_namelist = bf_namelists[element.bf_namelist] # get self bf_namelist object from element
+        bf_namelist.draw(context,element,layout)
 
 # Material panel
 
@@ -683,11 +678,11 @@ class MaterialPanel():
     def draw_header(self,context):
         layout = self.layout
         element = context.material
-        nl = element.bf_namelist
-        self.bl_label = bf_namelists[nl].draw_header(context,element,layout)
+        bf_namelist = bf_namelists[element.bf_namelist] # get self bf_namelist object from element
+        self.bl_label = bf_namelist.draw_header(context,element,layout)
 
     def draw(self,context):
         layout = self.layout
         element = context.material
-        nl = element.bf_namelist
-        bf_namelists[nl].draw(context,element,layout)
+        bf_namelist = bf_namelists[element.bf_namelist] # get self bf_namelist object from element
+        bf_namelist.draw(context,element,layout)
