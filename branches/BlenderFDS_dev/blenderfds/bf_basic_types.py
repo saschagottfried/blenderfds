@@ -25,39 +25,67 @@
 from functools import total_ordering
 
 class BFList(list):
-    """Enhanced list. You can get an item by its name: bf_list["example"]"""
+    """Enhanced list, you can get an item by its item.name
+    
+    >>> bf_list = BFList((BFListItem("first"), BFListItem("second"), BFListItem("third")))
+    >>> bf_list["first"]
+    <BFListItem('first')>
+    >>> bf_list["error"]
+    Traceback (most recent call last):
+        ...
+    KeyError: 'error'
+    >>> "first" in bf_list, "error" in bf_list, bf_list.get("second"), bf_list.get("error","default")
+    (True, False, <BFListItem('second')>, 'default')
+    >>> for item in bf_list: item
+    <BFListItem('first')>
+    <BFListItem('second')>
+    <BFListItem('third')>
+    """
 
     def __repr__(self):
-        return "<{0}[{1}]>".format(self.__class__.__name__,len(self))
+        return "<{0}({1})>".format(self.__class__.__name__,list(self))
 
     def __getitem__(self,key):
-        if isinstance(key,str): return self.get(key)
-        if isinstance(key,tuple) or isinstance(key,list):  
-            return list((self[subkey] for subkey in key))
+        # Manage bf_list["key"]
+        if isinstance(key,str):
+            for value in self:
+                if getattr(value,"name",None) == key: return value
+            raise KeyError(key)
+        # Manage the rest (eg bf_list[3])
         return list.__getitem__(self,key)
 
     def __contains__(self,key):
+        # Manage "key" in bf_list
         if isinstance(key,str): return self.get(key,False) and True
+        # Manage the rest (eg item in bf_list)
         return list.__contains__(self,key)
 
     def get(self,key,default=None):
-        """Get value that has value.name = key and check duplication"""
-        result = None
+        """Manage bf_list.get("key",default=None)"""
         for value in self:
-            if getattr(value,"name",None) == key:
-                if result: raise KeyError("BFList: Duplicated name:",key)
-                result = value
-        if result is not None: return result
+            if getattr(value,"name",None) == key: return value
         if default is not None: return default
-      
+    
 @total_ordering
 class BFListItem():
-    """BlenderFDS self-appending items of BFList"""
+    """BlenderFDS self-appending items of BFList
+    
+    >>> BFListItem("first"), BFListItem("second"), BFListItem("third")
+    (<BFListItem('first')>, <BFListItem('second')>, <BFListItem('third')>)
+    >>> BFListItem(None)
+    Traceback (most recent call last):
+        ...
+    ValueError: Invalid name
+    >>> BFListItem.bf_list["first"]
+    <BFListItem('first')>
+    >>> BFListItem.bf_list["first"] > BFListItem.bf_list["second"], BFListItem.bf_list["third"] > BFListItem.bf_list["second"]
+    (False, True)
+    """
 
     bf_list = BFList()
 
     def __init__(self,name):
-        if not name: raise ValueError("BFListItem: Invalid name")
+        if not name: raise ValueError("Invalid name")
         self.name = name
         self.bf_list.append(self)
 
@@ -75,6 +103,12 @@ class BFResult():
     msg -- descriptive message concerning receiver
     msgs -- list of msg
     operator -- name of the operator that can help fixing the error
+    
+    >>> BFResult(BFListItem("John"),42), BFResult(BFListItem("Mac"),43,"Msg")
+    (<BFResult(42)>, <BFResult(43)>)
+    >>> c, d = BFResult(BFListItem("Bob"),44,msgs=("Msg1","Msg2","Msg3")), BFResult(None,None,None)
+    >>> c.labels, d.labels
+    (('Bob: Msg1', 'Bob: Msg2', 'Bob: Msg3'), ())
     """
     def __init__(self,sender=None,value=None,msg=None,msgs=None,operator=None):
         self.sender = sender
@@ -84,12 +118,12 @@ class BFResult():
         else: self.msgs = list()
         self.operator = operator
 
-    def __str__(self):
-        return "\n".join(self.labels)
+    def __repr__(self):
+        return "<{0}({1})>".format(self.__class__.__name__, getattr(self,"value",None) or self.msgs)
 
     def get_labels(self):
         if self.sender:
-            name = getattr(self.sender,"f_name",None) or getattr(self.sender,"name",None)
+            name = getattr(self.sender,"label",None) or getattr(self.sender,"fds_name",None) or getattr(self.sender,"name",None)
             return tuple("{}: {}".format(name,msg) for msg in self.msgs or tuple())
         else: return tuple(self.msgs or tuple())
     
@@ -99,10 +133,10 @@ class BFResult():
         """Draw self user interface"""
         if isinstance(self,Exception): icon = "ERROR"
         else: icon = "INFO"
-        for i,msg in enumerate(self.msgs or tuple()):
+        for index, msg in enumerate(self.msgs or tuple()):
             row = layout.row()
             row.label(icon=icon,text=msg)
-            if i == 0 and self.operator:
+            if index == 0 and self.operator:
                 row.operator(self.operator)
                 
 class BFError(BFResult,Exception):
@@ -112,104 +146,18 @@ class BFError(BFResult,Exception):
     msg -- descriptive message concerning receiver
     msgs -- list of msg
     operator -- name of the operator that can help fixing the error
+    
+    >>> try: raise BFError(BFListItem("John"),"Not good!")
+    ... except BFError as err: err.labels
+    ('John: Not good!',)
+    >>> try: raise BFError(BFListItem("Bob"),msgs=("Not good!","Really not!"))
+    ... except BFError as err: err.labels
+    ('Bob: Not good!', 'Bob: Really not!')
     """
     def __init__(self,sender=None,msg=None,msgs=None,operator=None):
         BFResult.__init__(self,sender=sender,msg=msg,msgs=msgs,operator=operator)
         del(self.value)
 
-### Test classes and show functionality
-
 if __name__ == "__main__":
-
-# Other classes
-
-    class Person(BFListItem):
-        """Person"""
-        
-        bf_list = BFList() # new BFList, not that from BFListItem
-        
-        def __init__(self,name,age):
-            BFListItem.__init__(self,name)
-            self.age = age
-
-    class PersonWeighted(Person):
-        """Person"""
-        def __init__(self,name,age,weight):
-            Person.__init__(self,name,age)
-            self.weight = weight
-            
-    BFListItem("Alien")
-    Person("John",40)
-    
-    # Test embedded bf_list and items() method
-    print(BFListItem.bf_list)
-    print(Person.bf_list)
-    
-    PersonWeighted("Mike",20,85) 
-    PersonWeighted("Carl",20,85)
-    Person("Bob",38)
-    Person("Robert",20)
-    PersonWeighted("Alex",21,80)
-
-    # Test embedded bf_list
-    print(BFListItem.bf_list)
-    print(Person.bf_list)
-    print(PersonWeighted.bf_list)
-    
-    # Test duplication error    
-    # Person("John",41)
-
-    persons = Person.bf_list
-    
-    # __init__, __getitem__
-    print(persons)
-    print(persons[1])
-    print(persons["Mike"])
-
-    # __contains__
-    print("Robert" in persons)
-    print("Emanuele" in persons)
-
-    # for
-    for person in persons:
-        print("name:",person.name,"age:",person.age)
-        if hasattr(person,"weight"): print("weight:",person.weight)
-
-
-# FResult, FError
-    
-    BFListItem("John")
-    BFListItem("Mac")
-    BFListItem("Bob")
-
-    bf_list_items = BFListItem.bf_list
-    print(bf_list_items)
-
-    for bf_item in bf_list_items:
-        print(bf_item)
-
-    bf_list_items.sort()
-
-    for bf_item in bf_list_items:
-        print(bf_item)
-
-    quit()
-    
-    bf_results = list()
-    
-    bf_results.append(BFResult(bf_list_items["John"],42))
-    bf_results.append(BFResult(bf_list_items["Mac"],43,"This is a message"))
-    bf_results.append(BFResult(bf_list_items["Bob"],44,msgs=("This is a message","This is a second")))
-    bf_results.append(BFResult(bf_list_items["John"],42,None))
-    bf_results.append(BFResult(None,43,"This is a message"))
-
-    for bf_result in bf_results:
-        print(bf_result)
-        print(bf_result.sender,bf_result.value,bf_result.msgs,bf_result.labels)
-
-#    raise BFError(bf_list_items["John"],"Not good!")
-#    raise BFError(bf_list_items["John"],("Not good!","Really not!"))
-    bf_error = BFError(None)
-    bf_error.msgs.append("Worst than ever")
-    bf_error.msgs.append("Yeah")
-#    raise bf_error
+    import doctest
+    doctest.testmod()

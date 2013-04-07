@@ -18,8 +18,8 @@
 """BlenderFDS, an open tool for the NIST Fire Dynamics Simulator"""
 
 import bpy, os
-from .bf_types import BFProp, BFParam, BFNamelist, BFSection, bf_namelists, bf_params, bf_sections
-from .bf_basic_types import BFResult, BFError
+from .bf_types import BFProp, BFParam, BFNamelist, BFSection, bf_props, bf_params, bf_namelists, bf_sections
+from .bf_basic_types import BFList, BFResult, BFError
 from . import bf_operators, bf_geometry, bf_config
 
 ### Generic BFParam
@@ -57,6 +57,8 @@ BFParam(
 )
 
 class BFParam_Custom(BFParam):
+    def _is_exported(self,context,element):
+        return True
     def _check(self,value):
         if isinstance(value,str):
             if "`" in value or "‘" in value or "’‌" in value:
@@ -741,7 +743,66 @@ BFParam(
     bf_prop_export = "bf_transparency_export",
 )
 
-### Object bf_namelists
+### Custom Namelist
+
+BFProp(
+    name = "bf_custom_namelist",
+    description = "Custom namelist body",
+    bpy_prop = bpy.props.StringProperty,
+    maxlen = 1024,
+    default = "ABCD P1='Example' P2=1234.56"
+)
+
+class BFParam_Custom_Namelist(BFParam):
+    def _check(self,value):
+        if isinstance(value,str):
+            if not value:
+                raise BFError(self,"Empty string")
+            elif '&' in value or '/' in value:
+                raise BFError(self,"Starting '&' and ending '/' not needed")
+            elif "`" in value or "‘" in value or "’‌" in value:
+                raise BFError(self,"Typographic quotes not allowed, use matched single quotes")
+            elif '"' in value or "”" in value:
+                raise BFError(self,"Double quotes not allowed, use matched single quotes")
+            elif value.count("'") % 2 != 0:
+                raise BFError(self,"Unmatched single quotes")
+    def _draw_bf_props(self,context,element,layout):
+        row = layout.row()
+        row.prop(element,self.bf_props[0].bpy_name,text="")
+
+# No fds_name, no automatic export
+BFParam_Custom_Namelist(
+    name = "Custom Namelist",
+    bf_props = "bf_custom_namelist",
+)
+
+class BFNamelist_Custom(BFNamelist):
+    
+    def _is_exported(self,context,element):
+        """If self with element is going to be exported return True, else False"""
+        if self.bf_prop_export: return self.bf_prop_export.value(context,element)
+        return True
+
+    def to_fds(self,context,element):
+        print("BlenderFDS: > > > BFNamelist.to_fds: {}".format(self.name))
+        # Check
+        if not self._is_exported(context,element): return None
+        # Export FIXME works but...
+        res = self.evaluate(context,element) # Do not trap exceptions, pass them upward
+        index = self.bf_params[:].index(bf_params["Custom Namelist"])
+        children = self.bf_params[:]
+        children.pop(index)
+        children_values, children_msgs = self._to_fds_children(children=children,context=context,element=element)
+        # Check and append value and msgs
+        child_res = bf_params["Custom Namelist"].evaluate(context=context,element=element)
+        if child_res is None: return None
+        if child_res.msgs: children_msgs.extend(child_res.labels)
+        if not child_res.value: return None
+        fds_name = child_res.value
+        # res.value from self.evaluate() is used then replaced with new content
+        res.value = self._format(context,element,fds_name,children_values,children_msgs)
+        return res
+
 BFProp(
     name = "bf_namelist_export",
     label = "Export",
@@ -750,12 +811,15 @@ BFProp(
     default = False,
 )
 
-BFNamelist(
-    name = "Other",
+
+### Object bf_namelists
+
+BFNamelist_Custom(
+    name = "Custom",
+    label = "Custom",
     unique_id = 7,
-    description = "Other Namelist",
     bpy_type = bpy.types.Object,
-    bf_params = ("Namelist","FYI","Custom",),
+    bf_params = ("Namelist","Custom Namelist","FYI","XB","XYZ","PB"),
     bf_prop_export = "bf_namelist_export",
 )
 
@@ -936,9 +1000,22 @@ BFSection(
     bf_namelists = ("DEVC", "SLCF", "PROF"),
 )
 
-# FIXME TMP and so on...
-# This bf_section gets all bf_namelist left alone without a section
 BFSection(
-    name = "Others",
-    bf_namelists = set(bf_namelists) - set(bf_namelist for bf_section in bf_sections for bf_namelist in bf_section.bf_namelists)
+    name = "Other",
+    bf_namelists = ("Custom"),
 )
+
+# Some sanity checks
+
+# Check unused defined objects
+bf_props_unused = set(bf_props) - set(bf_prop for bf_param in bf_params for bf_prop in bf_param.bf_props) \
+    - set(bf_param.bf_prop_export for bf_param in bf_params if bf_param.bf_prop_export is not None) \
+    - set(bf_namelist.bf_prop_export for bf_namelist in bf_namelists if bf_namelist.bf_prop_export is not None)
+bf_params_unused = set(bf_params) - set(bf_param for bf_namelist in bf_namelists for bf_param in bf_namelist.bf_params)
+bf_namelists_unused = set(bf_namelists) - set(bf_namelist for bf_section in bf_sections for bf_namelist in bf_section.bf_namelists)
+# bf_sections_unused = set(bf_sections) - set(bf_file.bf_sections) All bf_sections are always used!
+print("BlenderFDS: Unused bf_props:",bf_props_unused)
+print("BlenderFDS: Unused bf_params:",bf_params_unused)
+print("BlenderFDS: Unused bf_namelists:",bf_namelists_unused)
+
+# Check double bf_sections, bf_namelists, bf_params, bf_props

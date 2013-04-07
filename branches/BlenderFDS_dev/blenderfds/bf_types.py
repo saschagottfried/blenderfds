@@ -30,20 +30,25 @@ def _isiterable(var):
     # A str is iterable in Py... not what I want
     if isinstance(var,str): return False
     # Let's try and fail nicely
-    try: var[0]
+    try:
+        for item in var: break
     except TypeError: return False
     return True
 
-def _check_items(names,type_):
+def _check_items(inputs,type_):
     """Return a BFList of elements named names of type type_"""
-    if isinstance(names,str): return BFList((type_.bf_list[names],))
-    if isinstance(names,(tuple,list)): return BFList(type_.bf_list[names])
-    return BFList()
+    result = BFList()
+    if inputs is None: return result
+    if not _isiterable(inputs): inputs = (inputs,)
+    for input_ in inputs:
+        if isinstance(input_,type_): result.append(input_)
+        else: result.append(type_.bf_list[input_])
+    return result
 
-def _check_item(name,type_):
+def _check_item(input_,type_):
     """Return the element named p of type t or None"""
-    if name: return type_.bf_list[name]
-    else: return None
+    if isinstance(input_,type_) or input_ is None: return input_
+    else: return type_.bf_list[input_]
 
 ### Classes
 
@@ -75,12 +80,12 @@ class BFProp(BFListItem):
 
     def register(self,bpy_type):
         """Register Blender property in Blender bpy_type"""
-        print("BlenderFDS: > > BFProp.register:", self.name, self.bpy_name)
+        print("BlenderFDS: > > BFProp.register:", self.name)
         if self.bpy_prop: setattr(bpy_type,self.bpy_name,self.bpy_prop(name=self.label,description=self.description,**self.bpy_other))
 
     def unregister(self,bpy_type):
         """Unregister Blender property in Blender bpy_type"""
-        print("BlenderFDS: > > BFProp.unregister: {}".format(self.name))
+        print("BlenderFDS: > > BFProp.unregister:", self.name)
         # Try to unregister self
         try: delattr(bpy_type,self.bpy_name)
         except: pass
@@ -204,7 +209,8 @@ class BFParam(BFListItem,BFHavingFDSName):
         if isinstance(value[0],bool): value = ",".join(item and ".TRUE." or ".FALSE." for item in value)
         elif isinstance(value[0],int): value = ",".join(str(item) for item in value)
         elif isinstance(value[0],float): value = ",".join("{:.{}f}".format(item,self.precision) for item in value)
-        else: value = ",".join("'{}'".format(item) for item in value)
+        elif value[0]: value = ",".join("'{}'".format(item) for item in value) # No empty values!
+        else: return None # At this point, it's a None!
         return "=".join((self.fds_name,value))
 
     def to_fds(self,context,element):
@@ -251,6 +257,7 @@ class BFParam(BFListItem,BFHavingFDSName):
 
 class BFHavingChildren():
     """Parent type containing methods for types that have children"""
+
     def _to_fds_children(self,children,context,element=None):
         """Pile values, msgs, reraise piled errors from children instances
         
@@ -283,7 +290,6 @@ class BFNamelist(BFListItem,BFHavingFDSName,BFHavingChildren):
     unique_id -- integer, unique id, eg 345
     label -- label displayed by Blender UI, eg "REAC"
     description -- help text displayed by Blender UI, eg "Reaction"
-    has_auto_ui -- True/False if it has an automatic UI
     fds_name -- FDS parameter name, eg "REAC". If None, no automatic exporting to FDS.
     bpy_type -- One in bpy.types.Scene or bpy.types.Object or bpy.types.Material. Defaults to Object.
     bf_params -- Collection of at least one BFParam related FDS parameters.
@@ -346,7 +352,7 @@ class BFNamelist(BFListItem,BFHavingFDSName,BFHavingChildren):
         """
         return BFResult(sender=self,value=self._value(context,element),msg="test msg from "+self.name)
 
-    def _format(self,context,element,values,msgs):
+    def _format(self,context,element,fds_name,values,msgs):
         """Format self for to_fds, return a string"""
         # Extract one multivalues from values
         multivalues = None
@@ -355,7 +361,7 @@ class BFNamelist(BFListItem,BFHavingFDSName,BFHavingChildren):
                 if multivalues: raise Exception("Double multivalues not previously detected in element:",element.name)
                 multivalues = values.pop(i)
         # Format namelist body
-        namelist = "".join(("&",self.fds_name))
+        namelist = "".join(("&",fds_name))
         margin = bf_config.right_margin_position
         for value in values:
             if not value: continue
@@ -380,7 +386,7 @@ class BFNamelist(BFListItem,BFHavingFDSName,BFHavingChildren):
         res = self.evaluate(context,element) # Do not trap exceptions, pass them upward
         children_values, children_msgs = self._to_fds_children(children=self.bf_params,context=context,element=element)
         # res.value from self.evaluate() is used then replaced with new content
-        res.value = self._format(context,element,children_values,children_msgs)
+        res.value = self._format(context,element,self.fds_name,children_values,children_msgs)
         return res
 
     def draw_header(self,context,element,layout):
