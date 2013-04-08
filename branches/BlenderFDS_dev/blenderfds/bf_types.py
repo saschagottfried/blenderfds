@@ -10,7 +10,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 #  GNU General Public License for more details.
 #
-#  You should have received a copy of the GNU General Public LicenseB
+#  You should have received a copy of the GNU General Public License
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
@@ -40,7 +40,14 @@ def _isiterable(var):
     return True
 
 def _check_items(inputs,type_):
-    """Return a BFList of elements named names of type type_"""
+    """Return a BFList of elements named names of type type_
+    
+    >>> a, b = BFParam("first"), BFParam("second")
+    BlenderFDS: BFParam.init: first
+    BlenderFDS: BFParam.init: second
+    >>> _check_items(("first","second"),BFParam), _check_items((a,b),BFParam)
+    (<BFList([<BFParam('first')>, <BFParam('second')>])>, <BFList([<BFParam('first')>, <BFParam('second')>])>)
+    """
     result = BFList()
     if inputs is None: return result
     if not _isiterable(inputs): inputs = (inputs,)
@@ -50,7 +57,13 @@ def _check_items(inputs,type_):
     return result
 
 def _check_item(input_,type_):
-    """Return the element named p of type t or None"""
+    """Return the element named p of type t or None
+    
+    >>> a = BFParam("first")
+    BlenderFDS: BFParam.init: first
+    >>> _check_item("first",BFParam), _check_item(a,BFParam)
+    (<BFParam('first')>, <BFParam('first')>)
+    """
     if isinstance(input_,type_) or input_ is None: return input_
     else: return type_.bf_list[input_]
 
@@ -697,6 +710,9 @@ class MaterialPanel():
         bf_namelist = bf_namelists[element.bf_namelist] # get self bf_namelist object from element
         bf_namelist.draw(context,element,layout)
 
-if __name__ == "__main__":
+# Test
+
+def test():
     import doctest
-    doctest.testmod()
+    from . import bf_types as module
+    return doctest.testmod(module,verbose=True).failed
