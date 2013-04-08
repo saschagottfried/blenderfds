@@ -81,11 +81,22 @@ class BFProp(BFListItem):
     operator -- optional name of a related operator shown in the UI
     **kwargs -- other optional Blender properties
     precision -- (readonly) float precision
+    
+    >>> BFProp("bf_first",bpy_prop=bpy.props.FloatProperty,precision=3)
+    BlenderFDS: BFProp.init: bf_first
+    <BFProp('bf_first')>
+    >>> bf_props["bf_first"].register(bpy.types.Object)
+    BlenderFDS: > > BFProp.register: bf_first
+    >>> bpy.context.object.bf_first = 3.1234
+    >>> bf_props["bf_first"].value(bpy.context,bpy.context.object), bf_props["bf_first"].precision  # doctest:+ELLIPSIS
+    (3.123..., 3)
+    >>> bf_props["bf_first"].unregister(bpy.types.Object)
+    BlenderFDS: > > BFProp.unregister: bf_first
     """
     bf_list = BFList() # new class BFList, not that from BFListItem
     
     def __init__(self,name,label=None,description=None,has_auto_ui=True,operator=None,bpy_name=None,bpy_prop=None,**kwargs):
-        print("BlenderFDS: BFProp.init:{}".format(name))
+        print("BlenderFDS: BFProp.init:", name)
         BFListItem.__init__(self,name=name)
         self.label = label or name
         self.description = description or label or name
@@ -710,9 +721,13 @@ class MaterialPanel():
         bf_namelist = bf_namelists[element.bf_namelist] # get self bf_namelist object from element
         bf_namelist.draw(context,element,layout)
 
-# Test
-
+# Doctest
 def test():
+    """Doctest function.
+    
+    Open a Blender example, open a Python console, type "import blenderfds",
+    type "blenderfds.bf_types.test()", check test failures (if any ;-)
+    """
     import doctest
     from . import bf_types as module
-    return doctest.testmod(module,verbose=True).failed
+    return doctest.testmod(module,verbose=False).failed

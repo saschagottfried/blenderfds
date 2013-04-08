@@ -158,6 +158,13 @@ class BFError(BFResult,Exception):
         BFResult.__init__(self,sender=sender,msg=msg,msgs=msgs,operator=operator)
         del(self.value)
 
-if __name__ == "__main__":
+# Doctest
+def test():
+    """Doctest function.
+    
+    Open a Blender example, open a Python console, type "import blenderfds",
+    type "blenderfds.bf_basic_types.test()", check test failures (if any ;-)
+    """
     import doctest
-    doctest.testmod()
+    from . import bf_basic_types as module
+    return doctest.testmod(module,verbose=False).failed
