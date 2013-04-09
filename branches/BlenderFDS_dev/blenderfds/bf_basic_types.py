@@ -43,27 +43,27 @@ class BFList(list):
     """
 
     def __repr__(self):
-        return "<{0}({1})>".format(self.__class__.__name__,list(self))
+        return "<{0}({1})>".format(self.__class__.__name__, list(self))
 
-    def __getitem__(self,key):
+    def __getitem__(self, key):
         # Manage bf_list["key"]
-        if isinstance(key,str):
+        if isinstance(key, str):
             for value in self:
-                if getattr(value,"name",None) == key: return value
+                if getattr(value, "name", None) == key: return value
             raise KeyError(key)
         # Manage the rest (eg bf_list[3])
-        return list.__getitem__(self,key)
+        return list.__getitem__(self, key)
 
-    def __contains__(self,key):
+    def __contains__(self, key):
         # Manage "key" in bf_list
-        if isinstance(key,str): return self.get(key,False) and True
+        if isinstance(key, str): return self.get(key, False) and True
         # Manage the rest (eg item in bf_list)
-        return list.__contains__(self,key)
+        return list.__contains__(self, key)
 
-    def get(self,key,default=None):
-        """Manage bf_list.get("key",default=None)"""
+    def get(self, key, default=None):
+        """Manage bf_list.get("key", default=None)"""
         for value in self:
-            if getattr(value,"name",None) == key: return value
+            if getattr(value, "name", None) == key: return value
         if default is not None: return default
     
 @total_ordering
@@ -84,15 +84,15 @@ class BFListItem():
 
     bf_list = BFList()
 
-    def __init__(self,name):
+    def __init__(self, name):
         if not name: raise ValueError("Invalid name")
         self.name = name
         self.bf_list.append(self)
 
     def __repr__(self):
-        return "<{0}('{1}')>".format(self.__class__.__name__,self.name)
+        return "<{0}('{1}')>".format(self.__class__.__name__, self.name)
     
-    def __lt__(self,other):
+    def __lt__(self, other):
         return self.name < other.name
 
 class BFResult():
@@ -103,42 +103,42 @@ class BFResult():
     msgs -- one or more descriptive messages concerning receiver
     operator -- name of the operator that can help fixing the error
     
-    >>> BFResult(BFListItem("John"),42), BFResult(BFListItem("Mac"),43,"Msg")
+    >>> BFResult(BFListItem("John"), 42), BFResult(BFListItem("Mac"), 43, "Msg")
     (<BFResult(42)>, <BFResult(43)>)
-    >>> c, d = BFResult(BFListItem("Bob"),44,msgs=("Msg1","Msg2","Msg3")), BFResult(None,None,None)
+    >>> c, d = BFResult(BFListItem("Bob"), 44, msgs=("Msg1","Msg2","Msg3")), BFResult(None, None, None)
     >>> c.labels, d.labels
     (('Bob: Msg1', 'Bob: Msg2', 'Bob: Msg3'), ())
     """
-    def __init__(self,sender=None,value=None,msgs=None,operator=None):
+    def __init__(self, sender=None, value=None, msgs=None, operator=None):
         self.sender = sender
         self.value = value
-        if isinstance(msgs,str): self.msgs = list((msgs,))
+        if isinstance(msgs, str): self.msgs = list((msgs, ))
         elif msgs: self.msgs = list(msgs)
         else: self.msgs = list()
         self.operator = operator
 
     def __repr__(self):
-        return "<{0}({1})>".format(self.__class__.__name__, getattr(self,"value",None) or self.msgs)
+        return "<{0}({1})>".format(self.__class__.__name__,  getattr(self, "value", None) or self.msgs)
 
     def get_labels(self):
         if self.sender:
-            name = getattr(self.sender,"label",None) or getattr(self.sender,"fds_name",None) or getattr(self.sender,"name",None)
-            return tuple("{}: {}".format(name,msg) for msg in self.msgs or tuple())
+            name = getattr(self.sender, "label", None) or getattr(self.sender, "fds_name", None) or getattr(self.sender, "name", None)
+            return tuple("{}: {}".format(name, msg) for msg in self.msgs or tuple())
         else: return tuple(self.msgs or tuple())
     
     labels = property(get_labels)
 
-    def draw(self,layout):
+    def draw(self, layout):
         """Draw self user interface"""
-        if isinstance(self,Exception): icon = "ERROR"
+        if isinstance(self, Exception): icon = "ERROR"
         else: icon = "INFO"
         for index, msg in enumerate(self.msgs or tuple()):
             row = layout.row()
-            row.label(icon=icon,text=msg)
+            row.label(icon=icon, text=msg)
             if index == 0 and self.operator:
                 row.operator(self.operator)
                 
-class BFError(BFResult,Exception):
+class BFError(BFResult, Exception):
     """Exception returned by all exporting methods
     
     sender -- sender instance, eg. FResult(self,...)
@@ -148,12 +148,12 @@ class BFError(BFResult,Exception):
     >>> try: raise BFError(BFListItem("John"),"Not good!")
     ... except BFError as err: err.labels
     ('John: Not good!',)
-    >>> try: raise BFError(BFListItem("Bob"),msgs=("Not good!","Really not!"))
+    >>> try: raise BFError(BFListItem("Bob"), msgs=("Not good!", "Really not!"))
     ... except BFError as err: err.labels
-    ('Bob: Not good!', 'Bob: Really not!')
+    ('Bob: Not good!','Bob: Really not!')
     """
-    def __init__(self,sender=None,msgs=None,operator=None):
-        BFResult.__init__(self,sender=sender,msgs=msgs,operator=operator)
+    def __init__(self, sender=None, msgs=None, operator=None):
+        BFResult.__init__(self, sender=sender, msgs=msgs, operator=operator)
         del(self.value)
 
 # Doctest
@@ -165,4 +165,4 @@ def test():
     """
     import doctest
     from . import bf_basic_types as module
-    return doctest.testmod(module,verbose=False).failed
+    return doctest.testmod(module, verbose=False).failed

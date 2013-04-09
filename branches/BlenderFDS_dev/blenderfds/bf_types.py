@@ -72,6 +72,8 @@ def _check_item(input_,type_):
 class BFHavingFDSName():
     """Auxiliary class containing common methods for types that have an fds_name
 
+    label -- string, UI label, eg "FYI".
+    description -- string, UI help text, eg "For your information"
     fds_name -- string, FDS parameter name, eg "ID"
     has_export_flag -- bool, set an automatic or custom export flag for self.
     bf_prop_export -- BFProp or string, customized export flag for self.
@@ -98,6 +100,7 @@ class BFHavingFDSName():
         self.bf_props = _check_items(bf_props,BFProp)
 
     def is_exported_to_fds(self, context, element):
+        """True if self is exported to FDS"""
         if self.has_export_flag: return self.bf_prop_export.value(context, element)
         return True
 
@@ -125,7 +128,7 @@ class BFProp(BFListItem,BFHavingFDSName):
     precision -- (object attribute, readonly) float precision
     bf_list -- (class attribute) a BFList containing all created BFProp objects
     
-    >>> BFProp("bf_first",bpy_prop=bpy.props.FloatProperty,precision=3)
+    >>> BFProp("bf_first", "label_first", "bf_first", bpy_prop=bpy.props.FloatProperty, precision=3)
     BlenderFDS: BFProp.init: bf_first
     <BFProp('bf_first')>
     >>> bf_props["bf_first"].register(bpy.types.Object)
@@ -173,7 +176,7 @@ class BFProp(BFListItem,BFHavingFDSName):
         if self.bf_props:
             for bf_prop in self.bf_props: bf_prop.unregister(bpy_type)        
 
-    # evaluate
+    # Evaluate
 
     def _get_precision(self):
         """Get self precision for element"""
@@ -196,11 +199,12 @@ class BFProp(BFListItem,BFHavingFDSName):
         """Return self value for element. Raise BFError if not good."""
         value = getattr(element,self.bpy_name)
         self.check(value)
+        print("element:",element.name,"bpy_name:",self.bpy_name,"value:",value)
         return value
 
     def msgs(self, context, element):
         """Get one or more self msgs. Raise BFError if not good."""
-        return "Test msgs from {}".format(self.name)
+        return None
 
     def evaluate(self, context, element):
         """Check self for errors and return a BFResult or None.
@@ -208,7 +212,7 @@ class BFProp(BFListItem,BFHavingFDSName):
         """
         return BFResult(sender=self,value=self.value(context,element),msgs=self.msgs(context,element))
 
-    # to_fds
+    # Export to_fds
 
     def format(self,value):
         """Format self for to_fds, return a string"""
@@ -235,7 +239,7 @@ class BFProp(BFListItem,BFHavingFDSName):
         res.value = self.format(res.value)
         return res
 
-    # draw
+    # Draw panel
 
     def get_layout_export(self, context, element, layout):
         """Prepare double-column Blender panel layout for element if self has a bf_prop_export."""
@@ -348,6 +352,8 @@ class BFNamelist(BFListItem,BFHavingFDSName,BFHavingChildren):
         try: bpy.utils.unregister_class(self._b_panel)
         except: pass
 
+    # Evaluate
+
     def check(self, value):
         """Check value. Raise BFError if not good."""
         pass    
@@ -360,13 +366,15 @@ class BFNamelist(BFListItem,BFHavingFDSName,BFHavingChildren):
 
     def msgs(self, context, element):
         """Get one or more self msgs. Raise BFError if not good."""
-        return "Test msgs from {}".format(self.name)
+        return None
 
     def evaluate(self, context, element):
         """Check self for errors and return a BFResult or None.
         Raise a BFError exception if self cannot return a valid result.
         """
         return BFResult(sender=self, value=self.value(context,element), msgs=self.msgs(context,element))
+
+    # Export to_fds
 
     def format(self, context, element, values, msgs):
         """Format self for to_fds, return a string"""
@@ -410,6 +418,8 @@ class BFNamelist(BFListItem,BFHavingFDSName,BFHavingChildren):
         res.value = self.format(context, element, children_values, children_msgs)
         return res
 
+    # Draw panel
+
     def draw_header(self,context,element,layout):
         """Draw Blender panel header for element in the provided layout."""
         if self.bf_prop_export: layout.prop(element, self.bf_prop_export.bpy_name, text="")
@@ -432,11 +442,10 @@ class BFNamelist(BFListItem,BFHavingFDSName,BFHavingChildren):
     def draw(self, context, element, layout):
         """Draw Blender panel for element in the layout"""
         layout = self.get_layout_export(context, element, layout)
-        self.draw_extra(context, element, layout)
-        self.draw_bf_props(context, element, layout)
         self.draw_error(context, element, layout)
+        self.draw_bf_props(context, element, layout)
+        self.draw_extra(context, element, layout)
         # TODO copy FDS properties (except ID?) to other elements
-        # FIXME error, extra?
 
 class BFSection(BFListItem,BFHavingChildren):
     """BlenderFDS section, used for grouping FDS namelists.
@@ -461,7 +470,7 @@ class BFSection(BFListItem,BFHavingChildren):
         """Check self for errors and return a BFResult or None.
         Raise a BFError exception if self cannot return a valid result.
         """
-        return BFResult(sender=self, value=None, msgs="Test msg from section " + self.name)
+        return BFResult(sender=self, value=None, msgs=None)
 
     def format(self, values, msgs):
         """Format self, return a string"""
@@ -533,7 +542,7 @@ class BFFile(BFListItem, BFHavingChildren):
             return BFResult(sender=self, value=self.format(None, err.labels, True))
         else:
             # res.value from self.evaluate() is used then replaced with new content
-            res.value = self._format(children_values, children_msgs)
+            res.value = self.format(children_values, children_msgs)
             return res
 
 ### Global names
@@ -598,6 +607,9 @@ bpy.types.Material.to_fds = bpy_types_to_fds
 
 class BFPropNamelist(BFProp): # FIXME
     """Self has a special method to update self menus"""
+    def is_exported_to_fds(self, context, element):
+        return False
+
     def _update_bf_namelist(self,bpy_type,default):
         items = list()
         for bf_namelist in bf_namelists:
@@ -625,8 +637,6 @@ BFPropNamelist(
     bpy_name = "bf_namelist",
     bpy_prop = bpy.props.StringProperty,
 )
-
-
 
 class BFNamelist_TMP(BFNamelist):
     def draw_header(self,context,element,layout):

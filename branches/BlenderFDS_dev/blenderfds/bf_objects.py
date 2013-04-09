@@ -56,7 +56,7 @@ class BFPropCustom(BFProp):
         # Draw related bf_props
         for bf_prop in self.bf_props: bf_prop.draw(context, element, layout)
 
-class BFPropFilename(BFPropNoExport):
+class BFPropFilename(BFProp):
     def check(self,value):
         if bpy.path.clean_name(value) != value: raise BFError(self,"Illegal characters in filename")
 
@@ -612,7 +612,22 @@ BFProp(
     bpy_name = "alpha",
 )
 
-BFProp(
+hrr = 0.
+
+class BFPropHRRPUA(BFProp):
+    def msgs(self,context,element):
+        global hrr # FIXME no globals!!!
+        obs = (ob for ob in context.scene.objects \
+            if ob.type == "MESH" and ob.bf_namelist_export \
+            and ob.active_material == element and ob.bf_namelist in ("OBST","VENT"))
+        polygons = (polygon for ob in obs for polygon in ob.data.polygons)
+        area, msgs = 0., list()
+        for polygon in polygons: area += polygon.area
+        hrr = area * element.bf_hrrpua
+        msgs.extend(("Estimated burner area is {:.1f} m²".format(area),"Estimated HRR max is {:.1f} kW".format(hrr)))
+        return msgs
+
+BFPropHRRPUA(
     name = "HRRPUA",
     label = "HRRPUA [kW/m²]",
     description = "Heat release rate per unit area",
@@ -624,8 +639,18 @@ BFProp(
     min = 0.,
     default = 1000.,
 )
+    
+class BFPropTAUQ(BFProp):
+    def msgs(self,context,element):
+        global hrr
+        msgs = list() 
+        if element.bf_tau_q < 0 and hrr > 0:
+            msgs.append("t² ramp, HRR(t) reaches 1 MW at {:.0f} s".format(-element.bf_tau_q * (1000 / hrr) ** .5))
+        elif element.bf_tau_q > 0:
+            msgs.append("tanh(t/τ) ramp")
+        return msgs
 
-BFProp(
+BFPropTAUQ(
     name = "TAU_Q",
     label = "TAU_Q [s]",
     description = "Ramp time for heat release rate",
@@ -841,23 +866,7 @@ BFNamelistSURF(
     bf_props = ("Namelist","ID","FYI","RGB","TRANSPARENCY","Custom",),
 )
 
-class BFNamelistSURFburner(BFNamelistSURF):
-    def msgs(self,context,element):
-        obs = tuple(ob for ob in context.scene.objects \
-                if ob.type == "MESH" and ob.bf_namelist_export \
-                and ob.active_material == element and ob.bf_namelist in ("OBST","VENT"))
-        polygons = (polygon for ob in obs for polygon in ob.data.polygons)
-        area, msgs = 0., list()
-        for polygon in polygons: area += polygon.area
-        hrr = area * element.bf_hrrpua
-        msgs.extend(("Estimated burner area is {:.1f} m²".format(area),"Estimated HRR max is {:.1f} kW".format(hrr)))
-        if element.bf_tau_q < 0:
-            msgs.append("t² ramp, HRR(t) reaches 1 MW at {:.0f} s".format(-element.bf_tau_q * (1000 / hrr) ** .5))
-        elif element.bf_tau_q > 0:
-            msgs.append("tanh(t/τ) ramp")
-        return msgs
-
-BFNamelistSURFburner(
+BFNamelistSURF(
     name = "SURF burner",
     label = "SURF burner",
     description = "A simple burner",
