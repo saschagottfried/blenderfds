@@ -100,8 +100,7 @@ class BFResult():
     
     sender -- sender instance, eg. FResult(self,...)
     value -- result value of any type
-    msg -- descriptive message concerning receiver
-    msgs -- list of msg
+    msgs -- one or more descriptive messages concerning receiver
     operator -- name of the operator that can help fixing the error
     
     >>> BFResult(BFListItem("John"),42), BFResult(BFListItem("Mac"),43,"Msg")
@@ -110,10 +109,10 @@ class BFResult():
     >>> c.labels, d.labels
     (('Bob: Msg1', 'Bob: Msg2', 'Bob: Msg3'), ())
     """
-    def __init__(self,sender=None,value=None,msg=None,msgs=None,operator=None):
+    def __init__(self,sender=None,value=None,msgs=None,operator=None):
         self.sender = sender
         self.value = value
-        if msg: self.msgs = list((msg,))
+        if isinstance(msgs,str): self.msgs = list((msgs,))
         elif msgs: self.msgs = list(msgs)
         else: self.msgs = list()
         self.operator = operator
@@ -143,8 +142,7 @@ class BFError(BFResult,Exception):
     """Exception returned by all exporting methods
     
     sender -- sender instance, eg. FResult(self,...)
-    msg -- descriptive message concerning receiver
-    msgs -- list of msg
+    msgs -- one or more descriptive messages concerning receiver
     operator -- name of the operator that can help fixing the error
     
     >>> try: raise BFError(BFListItem("John"),"Not good!")
@@ -154,8 +152,8 @@ class BFError(BFResult,Exception):
     ... except BFError as err: err.labels
     ('Bob: Not good!', 'Bob: Really not!')
     """
-    def __init__(self,sender=None,msg=None,msgs=None,operator=None):
-        BFResult.__init__(self,sender=sender,msg=msg,msgs=msgs,operator=operator)
+    def __init__(self,sender=None,msgs=None,operator=None):
+        BFResult.__init__(self,sender=sender,msgs=msgs,operator=operator)
         del(self.value)
 
 # Doctest

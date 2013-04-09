@@ -26,6 +26,10 @@ def load_handler(self):
     # Init FDS default materials
     if not set(bf_config.predefined_material_names) <= set(bpy.data.materials.keys()):
         bpy.ops.material.bf_set_predefined()
+    # Init metric units
+    for scene in bpy.data.scenes:
+        scene.unit_settings.system = 'METRIC'
+        scene.unit_settings.scale_length = 1.
 
 @bpy.app.handlers.persistent
 def save_handler(self):
