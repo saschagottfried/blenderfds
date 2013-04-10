@@ -33,11 +33,11 @@ class BFNamelistNoExport(BFNamelist):
         return False
 
 class BFPropCustom(BFProp):
-    def check(self,value):
+    def check(self, value):
         err = BFError(self)
-        if isinstance(value,str):
+        if isinstance(value, str):
             if '&' in value or '/' in value:
-                err.msgs.append("& and / characters not allowed")
+                err.msgs.append("& and / characters not needed")
             if "`" in value or "‘" in value or "’‌" in value:
                 err.msgs.append("Typographic quotes not allowed, use matched single quotes")
             if '"' in value or "”" in value:
@@ -45,23 +45,20 @@ class BFPropCustom(BFProp):
             if value.count("'") % 2 != 0:
                 err.msgs.append("Unmatched single quotes")
         if err.msgs: raise err
+
     def draw_bf_props(self, context, element, layout):
-        """Draw self bf_props for element in the layout."""
         # Draw self
         row = layout.row()
-        row.label(text=self.label)
-        if self.operator: row.operator(self.operator)
-        row = layout.row()
-        row.prop(element, self.bpy_name, text="")
+        row.prop(element, self.bpy_name, text="", icon="TEXT")
         # Draw related bf_props
         for bf_prop in self.bf_props: bf_prop.draw(context, element, layout)
 
 class BFPropFilename(BFProp):
-    def check(self,value):
+    def check(self, value):
         if bpy.path.clean_name(value) != value: raise BFError(self,"Illegal characters in filename")
 
 class BFPropPathExists(BFPropNoExport):
-    def check(self,value):
+    def check(self, value):
         if not os.path.exists(bpy.path.abspath(value)): raise BFError(self,"Path does not exist")
 
 class BFPropNoUI(BFPropNoExport):
@@ -69,27 +66,34 @@ class BFPropNoUI(BFPropNoExport):
         pass
 
 class BFPropReferenceToObject(BFProp):
-    def draw_bf_props(self,context,element,layout):
+    def is_exported_to_fds(self, context, element):
+        # Check if self is exported
+        result = BFProp.is_exported_to_fds(self, context, element)
+        # Check if referenced object exists and if it is exported
+        ref_element_name = getattr(element, self.bpy_name, None) # Get its name
+        if ref_element_name: ref_element = bpy.data.objects.get(ref_element_name, None) # If its name, get the object
+        else: return False # No name, no export!
+        if ref_element: return result and ref_element.is_exported_to_fds() # If object, get if it is exported
+        else: return False # The name does not correspond to any object (Blender bug), no export!
+ 
+    def draw_bf_props(self, context, element, layout):
         row = layout.row()
+        row.active = self.is_exported_to_fds(context, element)
         row.prop_search(element, self.bpy_name, bpy.data, "objects", text=self.label)
 
-### SURF_ID FIXME check!
+### SURF_ID
 
 class BFPropSURFID(BFProp):
-    def get_layout_export(self, context, element, layout):
-        layout.active = self.is_exported_to_fds(context, element)
-        return layout
-
-    def draw_bf_props(self,context,element,layout):
-        row = layout.row()
-        row.prop_search(element, self.bpy_name, bpy.data, "materials", text=self.label)
-# FIXME row.prop_search(element,"active_material",bpy.data,"materials",text="SURF_ID:")
-
-    def is_exported(self,context,element):
+    def is_exported_to_fds(self,context,element):
         return element.active_material and element.active_material.bf_namelist_export or False
 
     def value(self,context,element):
         if element.active_material: return element.active_material.name
+        
+    def draw_bf_props(self,context,element,layout):
+        row = layout.row()
+        row.active = self.is_exported_to_fds(context, element)
+        row.prop_search(element, self.bpy_name, bpy.data, "materials", text=self.label)
 
 BFPropSURFID(
     name = "SURF_ID",
@@ -102,44 +106,43 @@ BFPropSURFID(
 ### XB
 
 class BFPropXB(BFProp):
-
-    def value(self,context,element):
+    def value(self, context, element):
         value = element.bf_xb
         if value == "VOXELS":
-            xbs = bf_geometry.get_bbox(context,element)[0]
+            xbs = bf_geometry.get_bbox(context, element)[0]
             (bbminx, bbmaxx, bbminy, bbmaxy, bbminz, bbmaxz,) = xbs[0]
             dimension = max(bbmaxx-bbminx, bbmaxy-bbminy, bbmaxz-bbminz)
             dimension_too_large = bf_geometry.calc_remesh(context, dimension, element.bf_voxel_size)[3]
-            if dimension_too_large: raise BFError(self,"Object too large, voxel size not guaranteed")
+            if dimension_too_large: raise BFError(self, "Object too large, voxel size not guaranteed")
         return value
 
-    def draw_extra(self,context,element,layout):
+    def draw_extra(self, context, element, layout):
         if element.bf_xb == "VOXELS":
             row = layout.row()
             bf_prop = self.bf_props["bf_voxel_size"]
-            row.prop(element,bf_prop.bpy_name,text=bf_prop.label)
+            row.prop(element, bf_prop.bpy_name, text=bf_prop.label)
             if element.bf_has_voxels_shown: row.operator("object.bf_hide_voxels") 
             else: row.operator("object.bf_show_voxels")
 
-    def format(self,value):
+    def format(self, value):
         return "XB={0[0]:.3f},{0[1]:.3f},{0[2]:.3f},{0[3]:.3f},{0[4]:.3f},{0[5]:.3f}".format(value)
     
-    def to_fds(self,context,element):
+    def to_fds(self, context, element):
         # Check and init
-        if not self.is_exported_to_fds(context,element): return None
-        res = self.evaluate(context,element)
+        if not self.is_exported_to_fds(context, element): return None
+        res = self.evaluate(context, element)
         # Select case
         if res.value == "BBOX":
-            xbs, tt = bf_geometry.get_bbox(context,element)
+            xbs, tt = bf_geometry.get_bbox(context, element)
         elif res.value == "VOXELS":
-            xbs, tt, dimension_too_large = bf_geometry.get_voxels(context,element)
-            res.msgs.append("{0} voxels of size {1:.3f}, in {2:.3f} s".format(len(xbs),element.bf_voxel_size,tt))
+            xbs, tt, dimension_too_large = bf_geometry.get_voxels(context, element)
+            res.msgs.append("{0} voxels of size {1:.3f} m, in {2:.3f} s".format(len(xbs),element.bf_voxel_size,tt))
         elif res.value == "FACES":
-            xbs, tt = bf_geometry.get_faces(context,element)
-            res.msgs.append("{0} faces, in {1:.3f} s".format(len(xbs),tt))
+            xbs, tt = bf_geometry.get_faces(context, element)
+            res.msgs.append("{0} faces, in {1:.3f} s".format(len(xbs), tt))
         elif res.value == "EDGES":
-            xbs, tt = bf_geometry.get_edges(context,element)
-            res.msgs.append("{0} edges, in {1:.3f} s".format(len(xbs),tt))
+            xbs, tt = bf_geometry.get_edges(context, element)
+            res.msgs.append("{0} edges, in {1:.3f} s".format(len(xbs), tt))
         else: raise Exception("XB type unknown")
         res.value = tuple((self.format(xb) for xb in xbs))
         return res
@@ -186,37 +189,53 @@ BFPropXB(
     bpy_name = "bf_xb",
     bpy_prop = bpy.props.EnumProperty,
     items = (
-        ("VOXELS","Voxelized Solid","Export voxels from voxelized solid"),
-        ("BBOX","Bounding Box","Use object bounding box"),
-        ("FACES","Faces","Faces, one for each face of this object"),
-        ("EDGES","Edges","Segments, one for each edge of this object"),
+        ("VOXELS", "Voxelized Solid", "Export voxels from voxelized solid"),
+        ("BBOX", "Bounding Box", "Use object bounding box"),
+        ("FACES", "Faces", "Faces, one for each face of this object"),
+        ("EDGES", "Edges", "Segments, one for each edge of this object"),
         ),
     default = "BBOX",
+)
+
+class BFPropXBBBox(BFPropXB):
+    def value(self, context, element):
+        return "BBOX"
+
+    def draw_bf_props(self, context, element, layout):
+        row = layout.row()
+        row.label(text=self.label)
+
+BFPropXBBBox(
+    name = "XB Bounding Box",
+    label = "XB:  Bounding Box",
+    description = "XB",
+    fds_name = "XB",
+    bpy_name = "bf_xb",
 )
 
 ### XYZ
 
 class BFPropXYZ(BFProp):
-    def value(self,context,element):
+    def value(self, context, element):
         bf_xb, bf_xyz = None, None
         if element.has_bf_prop("XB") and element.bf_xb_export: bf_xb = element.bf_xb
         if element.has_bf_prop("XYZ") and element.bf_xyz_export: bf_xyz = element.bf_xyz
-        if bf_xyz == "VERTICES" and bf_xb in ("VOXELS","FACES","EDGES"): raise BFError(self,"Conflicting with XB")
+        if bf_xyz == "VERTICES" and bf_xb in ("VOXELS", "FACES", "EDGES"): raise BFError(self, "Conflicting with XB")
         return bf_xyz
 
-    def format(self,value):
+    def format(self, value):
         return "XYZ={0[0]:.3f},{0[1]:.3f},{0[2]:.3f}".format(value)
         
-    def to_fds(self,context,element):
+    def to_fds(self, context, element):
         # Check and init
-        if not self.is_exported_to_fds(context,element): return None
-        res = self.evaluate(context,element)
+        if not self.is_exported_to_fds(context, element): return None
+        res = self.evaluate(context, element)
         # Select case
         if res.value == "CENTER":
-            xyzs, tt = bf_geometry.get_center(context,element)
+            xyzs, tt = bf_geometry.get_center(context, element)
         elif res.value == "VERTICES":
-            xyzs, tt = bf_geometry.get_vertices(context,element)
-            res.msgs.append("{0} vertices, in {1:.3f} s".format(len(xyzs),tt))
+            xyzs, tt = bf_geometry.get_vertices(context, element)
+            res.msgs.append("{0} vertices, in {1:.3f} s".format(len(xyzs), tt))
         else: raise Exception("XYZ type unknown")
         res.value = tuple((self.format(xyz) for xyz in xyzs))
         return res
@@ -240,14 +259,13 @@ BFPropXYZ(
 # FIXME what if no faces?
 
 class BFPropPB(BFProp):
-
     def value(self,context,element):
         err = BFError(self)
         bf_xb, bf_xyz, bf_pb = None, None, None
         if element.has_bf_prop("XB") and element.bf_xb_export: bf_xb = element.bf_xb
         if element.has_bf_prop("XYZ") and element.bf_xyz_export: bf_xyz = element.bf_xyz
         if element.bf_pb_export: bf_pb = element.bf_pb
-        if bf_pb == "PLANES" and bf_xb in ("VOXELS","FACES","EDGES"): err.msgs.append("Conflicting with XB")
+        if bf_pb == "PLANES" and bf_xb in ("VOXELS", "FACES", "EDGES"): err.msgs.append("Conflicting with XB")
         if bf_pb == "PLANES" and bf_xyz == "VERTICES": err.msgs.append("Conflicting with XYZ")
         # Errors?
         if err.msgs: raise err
@@ -262,8 +280,8 @@ class BFPropPB(BFProp):
         res = self.evaluate(context, element)
         # Select case
         if res.value == "PLANES":
-            pbs, tt = bf_geometry.get_planes(context,element)
-            res.msgs.append("{0} planes, in {1:.3f} s".format(len(pbs),tt))
+            pbs, tt = bf_geometry.get_planes(context, element)
+            res.msgs.append("{0} planes, in {1:.3f} s".format(len(pbs), tt))
         else: raise Exception("PB type unknown")
         res.value = tuple((self.format(pb) for pb in pbs))
         return res
@@ -276,7 +294,7 @@ BFPropPB(
     has_export_flag = True,
     bpy_name = "bf_pb",
     bpy_prop = bpy.props.EnumProperty,
-    items = [("PLANES","Planes","Planes, one for each face of this object"),],
+    items = [("PLANES", "Planes", "Planes, one for each face of this object"),],
     default = "PLANES",
 )
 
@@ -330,14 +348,14 @@ BFPropCustom(
 BFPropCustom(
     name = "Namelist Custom",
     label = "Custom Namelist:",
-    description = "Custom namelist body",
+    description = "Free text namelist, & and / not needed, use single quotes, eg OBST PROP1='example'",
     bpy_name = "bf_custom_namelist",
     bpy_prop = bpy.props.StringProperty,
     maxlen = 1024,
-    default = "ABCD P1='Example' P2=1234.56"
+    default = "OBST ID='Example'"
 )
  
-### Export BFProp
+### Namelist export BFProp
 
 BFProp(
     name = "Namelist export",
@@ -361,7 +379,7 @@ BFProp(
 BFPropNoExport(
     name = "ID no export",
     label = "ID",
-    description = "Element identificator",
+    description = "Element identificator, not exported",
     fds_name = "ID",
     bpy_name = "name",
 )
@@ -440,7 +458,18 @@ BFProp(
     default = 0.,
 )
 
-BFProp(
+class BFPropTEND(BFProp):
+    def evaluate(self, context, element):
+        bf_time_t_begin = element.bf_time_t_begin
+        bf_time_t_end = element.bf_time_t_end
+        duration = bf_time_t_end - bf_time_t_begin
+        msgs = None
+        if bf_time_t_begin > bf_time_t_end: raise BFError(self, "T_END < T_BEGIN")
+        elif duration > 0. and bf_time_t_begin > 0.: msgs = "Simulation duration is {} s".format(duration) 
+        elif duration == 0.: msgs = "Smokeview setup only"
+        return BFResult(sender=self,value=self.value(context,element),msgs=msgs)
+
+BFPropTEND(
     name = "T_END",
     label = "T_END [s]",
     description = "Simulation ending time",
@@ -476,7 +505,7 @@ BFProp(
 
 BFProp(
     name = "CO_YIELD",
-    label = "CO_YIELD",
+    label = "CO_YIELD [kg/kg]",
     description = "Fraction of fuel mass converted into carbon monoxide",
     fds_name = "CO_YIELD",
     has_export_flag = True,
@@ -491,7 +520,7 @@ BFProp(
 
 BFProp(
     name = "SOOT_YIELD",
-    label = "SOOT_YIELD",
+    label = "SOOT_YIELD [kg/kg]",
     description = "Fraction of fuel mass converted into smoke particulate",
     fds_name = "SOOT_YIELD",
     has_export_flag = True,
@@ -518,7 +547,11 @@ BFProp(
     default = 0.,
 )
 
-BFProp(
+class BFPropNFRAMES(BFProp):
+    def msgs(self, context, element):
+        return "Output dumps every {:.2f} s".format((element.bf_time_t_end - element.bf_time_t_begin) / element.bf_dump_nframes)
+
+BFPropNFRAMES(
     name = "NFRAMES",
     label = "NFRAMES",
     description = "Number of output dumps per calculation",
@@ -533,7 +566,7 @@ BFProp(
 BFPropReferenceToObject(
     name = "DEVC_ID",
     label = "DEVC_ID",
-    description = "DEVC_ID",
+    description = "Referred device identificator",
     fds_name = "DEVC_ID",
     has_export_flag = True,
     bpy_name = "bf_devc_id",
@@ -561,18 +594,29 @@ BFProp(
     default = False,
 )
 
-# FIXME check number for Poisson and inform user
-# FIXME check XB = bounding box!
 class BFPropIJK(BFProp):
-    def msgs(self, context, element):
-        return "{0} mesh cells of size {1[0]:.3f} x {1[1]:.3f} x {1[2]:.3f}".format(\
-            bf_geometry.get_cell_number(element), bf_geometry.get_cell_size(element))
+    def evaluate(self, context, element):
+        msgs = list()
+        operators = list()
+        # Good IJK
+        good_ijk = bf_geometry.get_good_ijk(element)
+        if tuple(element.bf_mesh_ijk) != good_ijk:
+            msgs.append("Not optimized for Poisson solver")
+            operators.append("object.bf_correct_ijk")
+        # Cells
+        cell_size = list(bf_geometry.get_cell_size(element))
+        cell_number = bf_geometry.get_cell_number(element)
+        msgs.append("{0} mesh cells of size {1[0]:.3f} m x {1[1]:.3f} m x {1[2]:.3f} m".format(cell_number, cell_size))
+        # Aspect ratio
+        cell_size.sort()
+        max_ratio = max(cell_size[2] / cell_size[0], cell_size[2] / cell_size[1], cell_size[1] / cell_size[0])
+        if max_ratio > 2.: msgs.append("Max cell aspect ratio is {:.1f}".format(max_ratio))      
+        return BFResult(sender=self, value=self.value(context,element), msgs=msgs, operators=operators)
 
 BFPropIJK(
     name = "IJK",
     label = "IJK",
     description = "Cell number in x, y, and z direction",
-    operator = "object.bf_correct_ijk",
     fds_name = "IJK",
     has_export_flag = True,
     bpy_name = "bf_mesh_ijk",
@@ -584,7 +628,7 @@ BFPropIJK(
 class BFPropRGB(BFProp):
     def value(self,context,element):
         value = element.diffuse_color
-        return int(value[0]*255),int(value[1]*255),int(value[2]*255)
+        return int(value[0]*255), int(value[1]*255), int(value[2]*255)
 
 BFPropRGB(
     name = "RGB",
@@ -594,7 +638,6 @@ BFPropRGB(
     bpy_name = "diffuse_color",
 )
 
-# FIXME name standard
 BFProp(
     name = "TRANSPARENCY export",
     label = "Export",
@@ -715,7 +758,6 @@ BFNamelist(
     bf_props = ("FUEL","FORMULA","CO_YIELD","SOOT_YIELD","HEAT_OF_COMBUSTION","REAC Custom"),
 )
 
-# FIXME show DT
 BFNamelist(
     name = "DUMP",
     label = "DUMP",
@@ -812,7 +854,6 @@ BFNamelist(
     bf_props = ("Namelist","ID","FYI","QUANTITY","XYZ","Custom",),
 )
 
-# FIXME RGB???
 BFNamelist(
     name = "MESH",
     label = "MESH",
@@ -822,7 +863,7 @@ BFNamelist(
     has_export_flag = True,
     bf_prop_export = "Namelist export",
     bpy_type = bpy.types.Object,
-    bf_props = ("Namelist","ID","FYI","IJK","XB","Custom",),
+    bf_props = ("Namelist","ID","FYI","IJK","XB Bounding Box","Custom",),
 )
 
 BFNamelist(
@@ -846,13 +887,14 @@ BFNamelist(
     has_export_flag = True,
     bf_prop_export = "Namelist export",
     bpy_type = bpy.types.Object,
-    bf_props = ("Namelist","ID","FYI","XB","Custom",),
+    bf_props = ("Namelist","ID","FYI","XB Bounding Box","Custom",),
 )
 
 class BFNamelistSURF(BFNamelist):
-    def check(self,value):
+    def evaluate(self, context, element):
         if not set(bf_config.predefined_material_names) <= set(bpy.data.materials.keys()):
-            raise BFError(sender=self,msgs="Predefined SURFs unset",operator="material.bf_set_predefined")
+            raise BFError(sender=self, msgs="Predefined SURFs unset", operator="material.bf_set_predefined")
+        return BFResult(sender=self, value=None, msgs=None)
 
 BFNamelistSURF(
     name = "SURF",

@@ -101,7 +101,7 @@ class BFResult():
     sender -- sender instance, eg. FResult(self,...)
     value -- result value of any type
     msgs -- one or more descriptive messages concerning receiver
-    operator -- name of the operator that can help fixing the error
+    operators -- one or more name of operators that can help with each displayed msg
     
     >>> BFResult(BFListItem("John"), 42), BFResult(BFListItem("Mac"), 43, "Msg")
     (<BFResult(42)>, <BFResult(43)>)
@@ -109,13 +109,17 @@ class BFResult():
     >>> c.labels, d.labels
     (('Bob: Msg1', 'Bob: Msg2', 'Bob: Msg3'), ())
     """
-    def __init__(self, sender=None, value=None, msgs=None, operator=None):
+    def __init__(self, sender=None, value=None, msgs=None, operators=None):
         self.sender = sender
         self.value = value
+        # Treat msgs: "example" or ("example1", "example2",) or None
         if isinstance(msgs, str): self.msgs = list((msgs, ))
         elif msgs: self.msgs = list(msgs)
         else: self.msgs = list()
-        self.operator = operator
+        # Treat operators: "example" or ("example1", "example2",) or None
+        if isinstance(operators, str): self.msgs = list((operators, ))
+        elif operators: self.operators = list(operators)
+        else: self.operators = list()
 
     def __repr__(self):
         return "<{0}({1})>".format(self.__class__.__name__,  getattr(self, "value", None) or self.msgs)
@@ -128,22 +132,28 @@ class BFResult():
     
     labels = property(get_labels)
 
-    def draw(self, layout):
+    def draw(self, layout, box=False):
         """Draw self user interface"""
         if isinstance(self, Exception): icon = "ERROR"
         else: icon = "INFO"
+        if self.msgs and box: layout = layout.box()
         for index, msg in enumerate(self.msgs or tuple()):
+            try: operator = self.operators[index]
+            except IndexError: pass
+            else:
+                row = layout.split(.7)
+                row.label(icon=icon, text=msg)
+                row.operator(operator)
+                continue
             row = layout.row()
             row.label(icon=icon, text=msg)
-            if index == 0 and self.operator:
-                row.operator(self.operator)
                 
 class BFError(BFResult, Exception):
     """Exception returned by all exporting methods
     
     sender -- sender instance, eg. FResult(self,...)
     msgs -- one or more descriptive messages concerning receiver
-    operator -- name of the operator that can help fixing the error
+    operators -- one or more name of operators that can help fixing each error
     
     >>> try: raise BFError(BFListItem("John"),"Not good!")
     ... except BFError as err: err.labels
@@ -152,8 +162,8 @@ class BFError(BFResult, Exception):
     ... except BFError as err: err.labels
     ('Bob: Not good!','Bob: Really not!')
     """
-    def __init__(self, sender=None, msgs=None, operator=None):
-        BFResult.__init__(self, sender=sender, msgs=msgs, operator=operator)
+    def __init__(self, sender=None, msgs=None, operators=None):
+        BFResult.__init__(self, sender=sender, msgs=msgs, operators=operators)
         del(self.value)
 
 # Doctest
