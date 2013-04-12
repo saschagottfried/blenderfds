@@ -327,11 +327,11 @@ class CenterBackgroundOperator(bpy.types.Operator):
             aspect_ratio =  float(bg_image.image.size[0])/float(bg_image.image.size[1])
             bg_image.offset_x = bg_image.offset_x - self.center_pt[0]
             bg_image.offset_y = bg_image.offset_y - self.center_pt[1] * aspect_ratio
-            context.region.callback_remove(self._handle)
+            bpy.types.SpaceView3D.draw_handler_remove(self._handle, 'WINDOW')
             return {'FINISHED'}
 
         elif event.type in {'RIGHTMOUSE', 'ESC'}:
-            context.region.callback_remove(self._handle)
+            bpy.types.SpaceView3D.draw_handler_remove(self._handle, 'WINDOW')
             return {'CANCELLED'}
 
         return {'RUNNING_MODAL'}
@@ -341,7 +341,7 @@ class CenterBackgroundOperator(bpy.types.Operator):
             context.window_manager.modal_handler_add(self)
             # Add the region OpenGL drawing callback
             # draw in view space with 'POST_VIEW' and 'PRE_VIEW'
-            self._handle = context.region.callback_add(bg_center_draw_callback_px, (self, context), 'POST_PIXEL')
+            self._handle = bpy.types.SpaceView3D.draw_handler_add(bg_center_draw_callback_px, (self, context), 'WINDOW', 'POST_PIXEL')
             self.center_pt = None
             return {'RUNNING_MODAL'}
         else:
@@ -378,11 +378,11 @@ class ScaleBackgroundOperator(bpy.types.Operator):
                 length = (self.scaling_pts[1] - self.scaling_pts[0]).magnitude
                 print(length)
                 bpy.ops.background_image.scale_dialog('INVOKE_DEFAULT',bg_index = self.bg_index)
-                context.region.callback_remove(self._handle)
+                bpy.types.SpaceView3D.draw_handler_remove(self._handle, 'WINDOW')
                 return {'FINISHED'}
 
         elif event.type in {'RIGHTMOUSE', 'ESC'}:
-            context.region.callback_remove(self._handle)
+            bpy.types.SpaceView3D.draw_handler_remove(self._handle, 'WINDOW')
             return {'CANCELLED'}
 
         return {'RUNNING_MODAL'}
@@ -393,8 +393,7 @@ class ScaleBackgroundOperator(bpy.types.Operator):
 
             # Add the region OpenGL drawing callback
             # draw in view space with 'POST_VIEW' and 'PRE_VIEW'
-            self._handle = context.region.callback_add(bg_scale_draw_callback_px, (self, context), 'POST_PIXEL')
-
+            self._handle = bpy.types.SpaceView3D.draw_handler_add(bg_scale_draw_callback_px, (self, context), 'WINDOW', 'POST_PIXEL')
             self.scaling_pts = []
 
             return {'RUNNING_MODAL'}
