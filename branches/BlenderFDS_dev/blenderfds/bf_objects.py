@@ -495,7 +495,7 @@ BFPropNoExport(
 class BFPropTBEGIN(BFProp):
     def is_exported(self, context, element):
         # No T_BEGIN if SMV setup
-        if element.bf_time_smv_setup: Return False
+        if element.bf_time_smv_setup: return False
         return True
 
 BFPropTBEGIN(
@@ -512,15 +512,14 @@ BFPropTBEGIN(
 )
 
 class BFPropTEND(BFProp):
-    # TODO T_END=0 if SMV setup
     def value(self, context, element):
+        # T_END=0 if SMV setup
         if element.bf_time_smv_setup: value = 0.
         else: value = getattr(element,self.bpy_name)
         self.check(value)
         return value
 
-
-BFProp(
+BFPropTEND(
     name = "T_END",
     label = "T_END [s]",
     description = "Simulation ending time",
@@ -838,7 +837,7 @@ class BFNamelistTIME(BFNamelist):
         duration = bf_time_t_end - bf_time_t_begin
         msgs = None
         if bf_time_t_begin > bf_time_t_end: raise BFError(self, "T_END < T_BEGIN")
-        elif duration > 0. and bf_time_t_begin > 0.: msgs = "Simulation duration is {} s".format(duration) 
+        elif duration > 0. and bf_time_t_begin > 0. and not element.bf_time_smv_setup: msgs = "Simulation duration is {} s".format(duration) 
         elif duration == 0. or element.bf_time_smv_setup: msgs = "Smokeview setup only"
         return BFResult(sender=self, value=None, msgs=msgs)
 
