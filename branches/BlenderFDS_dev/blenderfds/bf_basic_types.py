@@ -85,7 +85,8 @@ class BFListItem():
     bf_list = BFList()
 
     def __init__(self, name):
-        if not name: raise ValueError("Invalid name")
+        if not name or not isinstance(name,str): raise ValueError("Invalid name")
+        if name in self.bf_list: raise ValueError("Duplicated name '{}'".format(name))
         self.name = name
         self.bf_list.append(self)
 

@@ -25,11 +25,11 @@ from . import bf_operators, bf_geometry, bf_config
 ### Mods
 
 class BFPropNoExport(BFProp):
-    def is_exported_to_fds(self, context, element):
+    def is_exported(self, context, element):
         return False
 
 class BFNamelistNoExport(BFNamelist):
-    def is_exported_to_fds(self, context, element):
+    def is_exported(self, context, element):
         return False
 
 class BFPropCustom(BFProp):
@@ -66,25 +66,72 @@ class BFPropNoUI(BFPropNoExport):
         pass
 
 class BFPropReferenceToObject(BFProp):
-    def is_exported_to_fds(self, context, element):
+    def is_exported(self, context, element):
         # Check if self is exported
-        result = BFProp.is_exported_to_fds(self, context, element)
+        result = BFProp.is_exported(self, context, element)
         # Check if referenced object exists and if it is exported
         ref_element_name = getattr(element, self.bpy_name, None) # Get its name
         if ref_element_name: ref_element = bpy.data.objects.get(ref_element_name, None) # If its name, get the object
         else: return False # No name, no export!
-        if ref_element: return result and ref_element.is_exported_to_fds() # If object, get if it is exported
+        if ref_element: return result and ref_element.is_exported() # If object, get if it is exported
         else: return False # The name does not correspond to any object (Blender bug), no export!
  
     def draw_bf_props(self, context, element, layout):
         row = layout.row()
-        row.active = self.is_exported_to_fds(context, element)
+        row.active = self.is_exported(context, element)
         row.prop_search(element, self.bpy_name, bpy.data, "objects", text=self.label)
+
+### Default BFNamelist and BFProp
+
+class BFPropNamelist(BFPropNoExport):
+    def _update_bf_namelist(self, bpy_type, default):
+        items = list()
+        for bf_namelist in bf_namelists:
+            if not bf_namelist.bpy_type == bpy_type: continue
+            if bf_namelist.description: description = "{} ({})".format(bf_namelist.label, bf_namelist.description)
+            else: description = bf_namelist.label
+            items.append((bf_namelist.name, description, description, bf_namelist.unique_id,))
+        items.sort()
+        bpy_type.bf_namelist = bpy.props.EnumProperty(
+            name="Namelist",
+            description="Type of FDS namelist",
+            items=items,
+            default=default,
+            )
+            
+    def update_bf_namelist_items(self):
+        print("BlenderFDS: update_bf_namelist_items")
+        self._update_bf_namelist(bpy.types.Object,"OBST")
+        self._update_bf_namelist(bpy.types.Material,"SURF")
+
+BFPropNamelist(
+    name = "Namelist",
+    label = "Namelist",
+    description = "Type of FDS namelist",
+    bpy_name = "bf_namelist",
+    bpy_prop = bpy.props.StringProperty,
+)
+
+class BFNamelistTMP(BFNamelist):
+    def draw_header(self,context,element,layout):
+        return "BlenderFDS Temporary Object"
+    
+    def draw(self,context,element,layout):
+        row = layout.row()
+        row.operator("object.bf_hide_voxels")
+
+BFNamelistTMP(
+    name = "TMP",
+    label = "TMP",
+    description = "Temporary object",
+    unique_id = 0,
+    bpy_type = bpy.types.Object,
+)
 
 ### SURF_ID
 
 class BFPropSURFID(BFProp):
-    def is_exported_to_fds(self,context,element):
+    def is_exported(self,context,element):
         return element.active_material and element.active_material.bf_namelist_export or False
 
     def value(self,context,element):
@@ -92,7 +139,7 @@ class BFPropSURFID(BFProp):
         
     def draw_bf_props(self,context,element,layout):
         row = layout.row()
-        row.active = self.is_exported_to_fds(context, element)
+        row.active = self.is_exported(context, element)
         row.prop_search(element, self.bpy_name, bpy.data, "materials", text=self.label)
 
 BFPropSURFID(
@@ -129,7 +176,7 @@ class BFPropXB(BFProp):
     
     def to_fds(self, context, element):
         # Check and init
-        if not self.is_exported_to_fds(context, element): return None
+        if not self.is_exported(context, element): return None
         res = self.evaluate(context, element)
         # Select case
         if res.value == "BBOX":
@@ -148,7 +195,7 @@ class BFPropXB(BFProp):
         return res
 
 BFPropNoUI(
-    name = "bf_voxel_size",
+    name = "Voxel size",
     label = "Voxel Size [m]",
     description = "Minimum resolution for object voxelization",
     bpy_name = "bf_voxel_size",
@@ -162,7 +209,7 @@ BFPropNoUI(
 )
 
 BFPropNoUI(
-    name = "bf_is_voxels",
+    name = "Is voxels",
     label = "Is a Voxel Object",
     description = "This is a voxel temporary object",
     bpy_name = "bf_is_voxels",
@@ -171,7 +218,7 @@ BFPropNoUI(
 )
 
 BFPropNoUI(
-    name = "bf_has_voxels_shown",
+    name = "Has voxels shown",
     label = "Has Voxel Shown",
     description = "This object has a visible voxel object companion",
     bpy_name = "bf_has_voxels_shown",
@@ -185,7 +232,7 @@ BFPropXB(
     description = "XB",
     fds_name = "XB",
     has_export_flag = True,
-    bf_props = ("bf_voxel_size","bf_is_voxels","bf_has_voxels_shown"),
+    bf_props = ("Voxel size","Is voxels","Has voxels shown"),
     bpy_name = "bf_xb",
     bpy_prop = bpy.props.EnumProperty,
     items = (
@@ -228,7 +275,7 @@ class BFPropXYZ(BFProp):
         
     def to_fds(self, context, element):
         # Check and init
-        if not self.is_exported_to_fds(context, element): return None
+        if not self.is_exported(context, element): return None
         res = self.evaluate(context, element)
         # Select case
         if res.value == "CENTER":
@@ -276,7 +323,7 @@ class BFPropPB(BFProp):
     
     def to_fds(self,context,element):
         # Check and init
-        if not self.is_exported_to_fds(context, element): return None
+        if not self.is_exported(context, element): return None
         res = self.evaluate(context, element)
         # Select case
         if res.value == "PLANES":
@@ -445,7 +492,13 @@ BFPropNoExport(
 )
 # FIXME bl_info["version"]
 
-BFProp(
+class BFPropTBEGIN(BFProp):
+    def is_exported(self, context, element):
+        # No T_BEGIN if SMV setup
+        if element.bf_time_smv_setup: Return False
+        return True
+
+BFPropTBEGIN(
     name = "T_BEGIN",
     label = "T_BEGIN [s]",
     description = "Simulation starting time",
@@ -459,17 +512,15 @@ BFProp(
 )
 
 class BFPropTEND(BFProp):
-    def evaluate(self, context, element):
-        bf_time_t_begin = element.bf_time_t_begin
-        bf_time_t_end = element.bf_time_t_end
-        duration = bf_time_t_end - bf_time_t_begin
-        msgs = None
-        if bf_time_t_begin > bf_time_t_end: raise BFError(self, "T_END < T_BEGIN")
-        elif duration > 0. and bf_time_t_begin > 0.: msgs = "Simulation duration is {} s".format(duration) 
-        elif duration == 0.: msgs = "Smokeview setup only"
-        return BFResult(sender=self,value=self.value(context,element),msgs=msgs)
+    # TODO T_END=0 if SMV setup
+    def value(self, context, element):
+        if element.bf_time_smv_setup: value = 0.
+        else: value = getattr(element,self.bpy_name)
+        self.check(value)
+        return value
 
-BFPropTEND(
+
+BFProp(
     name = "T_END",
     label = "T_END [s]",
     description = "Simulation ending time",
@@ -480,6 +531,15 @@ BFPropTEND(
     precision = 1,
     min = 0.,
     default= 0.,
+)
+
+BFPropNoExport(
+    name = "SMV setup",
+    label = "Smokeview setup only",
+    description = "Perform Smokeview setup only",
+    bpy_name = "bf_time_smv_setup",
+    bpy_prop = bpy.props.BoolProperty,
+    default = False,
 )
 
 BFProp(
@@ -588,10 +648,9 @@ BFProp(
     label = "VECTOR",
     description = "Create animated vectors",
     fds_name = "VECTOR",
-    has_export_flag = True,
     bpy_name = "bf_slcf_vector",
     bpy_prop = bpy.props.BoolProperty,
-    default = False,
+    default = True,
 )
 
 class BFPropIJK(BFProp):
@@ -601,7 +660,7 @@ class BFPropIJK(BFProp):
         # Good IJK
         good_ijk = bf_geometry.get_good_ijk(element)
         if tuple(element.bf_mesh_ijk) != good_ijk:
-            msgs.append("Not optimized for Poisson solver")
+            msgs.append("J and K not optimal for Poisson solver")
             operators.append("object.bf_correct_ijk")
         # Cells
         cell_size = list(bf_geometry.get_cell_size(element))
@@ -666,7 +725,7 @@ class BFPropHRRPUA(BFProp):
         polygons = (polygon for ob in obs for polygon in ob.data.polygons)
         area, msgs = 0., list()
         for polygon in polygons: area += polygon.area
-        hrr = area * element.bf_hrrpua
+        hrr = area * element.bf_surf_hrrpua
         msgs.extend(("Estimated burner area is {:.1f} m²".format(area),"Estimated HRR max is {:.1f} kW".format(hrr)))
         return msgs
 
@@ -675,7 +734,7 @@ BFPropHRRPUA(
     label = "HRRPUA [kW/m²]",
     description = "Heat release rate per unit area",
     fds_name = "HRRPUA",
-    bpy_name = "bf_hrrpua",
+    bpy_name = "bf_surf_hrrpua",
     bpy_prop = bpy.props.FloatProperty,
     step = 1000,
     precision = 1,
@@ -687,9 +746,9 @@ class BFPropTAUQ(BFProp):
     def msgs(self,context,element):
         global hrr
         msgs = list() 
-        if element.bf_tau_q < 0 and hrr > 0:
-            msgs.append("t² ramp, HRR(t) reaches 1 MW at {:.0f} s".format(-element.bf_tau_q * (1000 / hrr) ** .5))
-        elif element.bf_tau_q > 0:
+        if element.bf_surf_tau_q < 0 and hrr > 0:
+            msgs.append("t² ramp, HRR(t) at 1 MW in {:.0f} s".format(-element.bf_surf_tau_q * (1000 / hrr) ** .5))
+        elif element.bf_surf_tau_q > 0:
             msgs.append("tanh(t/τ) ramp")
         return msgs
 
@@ -698,11 +757,57 @@ BFPropTAUQ(
     label = "TAU_Q [s]",
     description = "Ramp time for heat release rate",
     fds_name = "TAU_Q",
-    bpy_name = "bf_tau_q",
+    bpy_name = "bf_surf_tau_q",
     bpy_prop = bpy.props.FloatProperty,
     step = 10,
     precision = 1,
     default = 100.,
+)
+
+BFProp(
+    name = "INITIAL_STATE",
+    label = "INITIAL_STATE",
+    description = "Set device initial state to .TRUE.",
+    fds_name = "INITIAL_STATE",
+    bpy_name = "bf_devc_initial_state",
+    bpy_prop = bpy.props.BoolProperty,
+    default = False,
+)
+
+# TODO check variable name: bf_surf_hrrpua
+
+BFProp(
+    name = "LATCH",
+    label = "LATCH",
+    description = "Device only changes state once",
+    fds_name = "LATCH",
+    bpy_name = "bf_devc_latch",
+    bpy_prop = bpy.props.BoolProperty,
+    default = True,
+)
+
+BFProp(
+    name = "SETPOINT",
+    label = "SETPOINT [~]",
+    description = "Value of the device at which its state changes",
+    fds_name = "SETPOINT",
+    has_export_flag = True,
+    bpy_name = "bf_devc_setpoint",
+    bpy_prop = bpy.props.FloatProperty,
+    step = 10,
+    precision = 1,
+    default = 100.,
+)
+
+BFProp(
+    name = "PROP_ID",
+    label = "PROP_ID",
+    description = "Reference to a PROP (Property) line for self properties",
+    fds_name = "PROP_ID",
+    has_export_flag = True,
+    bpy_name = "bf_devc_prop_id",
+    bpy_prop = bpy.props.StringProperty,
+    maxlen = 32,
 )
 
 # BFNamelists
@@ -726,14 +831,45 @@ BFNamelistNoExport(
     bf_props = ("Case Directory","External Config File","Version"),
 )
 
-BFNamelist(
+class BFNamelistTIME(BFNamelist):
+    def evaluate(self, context, element):
+        bf_time_t_begin = element.bf_time_t_begin
+        bf_time_t_end = element.bf_time_t_end
+        duration = bf_time_t_end - bf_time_t_begin
+        msgs = None
+        if bf_time_t_begin > bf_time_t_end: raise BFError(self, "T_END < T_BEGIN")
+        elif duration > 0. and bf_time_t_begin > 0.: msgs = "Simulation duration is {} s".format(duration) 
+        elif duration == 0. or element.bf_time_smv_setup: msgs = "Smokeview setup only"
+        return BFResult(sender=self, value=None, msgs=msgs)
+
+    def to_fds(self,context,element):
+        print("BlenderFDS: > > > BFNamelist.to_fds: {}".format(self.name))
+        # Check
+        if not self.is_exported(context,element): return None
+        # Export
+        res = self.evaluate(context,element) # Do not trap exceptions, pass them upward
+        children_values, children_msgs = self.to_fds_children(children=self.bf_props, context=context, element=element)
+        # res.value from self.evaluate() is used then replaced with new content
+        res.value = self.format(context, element, children_values, children_msgs)
+        return res
+
+    def draw_bf_props(self, context, element, layout):
+        """Draw self bf_props for element in the layout."""
+        bf_time_smv_setup = element.bf_time_smv_setup
+        for b_prop in self.bf_props[0:2]: # T_BEGIN and T_END non active if SMV setup only
+            row = layout.row()
+            row.active = not bf_time_smv_setup
+            row.prop(element, b_prop.bpy_name, text=b_prop.label)
+        self.bf_props["SMV setup"].draw(context, element, layout) # Draw SMV setup
+
+BFNamelistTIME(
     name = "TIME",
     label = "TIME",
     description = "Time",
     fds_name = "TIME",
     unique_id = 3,
     bpy_type = bpy.types.Scene,
-    bf_props = ("T_BEGIN","T_END","TIME Custom"),
+    bf_props = ("T_BEGIN", "T_END", "SMV setup", "TIME Custom"),
 )
 
 BFNamelist(
@@ -813,10 +949,9 @@ BFNamelist(
     has_export_flag = True,
     bf_prop_export = "Namelist export",
     bpy_type = bpy.types.Object,
-    bf_props = ("Namelist","ID","FYI","SURF_ID","XB","XYZ","PB","DEVC_ID","Custom",),
+    bf_props = ("Namelist", "ID", "FYI", "SURF_ID", "XB", "XYZ", "PB", "DEVC_ID", "Custom",),
 )
 
-# FIXME INITIAL_STATE, LATCH, PROP_ID, SETPOINT, TRIP_DIRECTION
 BFNamelist(
     name = "DEVC",
     label = "DEVC",
@@ -826,7 +961,7 @@ BFNamelist(
     has_export_flag = True,
     bf_prop_export = "Namelist export",
     bpy_type = bpy.types.Object,
-    bf_props = ("Namelist","ID","FYI","QUANTITY","XB","XYZ","DEVC_ID","Custom",),
+    bf_props = ("Namelist", "ID", "FYI", "QUANTITY", "SETPOINT", "INITIAL_STATE", "LATCH", "XB", "XYZ", "PROP_ID", "DEVC_ID", "Custom",),
 )
 
 BFNamelist(
@@ -981,15 +1116,13 @@ BFSection(
     bf_namelists = ("Custom"),
 )
 
-# Some sanity checks
-
+### Some sanity checks
 # Check unused defined objects
 bf_props_unused = set(bf_props) - set(b_prop for bf_namelist in bf_namelists for b_prop in bf_namelist.bf_props) \
     - set(bf_prop.bf_prop_export for bf_prop in bf_props if bf_prop.bf_prop_export is not None) \
     - set(bf_namelist.bf_prop_export for bf_namelist in bf_namelists if bf_namelist.bf_prop_export is not None)
-bf_namelists_unused = set(bf_namelists) - set(bf_namelist for bf_section in bf_sections for bf_namelist in bf_section.bf_namelists)
-# bf_sections_unused = set(bf_sections) - set(bf_file.bf_sections) All bf_sections are always used!
 print("BlenderFDS: Unused bf_props:",bf_props_unused)
+
+bf_namelists_unused = set(bf_namelists) - set(bf_namelist for bf_section in bf_sections for bf_namelist in bf_section.bf_namelists)
 print("BlenderFDS: Unused bf_namelists:",bf_namelists_unused)
 
-# TODO Check double bf_sections, bf_namelists, bf_props

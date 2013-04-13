@@ -99,7 +99,7 @@ class BFHavingFDSName():
         else: self.bf_prop_export = None
         self.bf_props = _check_items(bf_props,BFProp)
 
-    def is_exported_to_fds(self, context, element):
+    def is_exported(self, context, element):
         """True if self is exported to FDS"""
         if self.has_export_flag: return self.bf_prop_export.value(context, element)
         return True
@@ -222,7 +222,7 @@ class BFProp(BFListItem,BFHavingFDSName):
     def to_fds(self,context,element):
         """Export self in FDS notation for element. Return a BFResult() or None."""
         print("BlenderFDS: > > > > BFProp.to_fds: {}".format(self.name))
-        if not self.is_exported_to_fds(context, element): return None
+        if not self.is_exported(context, element): return None
         # Evaluate
         res = self.evaluate(context, element) # Do not trap exceptions, pass them upward
         if res is None or res.value is None: return res # Could have msgs
@@ -392,7 +392,7 @@ class BFNamelist(BFListItem,BFHavingFDSName,BFHavingChildren):
         """Export self in FDS notation for element. Return a BFResult() or None."""
         print("BlenderFDS: > > > BFNamelist.to_fds: {}".format(self.name))
         # Check
-        if not self.is_exported_to_fds(context,element): return None
+        if not self.is_exported(context,element): return None
         # Export
         res = self.evaluate(context,element) # Do not trap exceptions, pass them upward
         children_values, children_msgs = self.to_fds_children(children=self.bf_props, context=context, element=element)
@@ -445,7 +445,7 @@ class BFSection(BFListItem,BFHavingChildren):
         BFListItem.__init__(self,name=name)
         self.bf_namelists = _check_items(bf_namelists,BFNamelist)
 
-    def is_exported_to_fds(self): # *args and **kwargs are for compatibility with other classes
+    def is_exported(self): # *args and **kwargs are for compatibility with other classes
         """If self is going to be exported return True, else False"""
         return True
 
@@ -463,7 +463,7 @@ class BFSection(BFListItem,BFHavingChildren):
         """Export self in FDS notation. Return a BFResult() or None."""
         print("BlenderFDS: > BFSection.to_fds: {}".format(self.name))
         # Check
-        if not self.is_exported_to_fds(): return None
+        if not self.is_exported(): return None
         # Get concerned bpy_types
         bpy_types = set(bf_namelist.bpy_type for bf_namelist in self.bf_namelists)
         # Get concerned children: Blender scenes, objects, materials
@@ -497,7 +497,7 @@ class BFFile(BFListItem, BFHavingChildren):
         print("BlenderFDS: BFFile.init: {}".format(name))
         BFListItem.__init__(self, name=name)
 
-    def is_exported_to_fds(self): # *args and **kwargs are for compatibility with other classes
+    def is_exported(self): # *args and **kwargs are for compatibility with other classes
         """If self is going to be exported return True, else False"""
         return True
 
@@ -516,7 +516,7 @@ class BFFile(BFListItem, BFHavingChildren):
         """Export self in FDS notation. Return a BFResult() or None."""
         print("BlenderFDS: BFFile.to_fds")
         # Check
-        if not self.is_exported_to_fds(): return None
+        if not self.is_exported(): return None
         # Manage error to produce output file
         try:
             res = self.evaluate()
@@ -537,9 +537,9 @@ bf_file = BFFile("Case")
 
 ### Class bpy.types.*, add methods
 
-def bpy_types_is_exported_to_fds(self):
+def bpy_types_is_exported(self):
     """Check if first namelist of self is exported to fds, return a bool."""
-    return self.get_bf_namelists()[0].is_exported_to_fds(bpy.context,self)
+    return self.get_bf_namelists()[0].is_exported(bpy.context,self)
         
 def bpy_types_get_bf_namelists(self):
     """Get BFNamelist related to self. Return a tuple() of BFNamelist."""
@@ -568,77 +568,26 @@ def bpy_types_to_fds(self, context=None, element=None): # element is kept for co
     return BFResult(sender=self, value=bf_format.format_body(values), msgs=msgs)
 
 # Assign methods to Scene, Object, and Material
-bpy.types.Scene.is_exported_to_fds = bpy_types_is_exported_to_fds
+bpy.types.Scene.is_exported = bpy_types_is_exported
 bpy.types.Scene.to_fds_children = BFHavingChildren.to_fds_children
 bpy.types.Scene.get_bf_namelists = bpy_types_get_bf_namelists
 bpy.types.Scene.get_bf_props = bpy_types_get_bf_props
 bpy.types.Scene.has_bf_prop = bpy_types_has_bf_prop
 bpy.types.Scene.to_fds = bpy_types_to_fds
 
-bpy.types.Object.is_exported_to_fds = bpy_types_is_exported_to_fds
+bpy.types.Object.is_exported = bpy_types_is_exported
 bpy.types.Object.to_fds_children = BFHavingChildren.to_fds_children
 bpy.types.Object.get_bf_namelists = bpy_types_get_bf_namelists
 bpy.types.Object.get_bf_props = bpy_types_get_bf_props
 bpy.types.Object.has_bf_prop = bpy_types_has_bf_prop
 bpy.types.Object.to_fds = bpy_types_to_fds
 
-bpy.types.Material.is_exported_to_fds = bpy_types_is_exported_to_fds
+bpy.types.Material.is_exported = bpy_types_is_exported
 bpy.types.Material.to_fds_children = BFHavingChildren.to_fds_children
 bpy.types.Material.get_bf_namelists = bpy_types_get_bf_namelists
 bpy.types.Material.get_bf_props = bpy_types_get_bf_props
 bpy.types.Material.has_bf_prop = bpy_types_has_bf_prop
 bpy.types.Material.to_fds = bpy_types_to_fds
-
-### Default BFNamelist and BFProp
-
-class BFPropNamelist(BFProp): # FIXME
-    """Self has a special method to update self menus"""
-    def is_exported_to_fds(self, context, element):
-        return False
-
-    def _update_bf_namelist(self,bpy_type,default):
-        items = list()
-        for bf_namelist in bf_namelists:
-            if not bf_namelist.bpy_type == bpy_type: continue
-            if bf_namelist.description: description = "{} ({})".format(bf_namelist.label,bf_namelist.description)
-            else: description = bf_namelist.label
-            items.append((bf_namelist.name,description,description,bf_namelist.unique_id,))
-        items.sort()
-        bpy_type.bf_namelist = bpy.props.EnumProperty(
-            name="Namelist",
-            description="Type of FDS namelist",
-            items=items,
-            default=default,
-            )
-            
-    def update_bf_namelist_items(self):
-        print("BlenderFDS: update_bf_namelist_items")
-        self._update_bf_namelist(bpy.types.Object,"OBST")
-        self._update_bf_namelist(bpy.types.Material,"SURF")
-
-BFPropNamelist(
-    name = "Namelist",
-    label = "Namelist",
-    description = "Type of FDS namelist",
-    bpy_name = "bf_namelist",
-    bpy_prop = bpy.props.StringProperty,
-)
-
-class BFNamelist_TMP(BFNamelist):
-    def draw_header(self,context,element,layout):
-        return "BlenderFDS Temporary Object"
-    
-    def draw(self,context,element,layout):
-        row = layout.row()
-        row.operator("object.bf_hide_voxels")
-
-BFNamelist_TMP(
-    name = "TMP",
-    label = "TMP",
-    description = "Temporary object",
-    unique_id = 0,
-    bpy_type = bpy.types.Object,
-)
 
 ### Generic panels
 
