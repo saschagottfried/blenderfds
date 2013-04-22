@@ -423,7 +423,7 @@ BFProp(
     fds_name = "FYI",
     bpy_name = "bf_fyi",
     bpy_prop = bpy.props.StringProperty,
-    maxlen = 60,
+    maxlen = 128,
 )
 
 BFPropFilename(
@@ -688,22 +688,7 @@ BFProp(
     bpy_name = "alpha",
 )
 
-hrr = 0.
-
-class BFPropHRRPUA(BFProp):
-    def msgs(self,context,element):
-        global hrr # FIXME no globals!!!
-        obs = (ob for ob in context.scene.objects \
-            if ob.type == "MESH" and ob.bf_namelist_export \
-            and ob.active_material == element and ob.bf_namelist in ("OBST","VENT"))
-        polygons = (polygon for ob in obs for polygon in ob.data.polygons)
-        area, msgs = 0., list()
-        for polygon in polygons: area += polygon.area
-        hrr = area * element.bf_surf_hrrpua
-        msgs.extend(("Estimated burner area is {:.1f} m²".format(area),"Estimated HRR max is {:.1f} kW".format(hrr)))
-        return msgs
-
-BFPropHRRPUA(
+BFProp(
     name = "HRRPUA",
     label = "HRRPUA [kW/m²]",
     description = "Heat release rate per unit area",
@@ -715,18 +700,8 @@ BFPropHRRPUA(
     min = 0.,
     default = 1000.,
 )
-    
-class BFPropTAUQ(BFProp):
-    def msgs(self,context,element):
-        global hrr
-        msgs = list() 
-        if element.bf_surf_tau_q < 0 and hrr > 0:
-            msgs.append("t² ramp, HRR(t) at 1 MW in {:.0f} s".format(-element.bf_surf_tau_q * (1000 / hrr) ** .5))
-        elif element.bf_surf_tau_q > 0:
-            msgs.append("tanh(t/τ) ramp")
-        return msgs
 
-BFPropTAUQ(
+BFProp(
     name = "TAU_Q",
     label = "TAU_Q [s]",
     description = "Ramp time for heat release rate",
@@ -1017,7 +992,12 @@ BFNamelistSURF(
     bf_props = ("Ma namelist","ID","FYI","RGB","TRANSPARENCY","Custom",),
 )
 
-BFNamelistSURF(
+class BFNamelistSURFBurner(BFNamelist):
+    def evaluate(self, context, element):
+        msgs = element.bf_surf_tau_q <= 0 and "HRR(t) has a t² ramp" or "HRR(t) has a tanh(t/τ) ramp"
+        return BFResult(sender=self, value=None, msgs=msgs, operators="material.set_tau_q")
+
+BFNamelistSURFBurner(
     name = "SURF burner",
     label = "SURF burner",
     description = "A simple burner",

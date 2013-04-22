@@ -17,6 +17,12 @@
 # ##### END GPL LICENSE BLOCK #####
 """BlenderFDS, an open tool for the NIST Fire Dynamics Simulator"""
 
+# TODO
+# HRRPUA dialog 
+# import from fds file
+# mesh alignment tool
+# object to mesh alignment
+# analyze and clean up background image tool
 
 bl_info = {
     "name": "BlenderFDS",
@@ -40,6 +46,7 @@ if "bpy" in locals():
     imp.reload(bf_operators)
     imp.reload(bf_handlers)
     imp.reload(bf_types)
+    imp.reload(bf_basic_types)
     imp.reload(bf_objects)
 else:
     import bpy

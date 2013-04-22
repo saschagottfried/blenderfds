@@ -17,7 +17,8 @@
 # ##### END GPL LICENSE BLOCK #####
 """BlenderFDS, operators"""
 
-from . import bf_geometry
+from . import bf_geometry, bf_config
+from .bf_types import bf_namelists
 from .bf_osd import bf_osd
 import bpy
 
@@ -194,6 +195,65 @@ def update_voxels(self, context):
         bpy.ops.object.bf_hide_voxels()
         bpy.ops.object.bf_show_voxels()
     bf_osd.clean()
+
+# TODO popup for HRR and alpha
+
+class DialogOperator(bpy.types.Operator):
+    bl_label = "Set t² ramp"
+    bl_idname = "material.set_tau_q"
+    bl_description = "Set t² ramp and HRRPUA"
+
+    bf_burner_area = bpy.props.FloatProperty(name="Burner area [m²]", min=0., step=100.)
+    bf_hrr_max = bpy.props.FloatProperty(name="HRR max [kW]", min=0., step=100.) # FIXME the same as elsewhere
+    bf_growth_rate = bpy.props.EnumProperty(
+        name = "Growth rate",
+        items = (
+            ("SLOW", "Slow (600\")", "Slow (600\")"),
+            ("MEDIUM", "Medium (300\")", "Medium (300\")"),
+            ("FAST", "Fast (150\")", "Fast (150\")"),
+            ("ULTRA-FAST", "Ultra fast (75\")", "Ultra fast (75\")"),
+            ),
+        default = "MEDIUM",
+        )
+    bf_reference_hrr = bpy.props.EnumProperty(
+        name = "Reference HRR",
+        items = (
+            ("US", "1000 BTU/s, US", "1000 BTU/s (1055 kW), US standard"),
+            ("EU", "1000 kW, Eurocode", "1000 kW, Eurocode definition"),
+            ),
+        default = "US",
+        )
+# FIXME cleanup!
+# FIXME 1000 kW or 1055 kW configurable from UI!
+    def execute(self, context):
+        ma = context.object.active_material
+        reference_hrr = self.bf_reference_hrr == "US" and 1055. or 1000.
+        if self.bf_growth_rate == "SLOW": time = 600.
+        elif self.bf_growth_rate == "MEDIUM": time = 300.
+        elif self.bf_growth_rate == "FAST": time = 150.
+        elif self.bf_growth_rate == "ULTRA-FAST": time = 75.
+        else: time = 0.
+        ma.bf_surf_tau_q = -time * (self.bf_hrr_max / reference_hrr) ** .5
+        ma.bf_surf_hrrpua = self.bf_hrr_max / self.bf_burner_area
+        ma.bf_fyi = "Estimated area {} m², HRR {} kW, t² ramp ({} {})".format(self.bf_burner_area, self.bf_hrr_max, self.bf_growth_rate, self.bf_reference_hrr)
+        self.report({'INFO'}, "TAU_Q set")
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        ma = context.object.active_material
+        # Calc burner area
+        burner_area = 0.
+        obs = (ob for ob in context.scene.objects \
+            if ob.type == "MESH" and ob.bf_namelist_export \
+            and ob.active_material == ma and ob.bf_namelist in ("OBST","VENT"))
+        polygons = (polygon for ob in obs for polygon in ob.data.polygons)
+        for polygon in polygons: burner_area += polygon.area
+        # Set defaults to estimated values
+        self.bf_burner_area = burner_area
+        self.bf_hrr_max = ma.bf_surf_hrrpua * burner_area
+        # Call dialog
+        wm = context.window_manager
+        return wm.invoke_props_dialog(self)
 
 # TODO analyze and clean up
 
