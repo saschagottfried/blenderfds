@@ -56,9 +56,6 @@ def register():
     bpy.types.INFO_MT_file_export.append(bf_export.export_fds_menu)
     bpy.app.handlers.load_post.append(bf_handlers.load_handler)
     bpy.app.handlers.save_post.append(bf_handlers.save_handler)
-    # Update bf_params["Namelist"] items
-    # This must be done now, after registering all other objects
-    bf_types.bf_props["Namelist"].update_bf_namelist_items()
     # TODO analyze and clean up
     bpy.types.VIEW3D_PT_background_image.draw = bg_panel_draw
 

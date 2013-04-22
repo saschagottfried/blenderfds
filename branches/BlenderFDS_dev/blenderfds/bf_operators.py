@@ -77,7 +77,7 @@ def _create_material(name):
     return bpy.data.materials[name]
 
 class MATERIAL_OT_bf_set_predefined(bpy.types.Operator):
-    bl_label = "Set INERT, OPEN, MIRROR"
+    bl_label = "Set predefined"
     bl_idname = "material.bf_set_predefined"
     bl_description = "Set INERT, OPEN, MIRROR predefined SURFs"
 

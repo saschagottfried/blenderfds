@@ -65,66 +65,51 @@ class BFPropNoUI(BFPropNoExport):
     def draw(self, context, element, layout):
         pass
 
-class BFPropReferenceToObject(BFProp):
-    def is_exported(self, context, element):
-        # Check if self is exported
-        result = BFProp.is_exported(self, context, element)
-        # Check if referenced object exists and if it is exported
-        ref_element_name = getattr(element, self.bpy_name, None) # Get its name
-        if ref_element_name: ref_element = bpy.data.objects.get(ref_element_name, None) # If its name, get the object
-        else: return False # No name, no export!
-        if ref_element: return result and ref_element.is_exported() # If object, get if it is exported
-        else: return False # The name does not correspond to any object (Blender bug), no export!
- 
-    def draw_bf_props(self, context, element, layout):
-        row = layout.row()
-        row.active = self.is_exported(context, element)
-        row.prop_search(element, self.bpy_name, bpy.data, "objects", text=self.label)
+# FIXME DEVC_ID cannot be cleanly supported.
+# Blender does not currently have a nice way to choose a referred object
+# from a filtered list of objects
 
 ### Default BFNamelist and BFProp
+# FIXME update each time?
+# Or update at the end of this file?
 
-class BFPropNamelist(BFPropNoExport):
-    def _update_bf_namelist(self, bpy_type, default):
-        items = list()
-        for bf_namelist in bf_namelists:
-            if not bf_namelist.bpy_type == bpy_type: continue
-            if bf_namelist.description: description = "{} ({})".format(bf_namelist.label, bf_namelist.description)
-            else: description = bf_namelist.label
-            items.append((bf_namelist.name, description, description, bf_namelist.unique_id,))
-        items.sort()
-        bpy_type.bf_namelist = bpy.props.EnumProperty(
-            name="Namelist",
-            description="Type of FDS namelist",
-            items=items,
-            default=default,
-            )
-            
-    def update_bf_namelist_items(self):
-        print("BlenderFDS: update_bf_namelist_items")
-        self._update_bf_namelist(bpy.types.Object,"OBST")
-        self._update_bf_namelist(bpy.types.Material,"SURF")
-
-BFPropNamelist(
-    name = "Namelist",
+BFProp(
+    name = "Ob namelist",
     label = "Namelist",
     description = "Type of FDS namelist",
     bpy_name = "bf_namelist",
-    bpy_prop = bpy.props.StringProperty,
+    bpy_prop = bpy.props.EnumProperty,
+    default = "OBST",
+    items = ("OBST","OBST","OBST",0),
+)
+
+BFProp(
+    name = "Ma namelist",
+    label = "Namelist",
+    description = "Type of FDS namelist",
+    bpy_name = "bf_namelist",
+    bpy_prop = bpy.props.EnumProperty,
+    default = "SURF",
+    items = ("SURF","SURF","SURF",0),
 )
 
 class BFNamelistTMP(BFNamelist):
+    
+    menu_item = None # No bf_namelist menu item
+    
     def draw_header(self,context,element,layout):
         return "BlenderFDS Temporary Object"
     
     def draw(self,context,element,layout):
         row = layout.row()
+        row.prop(context.object,"bf_namelist")
         row.operator("object.bf_hide_voxels")
-
+    
 BFNamelistTMP(
     name = "TMP",
     label = "TMP",
     description = "Temporary object",
-    unique_id = 0,
+    unique_id = 18,
     bpy_type = bpy.types.Object,
 )
 
@@ -166,7 +151,7 @@ class BFPropXB(BFProp):
     def draw_extra(self, context, element, layout):
         if element.bf_xb == "VOXELS":
             row = layout.row()
-            bf_prop = self.bf_props["bf_voxel_size"]
+            bf_prop = self.bf_props["Voxel size"]
             row.prop(element, bf_prop.bpy_name, text=bf_prop.label)
             if element.bf_has_voxels_shown: row.operator("object.bf_hide_voxels") 
             else: row.operator("object.bf_show_voxels")
@@ -622,16 +607,6 @@ BFPropNFRAMES(
     default = 1000,
 )
 
-BFPropReferenceToObject(
-    name = "DEVC_ID",
-    label = "DEVC_ID",
-    description = "Referred device identificator",
-    fds_name = "DEVC_ID",
-    has_export_flag = True,
-    bpy_name = "bf_devc_id",
-    bpy_prop = bpy.props.StringProperty,
-)
-
 BFProp(
     name = "QUANTITY",
     label = "QUANTITY",
@@ -912,7 +887,7 @@ BFNamelist(
     has_export_flag = True,
     bf_prop_export = "Namelist export",
     bpy_type = bpy.types.Object,
-    bf_props = ("Namelist","Namelist Custom","FYI","XB","XYZ","PB"),
+    bf_props = ("Ob namelist","Namelist Custom","FYI","XB","XYZ","PB"),
 )
 
 BFNamelist(
@@ -920,11 +895,11 @@ BFNamelist(
     label = "OBST",
     description = "Obstruction",
     fds_name = "OBST",
-    unique_id = 8,
+    unique_id = 0,
     has_export_flag = True,
     bf_prop_export = "Namelist export",
     bpy_type = bpy.types.Object,
-    bf_props = ("Namelist","ID","FYI","SURF_ID","XB","DEVC_ID","Custom",),
+    bf_props = ("Ob namelist","ID","FYI","SURF_ID","XB","Custom",),
 )
 
 BFNamelist(
@@ -936,7 +911,7 @@ BFNamelist(
     has_export_flag = True,
     bf_prop_export = "Namelist export",
     bpy_type = bpy.types.Object,
-    bf_props = ("Namelist","ID no export","FYI","XB","DEVC_ID","Custom",),
+    bf_props = ("Ob namelist","ID no export","FYI","XB","Custom",),
 )
 
 BFNamelist(
@@ -948,7 +923,7 @@ BFNamelist(
     has_export_flag = True,
     bf_prop_export = "Namelist export",
     bpy_type = bpy.types.Object,
-    bf_props = ("Namelist", "ID", "FYI", "SURF_ID", "XB", "XYZ", "PB", "DEVC_ID", "Custom",),
+    bf_props = ("Ob namelist", "ID", "FYI", "SURF_ID", "XB", "XYZ", "PB",  "Custom",),
 )
 
 BFNamelist(
@@ -960,7 +935,7 @@ BFNamelist(
     has_export_flag = True,
     bf_prop_export = "Namelist export",
     bpy_type = bpy.types.Object,
-    bf_props = ("Namelist", "ID", "FYI", "QUANTITY", "SETPOINT", "INITIAL_STATE", "LATCH", "XB", "XYZ", "PROP_ID", "DEVC_ID", "Custom",),
+    bf_props = ("Ob namelist", "ID", "FYI", "QUANTITY", "SETPOINT", "INITIAL_STATE", "LATCH", "XB", "XYZ", "PROP_ID",  "Custom",),
 )
 
 BFNamelist(
@@ -972,7 +947,7 @@ BFNamelist(
     has_export_flag = True,
     bf_prop_export = "Namelist export",
     bpy_type = bpy.types.Object,
-    bf_props = ("Namelist","ID no export","FYI","QUANTITY","VECTOR","XB","PB","DEVC_ID","Custom",),
+    bf_props = ("Ob namelist","ID no export","FYI","QUANTITY","VECTOR","XB","PB","Custom",),
 )
 
 # FIXME IOR
@@ -985,7 +960,7 @@ BFNamelist(
     has_export_flag = True,
     bf_prop_export = "Namelist export",
     bpy_type = bpy.types.Object,
-    bf_props = ("Namelist","ID","FYI","QUANTITY","XYZ","Custom",),
+    bf_props = ("Ob namelist","ID","FYI","QUANTITY","XYZ","Custom",),
 )
 
 BFNamelist(
@@ -997,7 +972,7 @@ BFNamelist(
     has_export_flag = True,
     bf_prop_export = "Namelist export",
     bpy_type = bpy.types.Object,
-    bf_props = ("Namelist","ID","FYI","IJK","XB Bounding Box","Custom",),
+    bf_props = ("Ob namelist","ID","FYI","IJK","XB Bounding Box","Custom",),
 )
 
 BFNamelist(
@@ -1009,7 +984,7 @@ BFNamelist(
     has_export_flag = True,
     bf_prop_export = "Namelist export",
     bpy_type = bpy.types.Object,
-    bf_props = ("Namelist","ID","FYI","XB","XYZ","DEVC_ID","Custom",),
+    bf_props = ("Ob namelist","ID","FYI","XB","XYZ","Custom",),
 )
 
 BFNamelist(
@@ -1021,13 +996,13 @@ BFNamelist(
     has_export_flag = True,
     bf_prop_export = "Namelist export",
     bpy_type = bpy.types.Object,
-    bf_props = ("Namelist","ID","FYI","XB Bounding Box","Custom",),
+    bf_props = ("Ob namelist","ID","FYI","XB Bounding Box","Custom",),
 )
 
 class BFNamelistSURF(BFNamelist):
     def evaluate(self, context, element):
         if not set(bf_config.predefined_material_names) <= set(bpy.data.materials.keys()):
-            raise BFError(sender=self, msgs="Predefined SURFs unset", operator="material.bf_set_predefined")
+            raise BFError(sender=self, msgs="Predefined SURFs unset", operators="material.bf_set_predefined")
         return BFResult(sender=self, value=None, msgs=None)
 
 BFNamelistSURF(
@@ -1035,11 +1010,11 @@ BFNamelistSURF(
     label = "SURF",
     description = "Boundary Condition",
     fds_name = "SURF",
-    unique_id = 17,
+    unique_id = 0,
     has_export_flag = True,
     bf_prop_export = "Namelist export",
     bpy_type = bpy.types.Material,
-    bf_props = ("Namelist","ID","FYI","RGB","TRANSPARENCY","Custom",),
+    bf_props = ("Ma namelist","ID","FYI","RGB","TRANSPARENCY","Custom",),
 )
 
 BFNamelistSURF(
@@ -1047,11 +1022,11 @@ BFNamelistSURF(
     label = "SURF burner",
     description = "A simple burner",
     fds_name = "SURF",
-    unique_id = 18,
+    unique_id = 1,
     has_export_flag = True,
     bf_prop_export = "Namelist export",
     bpy_type = bpy.types.Material,
-    bf_props = ("Namelist","ID","FYI","RGB","HRRPUA","TAU_Q","Custom",),
+    bf_props = ("Ma namelist","ID","FYI","RGB","HRRPUA","TAU_Q","Custom",),
 )
 
 ## BFSections
@@ -1114,6 +1089,18 @@ BFSection(
     name = "Other",
     bf_namelists = ("Custom"),
 )
+
+### Update bf_namelist menu with all namelists
+
+def get_bf_namelist_items(bpy_type):
+    items = list(bf_namelist.menu_item for bf_namelist in bf_namelists \
+        if bf_namelist.bpy_type == bpy_type and bf_namelist.menu_item)
+    print(items)
+    items.sort()
+    return items
+
+bf_props["Ob namelist"].bpy_other["items"] = get_bf_namelist_items(bpy.types.Object)
+bf_props["Ma namelist"].bpy_other["items"] = get_bf_namelist_items(bpy.types.Material)
 
 ### Some sanity checks
 # Check unused defined objects

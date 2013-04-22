@@ -118,7 +118,7 @@ class BFResult():
         elif msgs: self.msgs = list(msgs)
         else: self.msgs = list()
         # Treat operators: "example" or ("example1", "example2",) or None
-        if isinstance(operators, str): self.msgs = list((operators, ))
+        if isinstance(operators, str): self.operators = list((operators, ))
         elif operators: self.operators = list(operators)
         else: self.operators = list()
 

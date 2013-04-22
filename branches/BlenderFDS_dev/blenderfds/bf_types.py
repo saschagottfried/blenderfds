@@ -320,7 +320,7 @@ class BFNamelist(BFListItem,BFHavingFDSName,BFHavingChildren):
         BFHavingFDSName.__init__(self, label=label, description=description, \
             fds_name=fds_name, has_export_flag=has_export_flag, bf_prop_export=bf_prop_export, bf_props=bf_props)
         self.bpy_type = bpy_type
-
+    
     def register(self):
         """Register corresponding Blender properties"""
         print("BlenderFDS: BFNamelist.register: {}".format(self.name))
@@ -400,7 +400,13 @@ class BFNamelist(BFListItem,BFHavingFDSName,BFHavingChildren):
         res.value = self.format(context, element, children_values, children_msgs)
         return res
 
-    # Draw panel
+    # Draw panel and menu item
+
+    def get_menu_item(self):
+        description = self.description and "{} ({})".format(self.label, self.description) or self.label
+        return (self.name, description, description, self.unique_id)
+
+    menu_item = property(get_menu_item)
 
     def draw_header(self,context,element,layout):
         """Draw Blender panel header for element in the provided layout."""
