@@ -73,13 +73,13 @@ def get_voxels(context, ob):
     # Init
     t0 = time()
     sc = context.scene
-    voxel_size = ob.bf_voxel_size
+    voxel_size = ob.bf_xb_voxel_size
     epsilon = 0.001
     # Create a new tmp object from original object, link it to the scene and update the scene
     # The new object mesh has modifiers, scale, rotation, and location applied
     me_new = _get_global_mesh(context, ob)
     ob_new = bpy.data.objects.new("{0}_tmp".format(ob.name), me_new)
-    ob_new.bf_is_voxels = True
+    ob_new.bf_xb_is_voxels = True
     sc.objects.link(ob_new)
     sc.update()
     # Add new Remesh modifier to the tmp object

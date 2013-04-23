@@ -125,12 +125,12 @@ class BFProp(BFListItem,BFHavingFDSName):
     BlenderFDS: BFProp.init: bf_first
     <BFProp('bf_first')>
     >>> bf_props["bf_first"].register(bpy.types.Object)
-    BlenderFDS: > > BFProp.register: bf_first
+    BlenderFDS: > BFProp.register: bf_first
     >>> bpy.context.object.bf_first = 3.1234
     >>> bf_props["bf_first"].value(bpy.context,bpy.context.object), bf_props["bf_first"].precision  # doctest:+ELLIPSIS
     (3.123..., 3)
     >>> bf_props["bf_first"].unregister(bpy.types.Object)
-    BlenderFDS: > > BFProp.unregister: bf_first
+    BlenderFDS: > BFProp.unregister: bf_first
     """
     bf_list = BFList() # new class BFList, not that from BFListItem
     
@@ -147,7 +147,7 @@ class BFProp(BFListItem,BFHavingFDSName):
 
     def register(self, bpy_type):
         """Register Blender property in Blender bpy_type"""
-        print("BlenderFDS: > > BFProp.register:", self.name)
+        print("BlenderFDS: > BFProp.register:", self.name)
         # Register self
         if self.bpy_prop: setattr(bpy_type,self.bpy_name,self.bpy_prop(name=self.label,description=self.description,**self.bpy_other))
         # Register bf_prop_export
@@ -158,7 +158,7 @@ class BFProp(BFListItem,BFHavingFDSName):
 
     def unregister(self, bpy_type):
         """Unregister Blender property in Blender bpy_type"""
-        print("BlenderFDS: > > BFProp.unregister:", self.name)
+        print("BlenderFDS: > BFProp.unregister:", self.name)
         # Unregister self
         try: delattr(bpy_type,self.bpy_name)
         except: pass
@@ -270,7 +270,7 @@ class BFProp(BFListItem,BFHavingFDSName):
 class BFHavingChildren():
     """Parent type containing methods for types that have children"""
 
-    def to_fds_children(self,children,context,element=None):
+    def to_fds_children(self, children, context, element=None):
         """Pile values, msgs, reraise piled errors from children instances
         
         children -- list of concerned children having the to_fds() method
@@ -315,8 +315,12 @@ class BFNamelist(BFListItem,BFHavingFDSName,BFHavingChildren):
     def __init__(self, name, unique_id, bpy_type, label, description=None, \
         fds_name=None, has_export_flag=False, bf_prop_export=None, bf_props=None):
         print("BlenderFDS: BFNamelist.init:", name)
+        # Check unicity of unique_id before creating bf_namelist
+        if unique_id in (bf_namelist.unique_id for bf_namelist in self.bf_list):
+            raise ValueError("Duplicated unique_id in '{}'".format(name))
+        self.unique_id = unique_id
+        # Init
         BFListItem.__init__(self, name=name)
-        self.unique_id = unique_id # TODO test it is really unique
         BFHavingFDSName.__init__(self, label=label, description=description, \
             fds_name=fds_name, has_export_flag=has_export_flag, bf_prop_export=bf_prop_export, bf_props=bf_props)
         self.bpy_type = bpy_type
@@ -423,6 +427,13 @@ class BFNamelist(BFListItem,BFHavingFDSName,BFHavingChildren):
         """Draw self bf_props for element in the layout."""
         for bf_prop in self.bf_props: bf_prop.draw(context, element, layout)
 
+    def draw_extra(self, context, element, layout):
+        """Draw extra customized widgets for element in the layout"""
+        if self.bpy_type == bpy.types.Object:
+            layout.operator("object.bf_props_to_sel_obs") # Copy properties to obs
+        elif self.bpy_type == bpy.types.Material:
+            layout.operator("material.bf_surf_to_sel_obs") # Assign surf to obs
+                    
     def draw_error(self,context,element,layout):
         """Draw errors and messages for element in the provided layout."""
         try: res = self.evaluate(context,element)
@@ -434,7 +445,7 @@ class BFNamelist(BFListItem,BFHavingFDSName,BFHavingChildren):
         layout = self.get_layout_export(context, element, layout)
         self.draw_error(context, element, layout)
         self.draw_bf_props(context, element, layout)
-        # TODO copy FDS properties (except ID?) to other elements
+        self.draw_extra(context, element, layout)
 
 class BFSection(BFListItem,BFHavingChildren):
     """BlenderFDS section, used for grouping FDS namelists.
@@ -558,7 +569,7 @@ def bpy_types_get_bf_namelists(self):
 
 def bpy_types_get_bf_props(self):
     """Get BFProp related to self. Return a tuple() of BFProp."""
-    return BFList(set(bf_prop for bf_namelist in self.get_bf_namelists() for bf_prop in bf_namelist.bf_props)) # FIXME
+    return BFList(set(bf_prop for bf_namelist in self.get_bf_namelists() for bf_prop in bf_namelist.bf_props)) # FIXME no sub bf_props?
 
 def bpy_types_has_bf_prop(self, bf_prop):
     """Check if self has bf_prop parameter"""
@@ -650,11 +661,11 @@ class MaterialPanel():
     bl_context = "material"
     bl_label = "BlenderFDS Material"
 
-    @classmethod    
+    @classmethod
     def poll(cls,context):
         ma = context.material
         ob = context.active_object
-        return ma and ob and ob.type == "MESH" and "SURF_ID" in ob.get_bf_props() and not ob.bf_is_voxels
+        return ma and ob and ob.type == "MESH" and "SURF_ID" in ob.get_bf_props() and not ob.bf_xb_is_voxels
 
     def draw_header(self,context):
         layout = self.layout

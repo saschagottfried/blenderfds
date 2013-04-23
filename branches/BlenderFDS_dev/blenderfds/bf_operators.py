@@ -18,7 +18,7 @@
 """BlenderFDS, operators"""
 
 from . import bf_geometry, bf_config
-from .bf_types import bf_namelists
+from .bf_types import bf_namelists, bf_props
 from .bf_osd import bf_osd
 import bpy
 
@@ -38,37 +38,62 @@ class OBJECT_OT_bf_correct_ijk(bpy.types.Operator):
         self.report({"INFO"}, "IJK corrected")
         return{'FINISHED'}
 
-# FIXME loop on BProps except ID?
-# FIXME create UI
-class OBJECT_OT_bf_copy_active_FDS_properties_to_sel_obs(bpy.types.Operator):
+class OBJECT_OT_bf_copy_FDS_properties_to_sel_obs(bpy.types.Operator):
     bl_label = "Copy To Selected Objects"
-    bl_idname = "object.bf_fds_props_to_sel_obs"
-    bl_description = "Copy these FDS properties to other selected objects"
+    bl_idname = "object.bf_props_to_sel_obs"
+    bl_description = "Copy these properties to other selected objects"
 
     def execute(self,context):
         bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-        ob_active = context.active_object
-        obs = {ob for ob in context.selected_objects if ob.type == "MESH"}
-        for ob in obs:
-            # do not copy ID!
-            ob.bf_export = ob_active.bf_export
-            ob.bf_nl = ob_active.bf_nl
-            ob.bf_xb = ob_active.bf_xb
-            ob.bf_xyz = ob_active.bf_xyz
-            ob.bf_pb = ob_active.bf_pb
-            ob.bf_voxel_size = ob_active.bf_voxel_size
-            ob.bf_sawtooth = ob_active.bf_sawtooth
-            ob.bf_ijk_n = ob_active.bf_ijk_n
-            ob.bf_fyi = ob_active.bf_fyi
-            ob.bf_custom_param = ob_active.bf_custom_param
-            ob.draw_type = ob_active.draw_type
-            ob.show_transparent = ob_active.show_transparent
-            ob.bf_is_voxels = ob_active.bf_is_voxels
-            ob.bf_has_voxels_shown = ob_active.bf_has_voxels_shown
-            # copy active material only if it exists
-            if ob_active.active_material:
-                ob.active_material = ob_active.active_material
-        self.report({"INFO"}, "FDS properties copied")
+        # Get active (source) and selected objects (destination)
+        ob_source = context.active_object
+        obs_destination = set(ob for ob in context.selected_objects if ob.type == "MESH" and ob != ob_source)
+        if not obs_destination:
+            self.report({"WARNING"}, "No destination objects")
+            return{'CANCELLED'}
+        if not ob_source:
+            self.report({"WARNING"}, "No source object")
+            return{'CANCELLED'}        
+        # Get properties to copy
+        bf_props_to_copy = set(bf_props) - set((bf_props["ID"], bf_props["ID no export"])) # Do not overwrite IDs
+        # Loop on properties and objects
+        for bf_prop in bf_props_to_copy:
+            for ob in obs_destination:
+                bpy_name = bf_prop.bpy_name
+                try: setattr(ob, bpy_name, getattr(ob_source, bpy_name))
+                except AttributeError: pass
+                else: print("BlenderFDS: Copy {} -> {}: {}".format(ob_source.name, ob.name, bf_prop.name))
+        self.report({"INFO"}, "Copied to selected objects")
+        return{'FINISHED'}
+        
+class MATERIAL_OT_bf_assign_BC_to_sel_obs(bpy.types.Operator):
+    bl_label = "Assign To Selected Objects"
+    bl_idname = "material.bf_surf_to_sel_obs"
+    bl_description = "Assign this boundary condition to selected objects"
+
+    def execute(self,context):
+        bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+        # Get active (source) and selected objects (destination)
+        ob_source = context.active_object
+        active_material = ob_source.active_material
+        obs_destination = set(ob for ob in context.selected_objects if ob.type == "MESH" and ob != ob_source)
+        if not obs_destination:
+            self.report({"WARNING"}, "No destination objects")
+            return{'CANCELLED'}
+        if not ob_source:
+            self.report({"WARNING"}, "No source object")
+            return{'CANCELLED'}
+        if not active_material:
+            self.report({"WARNING"}, "No boundary condition to assign")
+            return{'CANCELLED'}
+        # Loop on objects
+        for ob in obs_destination:
+            ob.active_material = active_material
+            print("BlenderFDS: Assign {} -> {}".format(active_material, ob.name))
+        # Set myself exported
+        active_material.bf_namelist_export = True
+        # Return
+        self.report({"INFO"}, "Assigned to selected objects")
         return{'FINISHED'}
 
 def _create_material(name):
@@ -117,22 +142,6 @@ class MATERIAL_OT_bf_set_predefined(bpy.types.Operator):
         self.report({"INFO"}, "Predefined SURFs ok")
         return{'FINISHED'}
 
-# FIXME currently not used as the new voxelization algorithm
-# is much more robust towards non manifold objects
-class OBJECT_OT_bf_select_non_manifold(bpy.types.Operator):
-    bl_label = "Select Non-Manifold Edges"
-    bl_idname = "object.bf_select_non_manifold"
-    bl_description = "Go to edit mode and select non-manifold edges"
-
-    def execute(self,context):
-        bpy.ops.object.mode_set(mode='EDIT', toggle=False)
-        context.scene.tool_settings.mesh_select_mode = False, True, False # Vertices, edges, faces
-        bpy.ops.mesh.remove_doubles()
-        bpy.ops.mesh.select_all(action="DESELECT")
-        bpy.ops.mesh.select_non_manifold()
-        self.report({"INFO"}, "Non-manifold edges selected")
-        return{'FINISHED'}
-
 class OBJECT_OT_bf_show_voxels(bpy.types.Operator):
     bl_label = "Show Voxels"
     bl_idname = "object.bf_show_voxels"
@@ -145,7 +154,7 @@ class OBJECT_OT_bf_show_voxels(bpy.types.Operator):
         if ob.mode == 'EDIT':
             bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
         ob.hide = True
-        ob.bf_has_voxels_shown = True
+        ob.bf_xb_has_voxels_shown = True
         # Create voxels, put them in a new mesh
         edges, verts, faces, = tuple(), tuple(), tuple()
         xbs, tt, dimension_too_large = bf_geometry.get_voxels(context, ob)
@@ -158,14 +167,14 @@ class OBJECT_OT_bf_show_voxels(bpy.types.Operator):
         me_new.from_pydata(verts, edges, faces)
         # Create a new temporary voxel object, link new mesh
         ob_new = bpy.data.objects.new("_tmp_object", me_new)
-        ob_new.bf_namelist = "TMP"
-        ob_new.bf_is_voxels = True
+        ob_new.bf_namelist = "Temporary"
+        ob_new.bf_xb_is_voxels = True
         ob_new.active_material = ob.active_material
         ob_new.layers = ob.layers
         ob_new.show_wire = True
         sc.objects.link(ob_new)
         sc.update()
-        if dimension_too_large: self.report({"WARNING"}, "Object size too large, voxel size not guaranteed")
+        if dimension_too_large: self.report({"WARNING"}, "Object size too large, voxel size not guaranteed") #FIXME not useful
         else: self.report({"INFO"}, "Object voxels shown")
         return{'FINISHED'}
 
@@ -178,64 +187,65 @@ class OBJECT_OT_bf_hide_voxels(bpy.types.Operator):
         # Init
         sc = context.scene
         # Get temporary Blender objects and delete them
-        for ob in {ob for ob in bpy.data.objects if ob.bf_is_voxels}:
+        for ob in {ob for ob in bpy.data.objects if ob.bf_xb_is_voxels}:
             sc.objects.unlink(ob)
             bpy.data.objects.remove(ob)
         # Get hidden original objects and show them
-        for ob in {ob for ob in bpy.data.objects if ob.bf_has_voxels_shown}:
-            ob.bf_has_voxels_shown = False
+        for ob in {ob for ob in bpy.data.objects if ob.bf_xb_has_voxels_shown}:
+            ob.bf_xb_has_voxels_shown = False
             ob.hide = False
         self.report({"INFO"}, "All object voxels hidden")
         return{'FINISHED'}
 
+# FIXME move to BFPropXB class?
 def update_voxels(self, context):
-    bf_osd.show("BlenderFDS: Updating voxels")
+    """Update voxels when voxel_size is changed"""
     ob = context.active_object
-    if ob.bf_has_voxels_shown:
+    if ob.bf_xb != "VOXELS": return
+    bf_osd.show("BlenderFDS: Updating voxels")
+    if ob.bf_xb_has_voxels_shown:
         bpy.ops.object.bf_hide_voxels()
         bpy.ops.object.bf_show_voxels()
     bf_osd.clean()
 
-# TODO popup for HRR and alpha
+# FIXME Hide my voxels only?
+def hide_voxels(self, context):
+    """Update voxels when voxel_size is changed"""
+    ob = context.active_object
+    if ob.bf_xb_has_voxels_shown:
+        bpy.ops.object.bf_hide_voxels()
 
-class DialogOperator(bpy.types.Operator):
+class MATERIAL_OT_bf_set_tau_q(bpy.types.Operator):
     bl_label = "Set t² ramp"
     bl_idname = "material.set_tau_q"
     bl_description = "Set t² ramp and HRRPUA"
 
-    bf_burner_area = bpy.props.FloatProperty(name="Burner area [m²]", min=0., step=100.)
-    bf_hrr_max = bpy.props.FloatProperty(name="HRR max [kW]", min=0., step=100.) # FIXME the same as elsewhere
+    bf_burner_area = bpy.props.FloatProperty(name="Burner area [m²]", min=0., precision = 1, step=1000)
+    bf_hrr_max = bpy.props.FloatProperty(name="HRR max [kW]", min=0., precision = 1, step=1000)
     bf_growth_rate = bpy.props.EnumProperty(
         name = "Growth rate",
         items = (
-            ("SLOW", "Slow (600\")", "Slow (600\")"),
-            ("MEDIUM", "Medium (300\")", "Medium (300\")"),
-            ("FAST", "Fast (150\")", "Fast (150\")"),
-            ("ULTRA-FAST", "Ultra fast (75\")", "Ultra fast (75\")"),
+            ("SLOW", "Slow (600\")", "Slow growth rate (600\")"),
+            ("MEDIUM", "Medium (300\")", "Medium growth rate (300\")"),
+            ("FAST", "Fast (150\")", "Fast growth rate (150\")"),
+            ("ULTRA-FAST", "Ultra fast (75\")", "Ultra fast growth rate (75\")"),
             ),
-        default = "MEDIUM",
         )
     bf_reference_hrr = bpy.props.EnumProperty(
         name = "Reference HRR",
         items = (
-            ("US", "1000 BTU/s, US", "1000 BTU/s (1055 kW), US standard"),
-            ("EU", "1000 kW, Eurocode", "1000 kW, Eurocode definition"),
+            ("US", "US, 1000 BTU/s (1055 kW)", "US, 1000 BTU/s (1055 kw)"),
+            ("EU", "Eurocode, 1000 kW", "Eurocode, 1000 kW"),
             ),
-        default = "US",
         )
-# FIXME cleanup!
-# FIXME 1000 kW or 1055 kW configurable from UI!
+
     def execute(self, context):
         ma = context.object.active_material
         reference_hrr = self.bf_reference_hrr == "US" and 1055. or 1000.
-        if self.bf_growth_rate == "SLOW": time = 600.
-        elif self.bf_growth_rate == "MEDIUM": time = 300.
-        elif self.bf_growth_rate == "FAST": time = 150.
-        elif self.bf_growth_rate == "ULTRA-FAST": time = 75.
-        else: time = 0.
+        time = {"SLOW":600., "MEDIUM":300., "FAST":150., "ULTRA-FAST":75.}[self.bf_growth_rate]
         ma.bf_surf_tau_q = -time * (self.bf_hrr_max / reference_hrr) ** .5
         ma.bf_surf_hrrpua = self.bf_hrr_max / self.bf_burner_area
-        ma.bf_fyi = "Estimated area {} m², HRR {} kW, t² ramp ({} {})".format(self.bf_burner_area, self.bf_hrr_max, self.bf_growth_rate, self.bf_reference_hrr)
+        ma.bf_fyi = "HRR max {} kW, {} t² ramp ({})".format(self.bf_hrr_max, self.bf_growth_rate.lower(), self.bf_reference_hrr)
         self.report({'INFO'}, "TAU_Q set")
         return {'FINISHED'}
 
@@ -251,6 +261,8 @@ class DialogOperator(bpy.types.Operator):
         # Set defaults to estimated values
         self.bf_burner_area = burner_area
         self.bf_hrr_max = ma.bf_surf_hrrpua * burner_area
+        self.bf_growth_rate = "FAST"
+        self.bf_reference_hrr = "US"
         # Call dialog
         wm = context.window_manager
         return wm.invoke_props_dialog(self)

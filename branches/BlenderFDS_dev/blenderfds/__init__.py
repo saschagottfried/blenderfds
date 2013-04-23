@@ -18,7 +18,10 @@
 """BlenderFDS, an open tool for the NIST Fire Dynamics Simulator"""
 
 # TODO
-# HRRPUA dialog 
+# HRRPUA dialog DONE
+# Copy object properties DONE
+# Assign SURF to many objects DONE
+# Solve TMP namelist problem
 # import from fds file
 # mesh alignment tool
 # object to mesh alignment
@@ -46,7 +49,6 @@ if "bpy" in locals():
     imp.reload(bf_operators)
     imp.reload(bf_handlers)
     imp.reload(bf_types)
-    imp.reload(bf_basic_types)
     imp.reload(bf_objects)
 else:
     import bpy
