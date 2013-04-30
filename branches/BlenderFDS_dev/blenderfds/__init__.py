@@ -21,7 +21,10 @@
 # HRRPUA dialog DONE
 # Copy object properties DONE
 # Assign SURF to many objects DONE
-# Solve TMP namelist problem
+# Solve TMP namelist problem DONE
+# Visualize export geometry DONE
+# prepare geometry translation from FDS to Blender DONE
+# more SURF types
 # import from fds file
 # mesh alignment tool
 # object to mesh alignment
@@ -61,8 +64,9 @@ def register():
     bpy.utils.register_module(__name__)
     # Register namelists, their properties, and the panels
     for bf_namelist in bf_types.bf_namelists: bf_namelist.register()
-    # Register menu and handlers
+    # Register menu
     bpy.types.INFO_MT_file_export.append(bf_export.export_fds_menu)
+    # Register handlers
     bpy.app.handlers.load_post.append(bf_handlers.load_handler)
     bpy.app.handlers.save_post.append(bf_handlers.save_handler)
     # TODO analyze and clean up
@@ -71,10 +75,11 @@ def register():
 def unregister():
     """Unregister Blender types"""
     bpy.utils.unregister_module(__name__)
-    # Unegister namelists, their properties, and the panels
+    # Unregister namelists, their properties, and the panels
     for bf_namelist in bf_types.bf_namelists: bf_namelist.unregister()
-    # Unregister menu and handlers
+    # Unregister menu
     bpy.types.INFO_MT_file_export.remove(bf_export.export_fds_menu)
+    # Unregister handlers
     bpy.app.handlers.load_post.remove(bf_handlers.load_handler)
     bpy.app.handlers.save_post.remove(bf_handlers.save_handler)
 

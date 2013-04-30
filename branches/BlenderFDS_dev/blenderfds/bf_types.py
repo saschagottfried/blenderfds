@@ -56,7 +56,7 @@ def _check_items(inputs,type_):
         else: result.append(type_.bf_list[input_])
     return result
 
-def _check_item(input_,type_):
+def _check_item(input_, type_):
     """Return the element named p of type t or None
     
     >>> a = BFProp("first")
@@ -64,7 +64,7 @@ def _check_item(input_,type_):
     >>> _check_item("first",BFProp), _check_item(a,BFProp)
     (<BFProp('first')>, <BFProp('first')>)
     """
-    if isinstance(input_,type_) or input_ is None: return input_
+    if isinstance(input_, type_) or input_ is None: return input_
     else: return type_.bf_list[input_]
 
 ### Classes
@@ -86,12 +86,12 @@ class BFHavingFDSName():
         self.fds_name = fds_name
         self.has_export_flag = has_export_flag
         if has_export_flag:
-            if bf_prop_export: self.bf_prop_export = _check_item(bf_prop_export,BFProp)
+            if bf_prop_export: self.bf_prop_export = _check_item(bf_prop_export, BFProp)
             else:
                 self.bf_prop_export = BFProp(
-                    name = "{} export".format(self.name),
-                    label = "Export",
-                    description = "Export to FDS",
+                    name = "{} Export".format(self.name),
+                    label = "{} Export".format(self.name),
+                    description = "Export {} to FDS".format(self.name),
                     bpy_name = "bf_{}_export".format(self.name.lower()),                    
                     bpy_prop = bpy.props.BoolProperty,
                     default = False,
@@ -108,13 +108,13 @@ class BFProp(BFListItem,BFHavingFDSName):
     """Wrapper of a generic Blender property
     
     name -- string, unique name, eg "bf_fyi"
-    label -- string, UI label, eg "FYI".
-    description -- string, UI help text, eg "For your information"
-    fds_name -- string, FDS parameter name, eg "ID"
+    label -- string, UI label, eg "FYI". If None, name is used instead.
+    description -- string, UI help text, eg "For your information". If None, None is used.
+    fds_name -- string, FDS parameter name, eg "ID". If None, this is a custom property, the value contains all, eg "PROP1='Example'"
     has_export_flag -- bool, set an automatic or custom export flag for self.
     bf_prop_export -- BFProp, customized export flag for self.
-    bf_props -- list of BFProp, other related BFProp
-    bpy_name -- string, Blender property name, eg "bf_fyi" or "name". If None, use name.
+    bf_props -- list of BFProp, other related BFProp.
+    bpy_name -- string, Blender property name, eg "bf_fyi" or "name". If None, no Blender property is created.
     bpy_prop -- Blender property type, eg bpy.props.StringProperty. If None, refer to existing Blender property.
     **kwargs -- other optional Blender property parameters
 
@@ -134,12 +134,12 @@ class BFProp(BFListItem,BFHavingFDSName):
     """
     bf_list = BFList() # new class BFList, not that from BFListItem
     
-    def __init__(self, name, label, bpy_name, description=None, \
+    def __init__(self, name, label=None, description=None, \
         fds_name=None, has_export_flag=False, bf_prop_export=None, bf_props=None, \
-        bpy_prop=None, **kwargs):
-        print("BlenderFDS: BFProp.init:", name)
+        bpy_name=None, bpy_prop=None, **kwargs):
+        print("BlenderFDS: BFProp.init:", name, bpy_name)
         BFListItem.__init__(self, name=name)
-        BFHavingFDSName.__init__(self, label=label, description=description, \
+        BFHavingFDSName.__init__(self, label=label or name, description=description, \
             fds_name=fds_name, has_export_flag=has_export_flag, bf_prop_export=bf_prop_export, bf_props=bf_props)
         self.bpy_name = bpy_name
         self.bpy_prop = bpy_prop
@@ -149,7 +149,8 @@ class BFProp(BFListItem,BFHavingFDSName):
         """Register Blender property in Blender bpy_type"""
         print("BlenderFDS: > BFProp.register:", self.name)
         # Register self
-        if self.bpy_prop: setattr(bpy_type,self.bpy_name,self.bpy_prop(name=self.label,description=self.description,**self.bpy_other))
+        if self.bpy_prop and self.bpy_name:
+            setattr(bpy_type,self.bpy_name,self.bpy_prop(name=self.label,description=self.description,**self.bpy_other))
         # Register bf_prop_export
         if self.bf_prop_export: self.bf_prop_export.register(bpy_type)
         # Register related bf_props
@@ -160,48 +161,41 @@ class BFProp(BFListItem,BFHavingFDSName):
         """Unregister Blender property in Blender bpy_type"""
         print("BlenderFDS: > BFProp.unregister:", self.name)
         # Unregister self
-        try: delattr(bpy_type,self.bpy_name)
-        except: pass
-        # Unegister bf_prop_export
+        if self.bpy_name:
+            try: delattr(bpy_type,self.bpy_name)
+            except: pass
+        # Unregister bf_prop_export
         if self.bf_prop_export: self.bf_prop_export.unregister(bpy_type)
         # Unregister related bf_props
         if self.bf_props:
             for bf_prop in self.bf_props: bf_prop.unregister(bpy_type)        
-
-    # Evaluate
 
     def _get_precision(self):
         """Get self precision for element"""
         return self.bpy_other.get("precision",2)
 
     precision = property(_get_precision)
-            
-    def check(self,value):
-        """Check value. Raise BFError if not good."""
-        err = BFError(self)
-        if isinstance(value,str):
-            if '&' in value or '/' in value:
-                err.msgs.append("& and / characters not allowed")
-            if "'" in value or '"' in value or "`" in value or "“" in value \
-                or "”" in value or "‘" in value or "’‌" in value:
-                err.msgs.append("Quote characters not allowed")
-        if err.msgs: raise err
+
+    # Evaluate
 
     def value(self, context, element):
-        """Return self value for element. Raise BFError if not good."""
-        value = getattr(element,self.bpy_name)
-        self.check(value)
-        return value
-
-    def msgs(self, context, element):
-        """Get one or more self msgs. Raise BFError if not good."""
-        return None
+        """Return self value"""
+        return getattr(element, self.bpy_name or str(), None)
 
     def evaluate(self, context, element):
-        """Check self for errors and return a BFResult or None.
+        """Check self value for errors and return a BFResult or None.
         Raise a BFError exception if self cannot return a valid result.
         """
-        return BFResult(sender=self,value=self.value(context,element),msgs=self.msgs(context,element))
+        res = BFResult(sender=self, value=self.value(context, element), msgs=None)
+        err = BFError(self)
+        if isinstance(res.value, str):
+            if '&' in res.value or '/' in res.value:
+                err.msgs.append("& and / characters not allowed")
+            if "'" in res.value or '"' in res.value or "`" in res.value or "“" in res.value \
+                or "”" in res.value or "‘" in res.value or "’‌" in res.value:
+                err.msgs.append("Quote characters not allowed")
+        if err.msgs: raise err
+        return res
 
     # Export to_fds
 
@@ -245,8 +239,9 @@ class BFProp(BFListItem,BFHavingFDSName):
     def draw_bf_props(self, context, element, layout):
         """Draw self bf_props for element in the layout."""
         # Draw self
-        row = layout.row()
-        row.prop(element, self.bpy_name, text=self.label)
+        if self.bpy_name:
+            row = layout.row()
+            row.prop(element, self.bpy_name, text=self.label)
         # Draw related bf_props
         for bf_prop in self.bf_props: bf_prop.draw(context, element, layout)
 
@@ -382,6 +377,7 @@ class BFNamelist(BFListItem,BFHavingFDSName,BFHavingChildren):
             if not value: continue
             if len(namelist) + len(value) + 1 - namelist.rfind("\n") < margin: separator = " "
             else: separator = "\n      "
+            print("namelist:",namelist,"value:",value)
             namelist = separator.join((namelist,value))
         # Setup multivalues or close namelist, eg &OBST ID='example' XB=2.56,1.22,.../n&OBST ID='example' XB=2.56,1.22,.../n...
         if multivalues:
@@ -414,6 +410,9 @@ class BFNamelist(BFListItem,BFHavingFDSName,BFHavingChildren):
 
     def draw_header(self,context,element,layout):
         """Draw Blender panel header for element in the provided layout."""
+        # Manage temporary elements
+        if getattr(element, "bf_is_tmp", False): return "BlenderFDS Temporary Element"
+        # Manage ordinary elements, with or without export flag
         if self.bf_prop_export: layout.prop(element, self.bf_prop_export.bpy_name, text="")
         if self.description: return "BlenderFDS {} ({})".format(self.label, self.description)
         return "BlenderFDS {}".format(self.label)
@@ -429,10 +428,7 @@ class BFNamelist(BFListItem,BFHavingFDSName,BFHavingChildren):
 
     def draw_extra(self, context, element, layout):
         """Draw extra customized widgets for element in the layout"""
-        if self.bpy_type == bpy.types.Object:
-            layout.operator("object.bf_props_to_sel_obs") # Copy properties to obs
-        elif self.bpy_type == bpy.types.Material:
-            layout.operator("material.bf_surf_to_sel_obs") # Assign surf to obs
+        pass
                     
     def draw_error(self,context,element,layout):
         """Draw errors and messages for element in the provided layout."""
@@ -442,10 +438,15 @@ class BFNamelist(BFListItem,BFHavingFDSName,BFHavingChildren):
 
     def draw(self, context, element, layout):
         """Draw Blender panel for element in the layout"""
-        layout = self.get_layout_export(context, element, layout)
-        self.draw_error(context, element, layout)
-        self.draw_bf_props(context, element, layout)
-        self.draw_extra(context, element, layout)
+        if getattr(element, "bf_is_tmp", False):
+            # Manage temporary elements
+            layout.operator("scene.bf_del_tmp")
+        else:
+            # Manage ordinary elements
+            layout = self.get_layout_export(context, element, layout)
+            self.draw_error(context, element, layout)
+            self.draw_bf_props(context, element, layout)
+            self.draw_extra(context, element, layout)
 
 class BFSection(BFListItem,BFHavingChildren):
     """BlenderFDS section, used for grouping FDS namelists.
@@ -492,7 +493,7 @@ class BFSection(BFListItem,BFHavingChildren):
             children.extend(ob for ob in context.scene.objects \
                 if ob.type == "MESH" and ob.bf_namelist_export \
                 and ob.bf_namelist in self.bf_namelists)
-        # Get materials
+        # Get materials, export all not only referenced materials as before
         if bpy.types.Material in bpy_types:
             children.extend(ma for ma in bpy.data.materials \
                 if ma.bf_namelist_export and \
@@ -534,6 +535,11 @@ class BFFile(BFListItem, BFHavingChildren):
         print("BlenderFDS: BFFile.to_fds")
         # Check
         if not self.is_exported(): return None
+        # Go to OBJECT mode, delete temporary elements
+#        bpy.ops.object.mode_set(mode='OBJECT', toggle=False) FIXME no context
+#        bpy.ops.scene.bf_del_tmp() FIXME
+        # Set BF version FIXME
+        # FIXME Set predefined materials?
         # Manage error to produce output file
         try:
             res = self.evaluate()
@@ -575,6 +581,12 @@ def bpy_types_has_bf_prop(self, bf_prop):
     """Check if self has bf_prop parameter"""
     return bf_prop in self.get_bf_props()
 
+def bpy_types_has_bf_prop_type(self, bf_prop_type):
+    """Check if self has a bf_prop parameter that is instance of bf_prop_type"""
+    for bf_prop in self.get_bf_props():
+        if isinstance(bf_prop, bf_prop_type): return True
+    return False
+
 def bpy_types_to_fds(self, context=None, element=None): # element is kept for compatibility, self is the element itself.
     """Export self to FDS notation. Return a BFResult() or None."""
     print("BlenderFDS: > > {}.to_fds: {}".format(self.__class__.__name__, self.name))
@@ -590,6 +602,7 @@ bpy.types.Scene.to_fds_children = BFHavingChildren.to_fds_children
 bpy.types.Scene.get_bf_namelists = bpy_types_get_bf_namelists
 bpy.types.Scene.get_bf_props = bpy_types_get_bf_props
 bpy.types.Scene.has_bf_prop = bpy_types_has_bf_prop
+bpy.types.Scene.has_bf_prop_type = bpy_types_has_bf_prop_type
 bpy.types.Scene.to_fds = bpy_types_to_fds
 
 bpy.types.Object.is_exported = bpy_types_is_exported
@@ -597,6 +610,7 @@ bpy.types.Object.to_fds_children = BFHavingChildren.to_fds_children
 bpy.types.Object.get_bf_namelists = bpy_types_get_bf_namelists
 bpy.types.Object.get_bf_props = bpy_types_get_bf_props
 bpy.types.Object.has_bf_prop = bpy_types_has_bf_prop
+bpy.types.Object.has_bf_prop_type = bpy_types_has_bf_prop_type
 bpy.types.Object.to_fds = bpy_types_to_fds
 
 bpy.types.Material.is_exported = bpy_types_is_exported
@@ -604,6 +618,7 @@ bpy.types.Material.to_fds_children = BFHavingChildren.to_fds_children
 bpy.types.Material.get_bf_namelists = bpy_types_get_bf_namelists
 bpy.types.Material.get_bf_props = bpy_types_get_bf_props
 bpy.types.Material.has_bf_prop = bpy_types_has_bf_prop
+bpy.types.Material.has_bf_prop_type = bpy_types_has_bf_prop_type
 bpy.types.Material.to_fds = bpy_types_to_fds
 
 ### Generic panels
@@ -665,7 +680,8 @@ class MaterialPanel():
     def poll(cls,context):
         ma = context.material
         ob = context.active_object
-        return ma and ob and ob.type == "MESH" and "SURF_ID" in ob.get_bf_props() and not ob.bf_xb_is_voxels
+        return ma and ob and ob.type == "MESH" and "SURF_ID" in ob.get_bf_props() and not ob.bf_is_tmp
+#        return context.material # This is more liberal in SURF show, but risk of confusion arises
 
     def draw_header(self,context):
         layout = self.layout

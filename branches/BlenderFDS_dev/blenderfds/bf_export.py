@@ -55,7 +55,6 @@ def save(operator,context,filepath=""):
     """Export current Blender Scene to an FDS case file"""
     print("BlenderFDS: save(): Start exporting current scene to FDS case file: {}".format(context.scene.name))
 
-    # FIXME predefined materials and case file version
     # Prepare file name
     if not filepath.lower().endswith('.fds'): filepath += '.fds'
     # Check output file is writable

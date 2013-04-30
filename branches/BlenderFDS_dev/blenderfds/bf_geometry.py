@@ -22,13 +22,13 @@ from time import time
 
 ### Working on Blender objects and meshes
 
-def _get_global_mesh(context, ob):
+def get_global_mesh(context, ob):
     """Return object mesh modified and transformed in global coordinates."""
     me = ob.to_mesh(context.scene, True, "PREVIEW") # apply modifiers
     me.transform(ob.matrix_world) # transform mesh in global coordinates, apply scale, rotation, and location
     return me
 
-def _get_tessfaces(context, me):
+def get_tessfaces(context, me):
     """Get bmesh tessfaces"""
     me.update(calc_tessface=True)
     return me.tessfaces
@@ -48,56 +48,37 @@ def is_manifold(context, me):
     bm.free()
     return True
 
-def calc_remesh(context, dimension, voxel_size):
-    """Calc Remesh modifier parameters"""
-    dimension_too_large = True
-    for octree_depth in range(1,11):
-        scale = dimension / voxel_size / 2 ** octree_depth
-        if 0.010 < scale < 0.990:
-            dimension_too_large = False
-            break
-    if dimension_too_large: scale = 0.990
-    voxel_size = dimension / scale / 2 ** octree_depth
-    return octree_depth, scale, voxel_size, dimension_too_large
+### Extracting coordinates from objects and drawing tmp objects
 
-### Extracting coordinates from objects
-# input:  context,ob
-# output for XB:  ((x0,x1,y0,y1,z0,z1,), ...)
-#              or  (x0,x1,y0,y1,z0,z1,)
-# output for XYZ: ((x0,y0,z0,), ...)
-#              or  (x0,y0,z0,)
-# output for PB:  (("X",x0,), ("X",x1,), ("Y",y0,), ...)
+# XB:
+# input: context, ob
+# output: ((x0,x1,y0,y1,z0,z1,), ...), time
 
-def get_voxels(context, ob):
-    """Return a list of object voxels XBs, time, and error"""
+def get_voxels(self, context, ob):
+    """Return a list of object voxels XBs, and time"""
     # Init
     t0 = time()
-    sc = context.scene
     voxel_size = ob.bf_xb_voxel_size
     epsilon = 0.001
     # Create a new tmp object from original object, link it to the scene and update the scene
     # The new object mesh has modifiers, scale, rotation, and location applied
-    me_new = _get_global_mesh(context, ob)
-    ob_new = bpy.data.objects.new("{0}_tmp".format(ob.name), me_new)
-    ob_new.bf_xb_is_voxels = True
-    sc.objects.link(ob_new)
-    sc.update()
+    me_tmp = get_global_mesh(context, ob)
+    ob_tmp = create_tmp_object(context, ob, me_tmp)
     # Add new Remesh modifier to the tmp object
-    dimension = max(ob_new.dimensions) # before appling the modifier
-    mo = ob_new.modifiers.new('voxels_tmp','REMESH')
-    mo.octree_depth, mo.scale, voxel_size, dimension_too_large = calc_remesh(context, dimension, voxel_size)
+    dimension = max(ob_tmp.dimensions) # before appling the modifier
+    mo = ob_tmp.modifiers.new('voxels_tmp','REMESH')
+    mo.octree_depth, mo.scale, voxel_size, dimension_too_large = _calc_remesh(context, dimension, voxel_size)
+    if dimension_too_large: raise BFError(self, "Object '{}' too large for desired voxel size, split it in parts.".format(ob.name))
     mo.mode = 'BLOCKS'
     mo.remove_disconnected_pieces = False
     # Extract tessfaces from the object mesh as modified by Remesh (modifiers applied)
-    me_new = _get_global_mesh(context, ob_new)
-    tessfaces = _get_tessfaces(context, me_new)
+    me_tmp = get_global_mesh(context, ob_tmp)
+    tessfaces = get_tessfaces(context, me_tmp)
     # Clean unneeded tmp object
-    ob_new.modifiers.remove(mo)
-    sc.objects.unlink(ob_new)
-    bpy.data.objects.remove(ob_new)
+    del_tmp_object(context, ob, ob_tmp)
     # Classify tessfaces
     voxel_size_half = voxel_size / 2.
-    origin = me_new.vertices[0].co
+    origin = me_tmp.vertices[0].co
     facezs = dict()
     for tessface in tessfaces:
         center_loc = tessface.center - origin
@@ -126,41 +107,41 @@ def get_voxels(context, ob):
         b = origin + Vector((box[1], box[3], box[5])) * voxel_size
         result.append((a[0]-epsilon, b[0]+epsilon, a[1]-epsilon, b[1]+epsilon, a[2]-epsilon, b[2]+epsilon),)
     # Clean up temporary mesh
-    bpy.data.meshes.remove(me_new)
+    bpy.data.meshes.remove(me_tmp)
     # Timing and return
     tt = time() - t0
-    return result, tt, dimension_too_large
-
-def get_bbox(context, ob):
+    return result, tt
+    
+def get_bbox(self, context, ob):
     """Return a tuple of object bounding box XBs, and time"""
     # Init
     t0 = time()
-    me = _get_global_mesh(context, ob)
+    me_tmp = get_global_mesh(context, ob)
     # Check at least one vertex
-    if not me.vertices:
-        bpy.data.meshes.remove(me)
+    if not me_tmp.vertices:
+        bpy.data.meshes.remove(me_tmp)
         location = ob.location
-        return [(location[0], location[0], location[1], location[1], location[2], location[2],), ]
+        return ((location[0], location[0], location[1], location[1], location[2], location[2],),), 0.
     # Calc the bounding box in global coordinates and clean
-    bbminx, bbminy, bbminz = me.vertices[0].co
-    bbmaxx, bbmaxy, bbmaxz = me.vertices[0].co
-    for vertex in me.vertices:
+    bbminx, bbminy, bbminz = me_tmp.vertices[0].co
+    bbmaxx, bbmaxy, bbmaxz = me_tmp.vertices[0].co
+    for vertex in me_tmp.vertices:
         x, y, z = vertex.co
         bbminx, bbminy, bbminz = min(bbminx, x), min(bbminy, y), min(bbminz, z)
         bbmaxx, bbmaxy, bbmaxz = max(bbmaxx, x), max(bbmaxy, y), max(bbmaxz, z)
-    # Clean up and return
-    bpy.data.meshes.remove(me)
+    # Clean up temporary mesh
+    bpy.data.meshes.remove(me_tmp)
     # Timing and return
     tt = time() - t0
     return ((bbminx, bbmaxx, bbminy, bbmaxy, bbminz, bbmaxz,),), tt
 
-def get_faces(context, ob):
+def get_faces(self, context, ob):
     """Return a list of object faces straightened bounding boxes XBs, and time"""
     # Init
     t0 = time()
     result = list()
-    me = _get_global_mesh(context, ob)
-    tessfaces = _get_tessfaces(context, me)
+    me = get_global_mesh(context, ob)
+    tessfaces = get_tessfaces(context, me)
     # For each tessface...
     for tessface in tessfaces:
         vertices = [me.vertices[vertex] for vertex in tessface.vertices]
@@ -184,29 +165,12 @@ def get_faces(context, ob):
     tt = time() - t0
     return result, tt
 
-def get_planes(context, ob):
-    """Return a list of object planes with orientation and coordinate for PB, and time"""
-    # Init
-    t0 = time()
-    result = list()
-    xbs, tt = get_faces(context, ob)
-    # For each face build a plane...
-    for xb in xbs:
-        if   xb[1] - xb[0] < .000001: result.append(("X", xb[0],),)
-        elif xb[3] - xb[2] < .000001: result.append(("Y", xb[2],),)
-        elif xb[5] - xb[4] < .000001: result.append(("Z", xb[4],),)
-    result.sort()
-    # Nothing to clean up
-    # Timing and return
-    tt = time() - t0
-    return result, tt
-
-def get_edges(context, ob):
+def get_edges(self, context, ob):
     """Return a list of object edges XBs, and time"""
     # Init
     t0 = time()
     result = list()
-    me = _get_global_mesh(context, ob)
+    me = get_global_mesh(context, ob)
     # For each edge...
     for edge in me.edges:
         pt0x, pt0y, pt0z = me.vertices[edge.vertices[0]].co
@@ -219,12 +183,16 @@ def get_edges(context, ob):
     tt = time() - t0
     return result, tt
 
-def get_vertices(context, ob):
+# XYZ:
+# input: context, ob
+# output: ((x0,y0,z0,), ...), time
+
+def get_vertices(self, context, ob):
     """Return a list of object vertices XYZs, and time"""
     # Init
     t0 = time()
     result = list()
-    me = _get_global_mesh(context, ob)
+    me = get_global_mesh(context, ob)
     # For each vertex...
     for vertex in me.vertices:
         pt0x, pt0y, pt0z = vertex.co
@@ -236,11 +204,46 @@ def get_vertices(context, ob):
     tt = time() - t0
     return result, tt
 
-def get_center(context, ob):
+def get_center(self, context, ob):
     """Return a tuple of object center XYZ, and time"""
     return ((ob.location[0], ob.location[1], ob.location[2],),), 0.
 
-### Grow boxes
+# PB:
+# input: context, ob
+# output: (("X",x0,), ("X",x1,), ("Y",y0,), ...), time
+
+def get_planes(self, context, ob):
+    """Return a list of object planes with orientation and coordinate for PB, and time"""
+    # Init
+    t0 = time()
+    result = list()
+    xbs, tt = get_faces(self, context, ob)
+    # For each face build a plane...
+    for xb in xbs:
+        if   xb[1] - xb[0] < .000001: result.append(("X", xb[0],),)
+        elif xb[3] - xb[2] < .000001: result.append(("Y", xb[2],),)
+        elif xb[5] - xb[4] < .000001: result.append(("Z", xb[4],),)
+        else: raise Exception("Building a plane is impossible, problem with received faces")
+    result.sort()
+    # Nothing to clean up
+    # Timing and return
+    tt = time() - t0
+    return result, tt
+
+### Auxiliary functions for get_voxels()
+
+def _calc_remesh(context, dimension, voxel_size):
+    """Calc Remesh modifier parameters"""
+    for octree_depth in range(1,11):
+        scale = dimension / voxel_size / 2 ** octree_depth
+        if 0.010 < scale < 0.990:
+                dimension_too_large = False
+                break
+    if dimension_too_large: scale = 0.990
+    voxel_size = dimension / scale / 2 ** octree_depth
+    return octree_depth, scale, voxel_size, dimension_too_large
+
+# Grow boxes for voxels->boxels
 
 def _grow_boxes_along_x(boxes):
     """Grow boxes along x axis"""
@@ -296,6 +299,105 @@ def _grow_boxes_along_z(boxes): # currently not used
         boxes_grown.add(tuple(box))
     return boxes_grown
 
+### Tmp ob management and translate geometry from FDS notation to a Blender mesh
+
+def del_tmp_object(context, ob, ob_tmp):
+    """Restore original ob and delete tmp object ob_tmp"""
+    if context.mode != 'OBJECT': bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+    # Restore original object
+    if ob: ob.bf_has_tmp, ob.hide = False, False
+    # Unlink and delete temporary object
+    if ob_tmp:
+        context.scene.objects.unlink(ob_tmp)
+        bpy.data.objects.remove(ob_tmp)
+
+def del_all_tmp_objects(self, context):
+    """Restore all original obs and delete all tmp objects"""
+    if context.mode != 'OBJECT': bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+    sc = context.scene
+    for ob in sc.objects:
+        # Restore original object
+        if ob.bf_has_tmp: ob.bf_has_tmp, ob.hide = False, False
+        # Unlink and delete temporary object
+        if ob.bf_is_tmp:
+            sc.objects.unlink(ob)
+            bpy.data.objects.remove(ob)
+            continue
+
+def create_tmp_object(context, ob, me):
+    """Create a new temporary object of ob, from mesh me"""
+    # Hide original object
+    ob.bf_has_tmp = True
+    ob.hide = True
+    # Create temporary object and link it to scene
+    ob_tmp = bpy.data.objects.new("{}_tmp".format(ob.name), me)
+    ob_tmp.bf_is_tmp = True
+    # ob_tmp.parent = ob can't do this, the tmp ob is rotated, translated, scaled
+    ob_tmp.active_material = ob.active_material
+    ob_tmp.layers = ob.layers
+    ob_tmp.show_wire = True
+    ob_tmp.select = True
+    sc = context.scene
+    sc.objects.link(ob_tmp)
+    sc.update()
+    return ob_tmp
+
+def xbs_edges_to_mesh(xbs):
+    """Translate XB edges FDS notation to Blender geometry"""
+    verts, edges, faces = list(), list(), list()
+    for i, xb in enumerate(xbs):
+        x0, x1, y0, y1, z0, z1 = xb
+        j = i * 2
+        verts.extend(((x0,y0,z0), (x1,y1,z1)))
+        edges.append((0+j,1+j))
+    me_tmp = bpy.data.meshes.new("mesh_tmp")
+    me_tmp.from_pydata(verts, edges, faces)
+    return me_tmp
+
+def xbs_faces_to_mesh(xbs):
+    """Translate XB faces FDS notation to Blender geometry"""
+    verts, edges, faces = list(), list(), list()
+    for i, xb in enumerate(xbs):
+        x0, x1, y0, y1, z0, z1 = xb
+        j = i * 4
+        if   x1 - x0 < .000001: verts.extend(((x0,y0,z0), (x0,y1,z0), (x0,y1,z1), (x0,y0,z1)))
+        elif y1 - y0 < .000001: verts.extend(((x0,y0,z0), (x1,y0,z0), (x1,y0,z1), (x0,y0,z1)))
+        elif z1 - z0 < .000001: verts.extend(((x0,y0,z0), (x0,y1,z0), (x1,y1,z0), (x1,y0,z0)))
+        else: raise Exception("Building a face is impossible as this XB represents a volume, problem with received xbs")
+        faces.append((0+j,1+j,2+j,3+j))
+    me_tmp = bpy.data.meshes.new("mesh_tmp")
+    me_tmp.from_pydata(verts, edges, faces)
+    return me_tmp
+
+def xbs_volumes_to_mesh(xbs):
+    """Translate XB volumes FDS notation to Blender geometry"""
+    verts, edges, faces = list(), list(), list()
+    for i, xb in enumerate(xbs):
+        x0, x1, y0, y1, z0, z1 = xb
+        j = i * 8
+        verts.extend(((x0,y0,z0), (x1,y0,z0), (x1,y1,z0), (x0,y1,z0), (x0,y0,z1), (x1,y0,z1), (x1,y1,z1), (x0,y1,z1)))
+        faces.extend(((0+j,3+j,2+j,1+j), (0+j,1+j,5+j,4+j), (0+j,4+j,7+j,3+j), (6+j,5+j,1+j,2+j), (6+j,2+j,3+j,7+j), (6+j,7+j,4+j,5+j)))
+    me_tmp = bpy.data.meshes.new("mesh_tmp")
+    me_tmp.from_pydata(verts, edges, faces)
+    return me_tmp
+
+def xyzs_to_mesh(xyzs):
+    """Translate XYZ FDS notation to Blender geometry"""
+    verts, edges, faces = xyzs, list(), list()
+    me_tmp = bpy.data.meshes.new("mesh_tmp")
+    me_tmp.from_pydata(verts, edges, faces)
+    return me_tmp
+
+def pbs_to_mesh(pbs):
+    """Translate PB* FDS notation to Blender geometry"""
+    xbs = list()
+    for i, pb in enumerate(pbs):
+        if pb[0] == "X": xbs.append((pb[1], pb[1], -2., +2., -2., +2.))
+        elif pb[0] == "Y": xbs.append((-2., +2., pb[1], pb[1], -2., +2.))
+        elif pb[0] == "Z": xbs.append((-2., +2., -2., +2., pb[1], pb[1]))
+        else: raise Exception("Unrecognized PB*")
+    return xbs_faces_to_mesh(xbs)
+
 ### Manage mesh cells for FDS MESH object
 
 def _factor(n):
@@ -323,18 +425,6 @@ def _n_for_poisson(n):
         else: break
     return n
 
-def get_good_ijk(ob):
+def get_good_ijk(current_ijk):
     """Get a good IJK near the desired"""
-    return ob.bf_mesh_ijk[0], _n_for_poisson(ob.bf_mesh_ijk[1]), _n_for_poisson(ob.bf_mesh_ijk[2])
-
-def get_cell_size(ob):
-    """Calc cell size"""
-    return (
-        ob.dimensions[0] / ob.bf_mesh_ijk[0] or .001,
-        ob.dimensions[1] / ob.bf_mesh_ijk[1] or .001,
-        ob.dimensions[2] / ob.bf_mesh_ijk[2] or .001
-       )
-
-def get_cell_number(ob):
-    """Calc cell number"""
-    return ob.bf_mesh_ijk[0] * ob.bf_mesh_ijk[1] * ob.bf_mesh_ijk[2]
+    return current_ijk[0], _n_for_poisson(current_ijk[1]), _n_for_poisson(current_ijk[2])
