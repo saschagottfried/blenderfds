@@ -392,10 +392,11 @@ class CenterBackgroundOperator(bpy.types.Operator):
         elif event.type == 'LEFTMOUSE':
             print(self.center_pt)
             area = bpy.context.area
+            print("view orientation: " + str(area.spaces[0].current_orientation))
             bg_image = area.spaces[0].background_images[self.bg_index]
             aspect_ratio =  float(bg_image.image.size[0])/float(bg_image.image.size[1])
-            bg_image.offset_x = bg_image.offset_x - self.center_pt[0]
-            bg_image.offset_y = bg_image.offset_y - self.center_pt[1] * aspect_ratio
+            bg_image.offset_x = bg_image.offset_x - self.center_pt[self.mousex_to_imagex_index]
+            bg_image.offset_y = bg_image.offset_y - self.center_pt[self.mousey_to_imagey_index] * aspect_ratio
             bpy.types.SpaceView3D.draw_handler_remove(self._handle, 'WINDOW')
             return {'FINISHED'}
 
@@ -407,11 +408,27 @@ class CenterBackgroundOperator(bpy.types.Operator):
 
     def invoke(self, context, event):
         if context.area.type == 'VIEW_3D':
+            if context.area.spaces[0].region_3d.view_perspective != 'ORTHO':
+                self.report({'WARNING'}, "Operator requires the view to be set to orthographic")
+                return {'CANCELLED'}
             context.window_manager.modal_handler_add(self)
             # Add the region OpenGL drawing callback
             # draw in view space with 'POST_VIEW' and 'PRE_VIEW'
             self._handle = bpy.types.SpaceView3D.draw_handler_add(bg_center_draw_callback_px, (self, context), 'WINDOW', 'POST_PIXEL')
             self.center_pt = None
+            perpective_matrix = context.area.spaces[0].region_3d.perspective_matrix.normalized()
+            if perpective_matrix[2][2] == -1:
+                self.mousex_to_imagex_index = 0
+                self.mousey_to_imagey_index = 1
+            elif perpective_matrix[2][1] == 1:
+                self.mousex_to_imagex_index = 0
+                self.mousey_to_imagey_index = 2
+            elif perpective_matrix[2][0] == -1:
+                self.mousex_to_imagex_index = 1
+                self.mousey_to_imagey_index = 2
+            else:
+                bpy.types.SpaceView3D.draw_handler_remove(self._handle, 'WINDOW')
+                return {'CANCELLED'}
             return {'RUNNING_MODAL'}
         else:
             self.report({'WARNING'}, "View3D not found, cannot run operator")

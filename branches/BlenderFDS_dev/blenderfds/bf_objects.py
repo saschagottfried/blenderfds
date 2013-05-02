@@ -953,7 +953,7 @@ BFNamelist(
     has_export_flag = True,
     bf_prop_export = "Namelist Export",
     bpy_type = bpy.types.Object,
-    bf_props = ("Ob Namelist", "ID No Export", "FYI", "XB Solid", "Show Geometries", "Ob Custom",),
+    bf_props = ("Ob Namelist", "ID No Export", "FYI", "SURF_ID", "XB Solid", "Show Geometries", "Ob Custom",),
 )
 
 BFNamelist(
