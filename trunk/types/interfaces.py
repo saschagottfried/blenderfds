@@ -7,8 +7,8 @@ from blenderfds.types.flags import *
 from blenderfds.lib import geometry, fds_surf, fds_to_py, fds_format
 from blenderfds.lib.utilities import isiterable
 
-DEBUG = context.user_preferences.addons["blenderfds"].preferences.bf_pref_show_debug
-INFO = context.user_preferences.addons["blenderfds"].preferences.bf_pref_show_info
+DEBUG = False
+INFO = True
 
 ### BFCommon
 

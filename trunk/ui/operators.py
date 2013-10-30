@@ -5,8 +5,8 @@ from blenderfds.types import *
 from blenderfds.lib import geometry, fds_mesh, fds_surf
 from blenderfds.fds import *
 
-DEBUG = context.user_preferences.addons["blenderfds"].preferences.bf_pref_show_debug
-INFO = context.user_preferences.addons["blenderfds"].preferences.bf_pref_show_info
+DEBUG = True
+INFO = True
 
 ### MESH and IJK
 

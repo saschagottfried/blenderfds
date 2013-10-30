@@ -3,7 +3,10 @@
 import bpy, os
 from bpy_extras.io_utils import ExportHelper
 from blenderfds.types import *
-from blenderfds.config import *
+from blenderfds.types.flags import *
+
+DEBUG = False
+INFO = True
 
 def save(operator, context, filepath=""):
     """Export current Blender Scene to an FDS case file"""

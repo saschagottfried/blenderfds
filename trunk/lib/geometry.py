@@ -4,9 +4,10 @@ import bpy, bmesh
 from mathutils import Vector
 from time import time
 from blenderfds.types import *
+from blenderfds.types.flags import *
 
-DEBUG = context.user_preferences.addons["blenderfds"].preferences.bf_pref_show_debug
-INFO = context.user_preferences.addons["blenderfds"].preferences.bf_pref_show_info
+DEBUG = True
+INFO = False
 
 ### Constants
 

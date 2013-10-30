@@ -4,8 +4,7 @@ import bpy
 from blenderfds.types import *
 from blenderfds.types.flags import *
 
-DEBUG = context.user_preferences.addons["blenderfds"].preferences.bf_pref_show_debug
-INFO = context.user_preferences.addons["blenderfds"].preferences.bf_pref_show_info
+DEBUG = False
 
 # FIXME evacuation namelists
 
