@@ -3,8 +3,6 @@
 from functools import total_ordering
 from blenderfds.lib.utilities import isiterable
 
-DEBUG = False
-
 class BFList(list):
     """Enhanced list of objects with idname property.
     Get an item by its idname: bf_list["item idname"]
