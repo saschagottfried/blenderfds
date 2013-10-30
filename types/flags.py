@@ -1,0 +1,6 @@
+"""BlenderFDS, flags"""
+
+NOEXPORT = 2
+NOUI = 4
+ACTIVEUI = 8
+IMPORTONLY = NOEXPORT | NOUI

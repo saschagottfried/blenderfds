@@ -1,0 +1,11 @@
+A messed-up and bad test file
+This is a comment! &A = 3/ still a comment.
+&OBST ID = 'ciao'
+          FYI = 'example: this is \t it A=3' VECTOR1 = 3.45, 42.12,  5.34, 'ciao'
+          PROP1 ="exam'ple2" NUM= 3 VECTOR2 = 3,4,5 no final slash here
+&OBST /
+&VENT ID='ciao & bad ampersand',FYI ='example: this \tis it A=3',VECTOR1=3.45, 42.12,  5.34, 'ciao',PROP1 ="exam'ple2",NUM= 3,VECTOR2 = 3,4,5,,, / Comment
+Another comment
+&no namelist\t\n ID = 'ciao' FYI =\t\n'example: this \tis it A=3' VECTOR1\t = 3.45, 42.12,  5.34, 'ciao' \n\tPROP1 ="exam'ple2" NUM= 3 VECTOR2 = 3,4,5 /
+End comment
+&TAIL /

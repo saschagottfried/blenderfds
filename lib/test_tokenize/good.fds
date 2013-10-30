@@ -1,0 +1,14 @@
+A messed-up but correct test file
+This is a comment! &A = 3/ still a comment.
+&HEAD CHID='good/bad' /
+&OBST	  ID = 'obst'
+          FYI = 'example: this is it A=3' VECTOR1 = 3.45, 42.12,  5.34, 'bye'
+          PROP1 ="exam'ple2" NUM= 3 VECTOR2 = 3,4,5
+          /
+&VENT ID='vent',FYI =		'example: this \tis it A=3',VECTOR1=3.45, 42.12,  5.34, 'ciao',PROP1 ="exam'ple2",NUM= 3,VECTOR2 = 3,4,5,,, 	/ Comment
+Another comment
+&SURF
+	ID = 'ciao' FYI = 'example: this is it A=3' VECTOR1 = 3.45, 42.12, 5.34, 'ciao' 
+	PROP1 ="exam'ple2" NUM= 3 VECTOR2 = 3,4,5 /
+End comment
+&TAIL /
