@@ -1,9 +1,0 @@
-"""BlenderFDS, types"""
-# use me like this: from blenderfds.types import *
-
-from .collections import *
-from .interfaces import *
-from .results import *
-
-__all__ = ["BFResult", "BFException", "BFList", "BFListItem", "BFProp", "BFNamelist", "flags"]
-
