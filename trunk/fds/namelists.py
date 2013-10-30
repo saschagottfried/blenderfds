@@ -80,7 +80,7 @@ BFNamelist(
     enum_id = 1005,
     bpy_type = bpy.types.Scene,
     bf_prop_export = "bf_dump_export",
-    bf_props = ("bf_dump_nframes", ),
+    bf_props = ("bf_dump_render_file", "bf_dump_nframes", ),
     bf_prop_custom = "bf_dump_custom",
 )
 
