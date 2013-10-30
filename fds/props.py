@@ -200,6 +200,23 @@ BFPropCustom(
     maxlen = 1024,
 )
 
+class BFPropDumpRenderFile(BFProp):
+    def get_value(self, context, element):
+        if element.bf_dump_render_file: return element.name + ".GE1"
+
+    def set_value(self, context, element, value):
+        if value: element.bf_dump_render_file = True
+
+BFPropDumpRenderFile(
+    idname = "bf_dump_render_file",
+    label = "Export Geometric Description File",
+    description = "Export geometric description file GE1",
+    fds_label = "RENDER_FILE",
+    bpy_idname = "bf_dump_render_file",
+    bpy_prop = bpy.props.BoolProperty,
+    default = False,
+)
+
 class BFPropNFRAMES(BFProp):
     def get_res(self, context, element, ui=False):
         return BFResult(
