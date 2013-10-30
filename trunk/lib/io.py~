@@ -1,0 +1,81 @@
+"""BlenderFDS, input/output routines"""
+
+import bpy, os
+from bpy_extras.io_utils import ExportHelper
+
+from blenderfds.types import *
+from .tokenize import tokenize
+
+def save(operator, context, filepath=""):
+    """Export current Blender Scene to an FDS case file"""
+    print("BFDS: save: Exporting current scene to FDS case file: {}".format(context.scene.name))
+    # Init
+    context.window_manager.progress_begin(0, 100)
+    context.window_manager.progress_update(0)
+    # Prepare file name
+    if not filepath.lower().endswith('.fds'): filepath += '.fds'
+    # Check output file is writable
+    print("BFDS: save: Checking writable file: {}".format(filepath))
+    filepath = bpy.path.abspath(filepath)
+    try:
+        with open(filepath, "w") as out_file:
+            out_file.write("Test")
+    except IOError:
+        operator.report({"ERROR"}, "Output file not writable, cannot export")
+        context.window_manager.progress_end()
+        return {'CANCELLED'}
+    # Get results or errors
+    print("BFDS: save: Getting results")
+    to_fds_error = False
+    try: fds_file = context.scene.to_fds(context)
+    except BFException as err:
+        fds_file = "".join(("ERROR: {}\n".format(msg) for msg in err.labels))
+        to_fds_error = True
+    # Check existence
+    if fds_file is None:
+        operator.report({"ERROR"}, "Nothing to export")
+        context.window_manager.progress_end()
+        return {'CANCELLED'}
+    # Write to file
+    print("BFDS: save: Writing to path:".format(filepath))
+    try:
+        with open(filepath, "w") as out_file: out_file.write(fds_file)
+    except IOError:
+        operator.report({"ERROR"}, "Output file not writable, cannot export")
+        context.window_manager.progress_end()
+        return {'CANCELLED'}
+    # Check errors
+    if to_fds_error:
+        operator.report({"ERROR"}, "Errors reported, check exported file")
+        context.window_manager.progress_end()
+        return {'CANCELLED'}
+    # End
+    print("BFDS: save: End.")
+    context.window_manager.progress_end()
+    operator.report({"INFO"}, "FDS File exported")
+    return {'FINISHED'}
+
+def load(operator, context, filepath=""):
+    """Import FDS file to new Blender Scene"""
+    # Init
+    context.window_manager.progress_begin(0, 100)
+    context.window_manager.progress_update(0)  
+    # Read file to Text Editor
+    print("BFDS: loading:", filepath)
+    try: bpy.data.texts.load(filepath, internal=True)
+    except:
+        operator.report({"ERROR"}, "FDS file not readable, cannot import")
+        context.window_manager.progress_end()
+        return {'CANCELLED'}
+    bpy.data.texts[-1].name = "Original FDS file"
+    # Import
+    try: context.scene.from_fds(context=bpy.context, value=bpy.data.texts[-1].as_string())
+    except BFException as err:
+        operator.report({"ERROR"}, "Errors reported, check custom text file")
+        context.window_manager.progress_end()
+        return {'CANCELLED'}
+    # End
+    print("BFDS: load: End.")
+    context.window_manager.progress_end()
+    operator.report({"INFO"}, "FDS File imported")
+    return {'FINISHED'} 
