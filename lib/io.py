@@ -6,11 +6,10 @@ from blenderfds.types import *
 from blenderfds.types.flags import *
 
 DEBUG = False
-INFO = True
 
 def save(operator, context, filepath=""):
     """Export current Blender Scene to an FDS case file"""
-    if INFO or DEBUG: print("BFDS: io.save: Exporting current scene to FDS case file: {}".format(context.scene.name))
+    print("BFDS: io.save: Exporting current scene to FDS case file: {}".format(context.scene.name))
     # Prepare file name
     if not filepath.lower().endswith('.fds'): filepath += '.fds'
     # Check output file is writable
@@ -45,25 +44,26 @@ def save(operator, context, filepath=""):
         operator.report({"ERROR"}, "Errors reported, check exported file")
         return {'CANCELLED'}
     # End
-    if INFO or DEBUG: print("BFDS: io.save: End.")
+    print("BFDS: io.save: End.")
     operator.report({"INFO"}, "FDS File exported")
     return {'FINISHED'}
 
 def load(operator, context, filepath=""):
     """Import FDS file to new Blender Scene"""
     # Read file to Text Editor
-    if INFO or DEBUG: print("BFDS: io.load: loading:", filepath)
+    print("BFDS: io.load: loading:", filepath)
     try: bpy.data.texts.load(filepath, internal=True)
     except:
         operator.report({"ERROR"}, "FDS file not readable, cannot import")
         return {'CANCELLED'}
     bpy.data.texts[-1].name = "Original FDS file"
     # Import to current scene
+    if DEBUG: print("BFDS: io.load: importing.")
     try: context.scene.from_fds(context=context, value=bpy.data.texts[-1].as_string(), progress=True)
     except BFException as err:
         operator.report({"ERROR"}, "Errors reported, check custom text file")
         return {'CANCELLED'}
     # End
-    if INFO or DEBUG: print("BFDS: io.load: End.")
+    print("BFDS: io.load: End.")
     operator.report({"INFO"}, "FDS File imported")
     return {'FINISHED'} 

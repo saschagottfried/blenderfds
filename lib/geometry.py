@@ -6,9 +6,6 @@ from time import time
 from blenderfds.types import *
 from blenderfds.types.flags import *
 
-DEBUG = True
-INFO = False
-
 ### Constants
 
 epsilon = .0001
@@ -134,7 +131,7 @@ def ob_to_none(context, ob):
 def ob_to_xbs_voxels(context, ob):
     """Return a list of object voxels XBs and a msg:
     ((x0,x1,y0,y1,z0,z1,), ...), "Message"."""
-    if INFO or DEBUG: print("BFDS: geometry.ob_to_xbs_voxels:", ob.name) 
+    print("BFDS: geometry.ob_to_xbs_voxels:", ob.name) 
     # Init
     t0 = time()
     voxel_size = ob.bf_xb_voxel_size
@@ -201,7 +198,6 @@ def ob_to_xbs_voxels(context, ob):
 def ob_to_xbs_bbox(context, ob):
     """Return a list of object bounding box XBs and a msg:
     ((x0,x1,y0,y1,z0,z1,), ...), "Message"."""
-    if DEBUG: print("BFDS: geometry.ob_to_xbs_bbox:", ob.name)
     # Init
     me_tmp = get_global_mesh(context, ob)
     # Check at least one vertex
@@ -224,7 +220,6 @@ def ob_to_xbs_bbox(context, ob):
 def ob_to_xbs_faces(context, ob):
     """Return a list of object faces straightened bounding boxes XBs and a msg:
     ((x0,x0,y0,y1,z0,z1,), ...), "Message"."""
-    if DEBUG: print("BFDS: geometry.ob_to_xbs_faces:", ob.name)
     # Init
     result = list()
     me = get_global_mesh(context, ob)
@@ -255,7 +250,6 @@ def ob_to_xbs_faces(context, ob):
 def ob_to_xbs_edges(context, ob):
     """Return a list of object edges XBs and a msg:
     ((x0,x1,y0,y1,z0,z1,), ...), "Message"."""
-    if DEBUG: print("BFDS: geometry.ob_to_xbs_edges:", ob.name)
     # Init
     result = list()
     me = get_global_mesh(context, ob)
@@ -274,7 +268,6 @@ def ob_to_xbs_edges(context, ob):
 def ob_to_xyzs_vertices(context, ob):
     """Return a list of object vertices XYZs and a msg:
     ((x0,y0,z0,), ...), "Message"."""
-    if DEBUG: print("BFDS: geometry.ob_to_xyzs_vertices:", ob.name)
     # Init
     result = list()
     me = get_global_mesh(context, ob)
@@ -292,13 +285,11 @@ def ob_to_xyzs_vertices(context, ob):
 def ob_to_xyzs_center(context, ob):
     """Return a list of one object center XYZ and a msg:
     ((x0,y0,z0,), ...), "Message"."""
-    if DEBUG: print("BFDS: geometry.ob_to_xyzs_center:", ob.name)
     return [(ob.location[0], ob.location[1], ob.location[2],),], None
 
 def ob_to_pbs_planes(context, ob):
     """Return a list of object planes with orientation and coordinate for PB and a msg:
     (("X",x3,), ("X",x7,), ("Y",y9,), ...), "Message"."""
-    if DEBUG: print("BFDS: geometry.ob_to_pbs_planes:", ob.name)
     # Init
     result = list()
     xbs, msg = ob_to_xbs_faces(context, ob)

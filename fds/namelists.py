@@ -4,8 +4,6 @@ import bpy
 from blenderfds.types import *
 from blenderfds.types.flags import *
 
-DEBUG = False
-
 # FIXME evacuation namelists
 
 ### Expose collection
@@ -16,7 +14,6 @@ bf_namelists = BFNamelist.bf_list
 
 class BFNamelistHead(BFNamelist):
     def get_my_res(self, context, element, ui=False):
-        if DEBUG: print("BFDS: BFNamelistHead.get_my_res:", self.idname)
         # Export custom text file
         if element.bf_head_custom_text:
             if not element.bf_head_custom_text in bpy.data.texts:

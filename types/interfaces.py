@@ -7,8 +7,7 @@ from blenderfds.types.flags import *
 from blenderfds.lib import geometry, fds_surf, fds_to_py, fds_format
 from blenderfds.lib.utilities import isiterable
 
-DEBUG = False
-INFO = True
+DEBUG = True
 
 ### BFCommon
 
@@ -135,7 +134,7 @@ class BFCommon(BFAutoItem):
 
     def get_children_res(self, context, element, ui=False, progress=False) -> "BFList of BFResult, never None":
         """Return a BFlist of children BFResult. On error raise joined BFException."""
-        if DEBUG: print("BFDS: BFCommon.get_children_res:", self.idname) 
+        if DEBUG: print("BFDS: BFCommon.get_children_res:", self.idname, element.idname) 
         # Init
         children, children_res, err_msgs = self.children, BFList(), list()
         if progress:
@@ -173,7 +172,6 @@ class BFCommon(BFAutoItem):
 
     def get_my_res(self, context, element, ui=False) -> "BFResult or None":
         """Get my BFResult. On error raise BFException."""
-        if DEBUG: print("BFDS: BFCommon.get_my_res:", self.idname)
         # Check me exported 
         if not self.get_exported(context, element): return None
         # Here you can set a value, append msgs, append relevant operators.
@@ -187,7 +185,6 @@ class BFCommon(BFAutoItem):
 
     def get_res(self, context, element, ui=False) -> "BFResult or None":
         """Get full BFResult (children and mine). On error raise BFException."""
-        if DEBUG: print("BFDS: BFCommon.get_res:", self.idname, element)
         # Init
         my_res = self.get_my_res(context, element, ui)
         if not my_res: return None
@@ -315,7 +312,6 @@ class BFProp(BFCommon):
 
     def get_res(self, context, element, ui=False) -> "BFResult or None":
         """Get BFResult. On error raise BFException."""
-        if DEBUG: print("BFDS: BFProp.get_res:", self.idname) 
         # Init
         if not self.get_exported(context, element): return None
         res = BFResult(
@@ -347,7 +343,6 @@ class BFProp(BFCommon):
         Value is any type of data compatible with bpy_prop
         Eg: "String", (0.2,3.4,1.2), ...
         """
-        if DEBUG: print("BFDS: BFProp.from_fds:", self.idname, element.name, value) 
         self.set_exported(context, element, True)
         self.set_value(context, element, value)
 
@@ -485,7 +480,7 @@ class BFNamelist(BFCommon):
                 # The token could not be imported because of a raised exception or corresponding descendant not found,
                 # so pile the original token into custom_value.
                 custom_value.append(fds_original)
-                if INFO or DEBUG: print("BFDS: BFNamelist.from_fds: to custom param:\n ", fds_original) 
+                print("BFDS: BFNamelist.from_fds: to custom param:\n ", fds_original) 
         # Set final bf_prop_custom. If no self.bf_prop_custom, then the saved fds_origins are lost
         if custom_value and self.bf_prop_custom:
             self.bf_prop_custom.set_value(context, element, " ".join(custom_value))
@@ -523,12 +518,11 @@ class BFObject(BFCommon):
 
     def get_res(self, context, element=None, ui=False) -> "BFResult or None": # 'element' kept for polymorphism
         """Get full BFResult (children and mine). On error raise BFException."""
-        if INFO or DEBUG: print("BFDS: BFObject.get_res:", self.idname)
+        if DEBUG: print("BFDS: BFObject.get_res:", self.idname)
         return BFCommon.get_res(self, context, self, ui) # 'self' replaces 'element' as reference
     
     def to_fds(self, context=None) -> "str or None":
         """Export me in FDS notation, on error raise BFException."""
-        if INFO or DEBUG: print("BFDS: BFObject.to_fds:", self.idname)
         if not context: context = bpy.context
         res = self.get_res(context, self)
         if res: return res.value
@@ -622,7 +616,6 @@ class BFScene(BFObject):
 
     def get_my_res(self, context, element, ui=False) -> "BFResult or None":
         """Get my BFResult. On error raise BFException."""
-        if DEBUG: print("BFDS: BFScene.get_my_res:", self.idname, element)
         return BFResult(
             sender = self,
             value = "&TAIL /\n".format(self.idname), # closing namelist
@@ -635,7 +628,6 @@ class BFScene(BFObject):
                 "Time: {}".format(time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())),
             ),
         )
-
 
     # FIXME get_res is repeated here only for progress. Find a better solution!
 
@@ -656,18 +648,13 @@ class BFScene(BFObject):
         """Import a text in FDS notation into self. On error raise BFException.
         Value is any text in good FDS notation.
         """
-        if INFO or DEBUG: print("BFDS: BFScene.from_fds:", self.idname, "\n", value) 
+        if DEBUG: print("BFDS: BFScene.from_fds:", self.idname, "\n", value) 
         # Init
         from_fds_error = False
         # Progress
         if progress:
             wm = context.window_manager
             wm.progress_begin(0, 100)
-        # FIXME
-        wm = context.window_manager
-        wm.progress_begin(0, 100)   
-        print(context.window_manager.windows[0])
-        #wm.progress_update(0)
         # Create new HEAD custom text
         self.bf_head_custom_text = "Imported text"
         bpy.data.texts.new(self.bf_head_custom_text)
@@ -717,14 +704,14 @@ class BFScene(BFObject):
                         elif bf_namelist.bpy_type == bpy.types.Material:
                             bpy.data.materials.remove(element)
                     else:
-                        if INFO or DEBUG: print("BFDS: BFScene.from_fds: imported:\n", fds_original) 
+                        if DEBUG: print("BFDS: BFScene.from_fds: imported:\n", fds_original) 
                         is_imported = True # all ok, object created and parameters set
                     break # bf_namelist already found, stop searching by exiting loop
             # If after searching, namelist was not found or parameters could not be set
             if not is_imported:
                 # Write original item to custom_text
                 custom_text.write(fds_original + "\n")
-                if INFO or DEBUG: print("BFDS: BFScene.from_fds: to custom text:\n", fds_original) 
+                if DEBUG: print("BFDS: BFScene.from_fds: to custom text:\n", fds_original) 
         # If any exception was raised, inform the parent
         if progress: wm.progress_end()
         if from_fds_error: raise BFException(sender=self)

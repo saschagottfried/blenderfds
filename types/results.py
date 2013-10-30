@@ -1,7 +1,5 @@
 """BlenderFDS, result types"""
 
-DEBUG = False
-
 class BFResult():
     """Result returned by all exporting methods.
     

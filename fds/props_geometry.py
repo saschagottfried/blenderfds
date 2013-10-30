@@ -6,8 +6,6 @@ from blenderfds.types.flags import *
 from blenderfds.lib import geometry
 from .props import BFPropString
 
-DEBUG = False
-
 ### scale_lenght
 # Blender internally uses invariant units for length: Blender units.
 # bpy.context.scene.unit_settings.scale_length property is used to display different scales
@@ -87,7 +85,6 @@ class BFPropXB(BFPropGeometry):
         }
     
     def get_res(self, context, element, ui=False):
-        if DEBUG: print("BFDS: BFPropXB.get_res:", self.idname) 
         # Init and check
         bf_xb = element.bf_xb
         if bf_xb not in self.items or ui: return None
@@ -110,7 +107,6 @@ class BFPropXB(BFPropGeometry):
         return res
 
     def from_fds(self, context, element, value):
-        if DEBUG: print("BFDS: BFProp.from_fds:", self.idname, element.name, value) 
         # Correct for scale_lenght
         scale_length = context.scene.unit_settings.scale_length
         value = [coo / scale_length for coo in value]
@@ -244,7 +240,6 @@ class BFPropXYZ(BFPropGeometry):
     }
     
     def get_res(self, context, element, ui=False):
-        if DEBUG: print("BFDS: BFPropXYZ.get_res:", self.idname) 
         # Init and check
         bf_xyz = element.bf_xyz
         if bf_xyz not in self.items or ui: return None
@@ -267,7 +262,6 @@ class BFPropXYZ(BFPropGeometry):
         return res
 
     def from_fds(self, context, element, value):
-        if DEBUG: print("BFDS: BFProp.from_fds:", self.idname, element.name, value) 
         # Correct for scale_lenght
         scale_length = context.scene.unit_settings.scale_length
         value = [coo / scale_length for coo in value]
@@ -326,7 +320,6 @@ class BFPropPB(BFPropGeometry):
     }
 
     def get_res(self, context, element, ui=False):
-        if DEBUG: print("BFDS: BFPropPB.get_res:", self.idname) 
         # Init and check
         bf_pb = element.bf_pb
         if bf_pb not in self.items or ui: return None
@@ -349,7 +342,6 @@ class BFPropPB(BFPropGeometry):
         return res
 
     def from_fds(self, context, element, value):
-        if DEBUG: print("BFDS: BFProp.from_fds:", self.idname, element.name, value) 
         # Correct for scale_lenght
         value = value / context.scene.unit_settings.scale_length
         # Set value
