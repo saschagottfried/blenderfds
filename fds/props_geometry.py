@@ -6,6 +6,8 @@ from blenderfds.types.flags import *
 from blenderfds.lib import geometry
 from .props import BFPropString
 
+DEBUG = False
+
 ### scale_lenght
 # Blender internally uses invariant units for length: Blender units.
 # bpy.context.scene.unit_settings.scale_length property is used to display different scales

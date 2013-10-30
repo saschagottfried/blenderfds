@@ -1,7 +1,8 @@
 """BlenderFDS, tokenize FDS file in a readable notation"""
 
 import re
-from blenderfds.config import *
+
+DEBUG = False
 
 def _extract(value, pattern):
     """Extract compiled regex pattern from value sequentially"""
