@@ -354,6 +354,14 @@ BFPropCustom(
 ### Object
 
 BFProp( # Useful for bpy_props_copy operator
+    idname = "bf_show_transparent",
+    label = "Show Object Transparency",
+    description = "Show Object Transparency",
+    flags = NOUI | NOEXPORT,
+    bpy_idname = "show_transparent",
+)
+
+BFProp( # Useful for bpy_props_copy operator
     idname = "bf_draw_type",
     label = "Draw Type",
     description = "Draw type",

@@ -78,12 +78,14 @@ class OBJECT_PT_BF(bpy.types.Panel):
             return
         # Panel for normal element
         # Static part of the panel
-        split = layout.split(.7)  # namelist
+        split = layout.split(.6)  # namelist
         split.prop(element, "bf_namelist", text="")
         row = split.row(align=True)  # aspect
+        row.prop(element, "show_transparent", icon="GHOST", text="")
         row.prop(element, "draw_type", text="")
         row.prop(element, "hide", text="")
         row.prop(element, "hide_select", text="")
+        row.prop(element, "hide_render", text="")
         # Dynamic part of the panel
         bf_namelist = bf_namelists[element.bf_namelist] # get self bf_namelist object from element
         bf_namelist.draw(context, element, layout)
