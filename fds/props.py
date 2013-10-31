@@ -202,7 +202,7 @@ BFPropCustom(
 
 class BFPropDumpRenderFile(BFProp):
     def get_value(self, context, element):
-        if element.bf_dump_render_file: return element.name + ".GE1"
+        if element.bf_dump_render_file: return bpy.path.clean_name(element.name) + ".GE1" # FIXME not good!
 
     def set_value(self, context, element, value):
         if value: element.bf_dump_render_file = True
@@ -214,7 +214,7 @@ BFPropDumpRenderFile(
     fds_label = "RENDER_FILE",
     bpy_idname = "bf_dump_render_file",
     bpy_prop = bpy.props.BoolProperty,
-    default = False,
+    default = True,
 )
 
 class BFPropNFRAMES(BFProp):
@@ -426,7 +426,7 @@ class BFPropSURFID(BFProp):
         
     def _draw_body(self, context, element, layout):
         row = layout.row()
-        row.prop_search(element, self.bpy_idname, bpy.data, "materials", text="SURF_ID:")
+        row.prop_search(element, self.bpy_idname, bpy.data, "materials", text="SURF_ID")
 
 BFPropSURFID(
     idname = "bf_surf_id",
