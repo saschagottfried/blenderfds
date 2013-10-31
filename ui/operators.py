@@ -6,7 +6,6 @@ from blenderfds.lib import geometry, fds_mesh, fds_surf
 from blenderfds.fds import *
 
 DEBUG = True
-INFO = True
 
 ### MESH and IJK
 
@@ -82,7 +81,7 @@ def bpy_props_copy(context, source_element, destination_elements):
         except: continue
         for destination_element in destination_elements:
             setattr(destination_element, bf_prop.bpy_idname, bpy_value)
-            if INFO or DEBUG: print("BFDS: Copy: {} -> {}: {}='{}'".format(source_element.name, destination_element.name, bf_prop.bpy_idname, bpy_value)) 
+            print("BFDS: Copy: {} -> {}: {}='{}'".format(source_element.name, destination_element.name, bf_prop.bpy_idname, bpy_value)) 
 
 class SCENE_OT_bf_copy_props_to_scene(bpy.types.Operator):
     bl_label = "Copy Properties To Scene"
@@ -122,7 +121,7 @@ class OBJECT_OT_bf_copy_FDS_properties_to_sel_obs(bpy.types.Operator):
     bl_description = "Copy these properties to other selected objects"
 
     def execute(self,context):
-        bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+        if context.mode != 'OBJECT': bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
         # Get source and destination objects
         source_element = context.active_object
         destination_elements = set(ob for ob in context.selected_objects if ob.type == "MESH" and ob != source_element)
@@ -160,7 +159,7 @@ class MATERIAL_OT_bf_assign_BC_to_sel_obs(bpy.types.Operator):
         # Loop on objects
         for ob in destination_elements:
             ob.active_material = active_material
-            if INFO or DEBUG: print("BlenderFDS: Assign material '{}' -> {}".format(active_material.name, ob.name))
+            print("BlenderFDS: Assign material '{}' -> {}".format(active_material.name, ob.name))
         # Set myself as exported
         active_material.bf_namelist_export = True
         # Return
