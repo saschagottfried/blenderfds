@@ -7,7 +7,7 @@ from blenderfds.types.flags import *
 from blenderfds.lib import geometry, fds_surf, fds_to_py, fds_format
 from blenderfds.lib.utilities import isiterable
 
-DEBUG = True
+DEBUG = False
 
 ### BFCommon
 
@@ -151,7 +151,7 @@ class BFCommon(BFAutoItem):
                 if child_res is None: continue # The child did not send a result, continue
                 children_res.append(child_res) # The child result is appended to the BFList
         # Return
-        wm.progress_end()
+        if progress: wm.progress_end()
         if err_msgs: raise BFException(sender=self, msgs=err_msgs) # Raise all piled exceptions to parent
         return children_res
 
@@ -642,6 +642,69 @@ class BFScene(BFObject):
         my_res.value = self._format(context, element, my_res, children_res)
         return my_res
 
+    def to_ge1(self, context):
+        """Export my geometry in FDS GE1 notation, on error raise BFException."""
+        # File format:
+        # [APPEARANCE]  < immutable title
+        # 2             < number of appearances (from materials)
+        # INERT                     < appearance name
+        # 0 200 200 50 0.0 0.0 0.5  < index, red, green, blue, twidth, theight, alpha, tx0, ty0, tz0 (t is texture)
+        #                           < texture file, blank if None
+        # Burner
+        # 1 255 0 0 0.0 0.0 0.5
+        #
+        # [FACES]       < immutable title
+        # 2             < number of quad faces (from OBST and SURF objects tessfaces)
+        # 6.0 3.9 0.5 6.0 1.9 0.5 6.0 1.9 1.9 6.0 3.9 1.9 0 < x0, y0, z0, x1, y1, z1, ..., ref to appearance index
+        # 6.0 3.9 0.5 6.0 1.9 0.5 6.0 1.9 1.9 6.0 3.9 1.9 0
+        # EOF
+        # Progress
+        progress = True
+        if progress:
+            wm = context.window_manager
+            wm.progress_begin(0, 100)
+        # Get GE1 appearances from materials
+        appearances = list()
+        ma_to_appearance = dict()
+        for index, ma in enumerate(bpy.data.materials):
+            ma_to_appearance[ma.name] = index
+            appearances.append(
+                "{desc}\n{i} {r} {g} {b} 0. 0. {alpha:.6f}\n\n".format(
+                    desc=ma.name, i=index,
+                    r=int(ma.diffuse_color[0]*255), g=int(ma.diffuse_color[1]*255), b=int(ma.diffuse_color[2]*255), 
+                    alpha=ma.alpha,
+                )
+            )
+        # Get GE1 gefaces from objects
+        if progress: wm.progress_update(20)
+        obs = (ob for ob in context.scene.objects if ob.type == "MESH"
+            and not ob.hide_render # hide some objects if requested
+            and ob.bf_namelist_export
+            and ob.bf_namelist in ("bf_obst", "bf_vent")
+        ) # FIXME bf_hole?
+        gefaces = list()
+        for ob in obs:
+            me = geometry.get_global_mesh(context, ob)
+            tessfaces = geometry.get_tessfaces(context, me)
+            # Transform ob tessfaces in GE1 gefaces
+            appearance_index = str(ma_to_appearance.get(ob.active_material.name, 0)) + "\n"
+            for tessface in tessfaces:
+                # Get tessface vertices: (x0, y0, z0), (x1, y1, z1), (x2, y2, z2), ... tri or quad
+                verts = list(me.vertices[vertex] for vertex in tessface.vertices)
+                # Transform tri in quad
+                if len(verts) == 3: verts.append(verts[-1])
+                # Unzip and format verts, append ref to appearance
+                items = ["{:.6f}".format(co) for vert in verts for co in vert.co]
+                items.append(appearance_index)
+                # Append GE1 face
+                gefaces.append(" ".join(items))
+        # Prepare GE1 file and return
+        if progress: wm.progress_update(90)
+        ge1_file_a = "[APPEARANCE]\n{}\n{}".format(len(appearances), "".join(appearances))
+        ge1_file_f = "[FACES]\n{}\n{}".format(len(gefaces), "".join(gefaces))
+        if progress: wm.progress_end()
+        return "".join((ge1_file_a, ge1_file_f))
+
     # Import
 
     def from_fds(self, context, value=None, progress=False) -> "None":
@@ -655,15 +718,13 @@ class BFScene(BFObject):
         if progress:
             wm = context.window_manager
             wm.progress_begin(0, 100)
-        # Create new HEAD custom text
-        self.bf_head_custom_text = "Imported text"
-        bpy.data.texts.new(self.bf_head_custom_text)
-        custom_text = bpy.data.texts[self.bf_head_custom_text]
         # Try to tokenize value
         try: tokens = fds_to_py.tokenize(value)
         except Exception as err:
             tokens, from_fds_error = list(), True
             custom_text.write(str(err))
+        # Prepare custom_text
+        custom_text = list()
         # Prepare progress for namelists import
         index_max = len(tokens)
         # Create elements, set their namelists, import parameters
@@ -696,7 +757,7 @@ class BFScene(BFObject):
                     except BFException as child_err:
                         from_fds_error = True
                         # Write error from bf_namelist to custom_text
-                        custom_text.write("".join(("! ERROR: {}\n".format(msg) for msg in child_err.labels)))
+                        custom_text.append("".join(("! ERROR: {}\n".format(msg) for msg in child_err.labels)))
                         # Delete unfinished element, but not myself if element is the scene
                         if bf_namelist.bpy_type == bpy.types.Object:
                             context.scene.objects.unlink(element)
@@ -710,8 +771,13 @@ class BFScene(BFObject):
             # If after searching, namelist was not found or parameters could not be set
             if not is_imported:
                 # Write original item to custom_text
-                custom_text.write(fds_original + "\n")
+                custom_text.append(fds_original + "\n")
                 if DEBUG: print("BFDS: BFScene.from_fds: to custom text:\n", fds_original) 
+        # Write custom_text to self.bf_head_custom_text FIXME clean up
+        if custom_text:
+            self.bf_head_custom_text = "Imported text"
+            bpy.data.texts.new(self.bf_head_custom_text)
+            bpy.data.texts[self.bf_head_custom_text].from_string("".join(custom_text))
         # If any exception was raised, inform the parent
         if progress: wm.progress_end()
         if from_fds_error: raise BFException(sender=self)
@@ -729,4 +795,5 @@ bpy.types.Scene.get_children_res = BFScene.get_children_res
 bpy.types.Scene.get_my_res = BFScene.get_my_res
 bpy.types.Scene.get_res = BFScene.get_res
 bpy.types.Scene.to_fds = BFScene.to_fds
+bpy.types.Scene.to_ge1 = BFScene.to_ge1
 bpy.types.Scene.from_fds = BFScene.from_fds
