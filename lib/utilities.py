@@ -30,3 +30,16 @@ for publishing this code"""
             i += 1  
     if n > 1:  
         yield int(n)
+        
+def is_writable(filepath):
+    """Check if filepath is writable"""
+    return write_to_file(filepath, "Test")
+
+def write_to_file(filepath, text_file):
+    """Write text_file to filepath"""
+    if text_file is None: text_file = str()
+    try:
+        with open(filepath, "w") as out_file: out_file.write(text_file)
+        return True
+    except IOError:
+        return False
