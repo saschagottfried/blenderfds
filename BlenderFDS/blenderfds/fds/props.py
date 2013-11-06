@@ -41,11 +41,9 @@ class BFPropFYI(BFPropString):
 BFPropFYI(
     idname = "bf_fyi",
     label = "FYI",
-    description = "Namelist description",
+    description = "Object description",
     fds_label = "FYI",
-    bpy_idname = "bf_fyi",
-    bpy_prop = bpy.props.StringProperty,
-    maxlen = 128,
+    bpy_idname = "bf_fyi", # BFDS system bpy property
 )
 
 class BFPropCustom(BFProp):
@@ -424,7 +422,7 @@ BFPropID(
 
 class BFPropSURFID(BFProp):
     def get_exported(self, context, element):
-        return element.active_material and element.active_material.bf_namelist_export
+        return element.active_material and element.active_material.bf_export
 
     def get_value(self, context, element):
         if element.active_material: return element.active_material.name

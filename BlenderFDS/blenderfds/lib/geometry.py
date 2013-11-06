@@ -155,6 +155,9 @@ def ob_to_xbs_voxels(context, ob):
     if progress: wm.progress_update(20)
     me_tmp = get_global_mesh(context, ob_tmp)
     tessfaces = get_tessfaces(context, me_tmp)
+    if not tessfaces:
+        if progress: wm.progress_end()
+        return None, "No voxel created"
     # Clean unneeded tmp object
     bpy.data.objects.remove(ob_tmp)
     # Classify tessfaces
@@ -531,8 +534,9 @@ def show_ob_fds_geometries(context, ob):
     msgs = list()
     # Manage XB: get coordinates, show them in a tmp object, prepare msg
     xbs = None
-    try: xbs, msg  = ob_to_xbs(context, ob)
-    except: print("BFDS: show_ob_fds_geometries: error in xbs for object '{}'".format(ob.name))
+    xbs, msg  = ob_to_xbs(context, ob) # FIXME
+    #try: xbs, msg  = ob_to_xbs(context, ob)
+    #except: print("BFDS: show_ob_fds_geometries: error in xbs for object '{}'".format(ob.name))
     if xbs:
         ob_tmp = xbs_to_ob(xbs, context, bf_xb=ob.bf_xb)
         set_tmp_object(context, ob, ob_tmp)
