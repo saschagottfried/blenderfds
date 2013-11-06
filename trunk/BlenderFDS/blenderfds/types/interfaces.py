@@ -312,17 +312,10 @@ class BFProp(BFCommon):
 
     def get_res(self, context, element, ui=False) -> "BFResult or None":
         """Get BFResult. On error raise BFException."""
-        # Init
         if not self.get_exported(context, element): return None
-        res = BFResult(
-            sender=self,
-            value = DEBUG and "! Debug value from BFProp.get_my_res of '{}'\n".format(self.idname) or None, 
-            msg = DEBUG and "Debug message from BFProp.get_my_res of '{}'".format(self.idname) or None, 
-        )
+        res = BFResult(sender=self,)
         value = self.get_value(context, element)
-        # Format value and return
-        if ui: return res # If ui, do not format value
-        res.value = self._format_value(context, element, value)
+        if not ui: res.value = self._format_value(context, element, value)
         return res
 
     # Import
@@ -490,7 +483,7 @@ class BFNamelist(BFCommon):
 ### Blender Object <-> BFObject <-> FDS geometric entity (eg. OBST, VENT, HOLE...)
 
 class BFObject(BFCommon):
-    """Extend object, and material"""
+    """Extend Blender object type"""
 
     # bpy.types do have "name", not "idname"
     def _get_idname(self) -> "str":
@@ -499,22 +492,91 @@ class BFObject(BFCommon):
 
     idname = property(_get_idname)
 
+    # UI: draw panel
+    # Blender objects have one only panel
+    
+    def draw_header(self, context, element, layout): # FIXME element is self!
+        """Draw Blender panel header."""
+        # Header for temporary element
+        if element.bf_is_tmp: return "BlenderFDS Temporary Object"
+        # Header for EMPTY object
+        if element.type == "EMPTY":
+            layout.prop(element, "bf_export", text="")
+            return "BlenderFDS Empty (Group of namelists)"
+        # Header for MESH object
+        return BFNamelist.bf_list[element.bf_namelist].draw_header(context, element, layout)
+
+    def _draw_messages(self, context, element, layout):
+        """Draw messages and exceptions."""
+        try: res = self.get_my_res(context, element, ui=True)
+        except BFException as err: err.draw(layout, box=True)
+        else: res and res.draw(layout, box=True) # check res existence before...    
+
+    def draw(self, context, element, layout):
+        """Draw Blender panel."""
+        # Panel for temporary element
+        if element.bf_is_tmp:
+            layout.operator("scene.bf_del_all_tmp_objects")
+            return
+        # Panel for EMPTY objects
+        if element.type == "EMPTY":
+            BFProp.bf_list["bf_id"].draw(context, element, layout)
+            BFProp.bf_list["bf_fyi"].draw(context, element, layout)
+            return
+        # Panel for MESH objects
+        self._draw_messages(context, element, layout)
+        # Static part of the panel
+        split = layout.split(.6)  # namelist
+        split.prop(element, "bf_namelist", text="")
+        row = split.row(align=True)  # aspect
+        row.prop(element, "show_transparent", icon="GHOST", text="")
+        row.prop(element, "draw_type", text="")
+        row.prop(element, "hide", text="")
+        row.prop(element, "hide_select", text="")
+        row.prop(element, "hide_render", text="")
+        # Dynamic part of the panel
+        BFNamelist.bf_list[element.bf_namelist].draw(context, element, layout)
+        # Static part of the panel
+        row = layout.row()
+        if element.bf_has_tmp: row.operator("scene.bf_del_all_tmp_objects")
+        else: row.operator("object.bf_show_fds_geometries")
+        row.operator("object.bf_props_to_sel_obs")
+
     # Export (me and children)
     # Override the _format() method for specific formatting
     # Override the get_my_res() method to send informative msgs, special values or raise special BFExceptions
     # The get_my_res() method is also used to draw the same messages and exceptions on the UI panel
     # Override the get_res() method to send informative msgs or raise special BFExceptions
 
-    def _get_children(self) -> "BFList of BFNamelist, never None":
-        """Get children (self.bf_namelist!) related to self."""
-        # This is an element that has one BFNamelist: Object, Material
-        return BFList((BFNamelist.bf_list[self.bf_namelist],))
+    def _get_children(self) -> "BFList of BFNamelist and Blender objects, never None":
+        """Get children: bf_namelist related to self, children objects."""
+        # Init
+        children = list()
+        context = bpy.context
+        # Get my bf_namelist, if self is a MESH
+        if self.type == "MESH":
+            children.append(BFNamelist.bf_list[self.bf_namelist]) # This is an element that has one BFNamelist: Object, Material
+        # Get children objects
+        obs = list(ob for ob in context.scene.objects \
+            if ob.type in ("MESH", "EMPTY",) and ob.parent == self and ob.bf_export)
+        obs.sort(key=lambda k:k.name) # Alphabetic order by element name
+        children.extend(obs)
+        # Return
+        print("Object children:", children) # FIXME
+        return BFList(children)
 
     children = property(_get_children)
 
     def get_exported(self, context, element=None) -> "bool": # 'element' kept for polymorphism
         """Return True if self is exported to FDS."""
         return True
+
+    def get_my_res(self, context, element, ui=False) -> "BFResult or None":
+        """Get my BFResult. On error raise BFException."""
+        if not self.get_exported(context, element): return None
+        if self.type == "EMPTY": msg = "{}".format(self.bf_fyi or str())
+        else: msg = None
+        return BFResult(sender=self, msg=msg,)
 
     def get_res(self, context, element=None, ui=False) -> "BFResult or None": # 'element' kept for polymorphism
         """Get full BFResult (children and mine). On error raise BFException."""
@@ -536,7 +598,10 @@ def update_ob_bf_namelist(self, context):
 
 # System properties
 
-bpy.types.Object.bf_namelist = bpy.props.EnumProperty(  # link to related BFNamelist
+bpy.types.Object.bf_export = bpy.props.BoolProperty(
+    name="Export", description="Set if object is exported to FDS", default=False)
+    
+bpy.types.Object.bf_namelist = bpy.props.EnumProperty( # link to related BFNamelist
     name="Namelist", description="Type of FDS namelist",
     items=(("bf_obst","OBST","OBST",1000),), default="bf_obst", update=update_ob_bf_namelist) # items are updated later
 
@@ -545,6 +610,9 @@ bpy.types.Object.bf_is_tmp = bpy.props.BoolProperty(
 
 bpy.types.Object.bf_has_tmp = bpy.props.BoolProperty(
     name="Has Tmp", description="Set if this element has a visible tmp element companion", default=False)
+
+bpy.types.Object.bf_fyi = bpy.props.StringProperty(
+    name="FYI", description="Object description", maxlen = 128)
 
 # Added methods
     
@@ -558,15 +626,39 @@ bpy.types.Object.get_my_res = BFObject.get_my_res
 bpy.types.Object.get_res = BFObject.get_res
 bpy.types.Object.to_fds = BFObject.to_fds
 
+bpy.types.Object.draw_header = BFObject.draw_header
+bpy.types.Object._draw_messages = BFObject._draw_messages
+bpy.types.Object.draw = BFObject.draw
+
+
 ### Blender Material <-> BFMaterial <-> FDS SURF
 
-BFMaterial = BFObject
+class BFMaterial(BFObject):
+    """Extend Blender material type"""
+
+    def _get_children(self) -> "BFList of Blender elements, never None":
+        """Get children: bf_namelist related to self."""
+        # Init
+        children = list()
+        # Get my bf_namelist
+        children.append(BFNamelist.bf_list[self.bf_namelist]) # This is an element that has one BFNamelist: Object, Material
+        print("Material children:", children) # FIXME
+        # Return
+        return BFList(children)
+
+    children = property(_get_children)
 
 # System properties
+
+bpy.types.Material.bf_export = bpy.props.BoolProperty(
+    name="Export", description="Set if material is exported to FDS", default=False)
 
 bpy.types.Material.bf_namelist = bpy.props.EnumProperty( # link to related BFNamelist
     name="Namelist", description="Type of FDS namelist",
     items=(("bf_surf","SURF","SURF",2000),), default="bf_surf") # items are updated later
+
+bpy.types.Material.bf_fyi = bpy.props.StringProperty(
+    name="FYI", description="Material description", maxlen = 128)
 
 # Added methods
 
@@ -600,15 +692,16 @@ class BFScene(BFObject):
         children.extend([bf_namelist for bf_namelist in BFNamelist.bf_list if bf_namelist.bpy_type == bpy.types.Scene])
         # Get materials (export all not only referenced materials as before)
         mas = list(ma for ma in bpy.data.materials \
-            if ma.bf_namelist_export and \
+            if ma.bf_export and \
             (ma.name not in fds_surf.predefined))
         mas.sort(key=lambda k:k.name) # Alphabetic order by element name
         children.extend(mas)
         # Get objects
         obs = list(ob for ob in context.scene.objects \
-            if ob.type == "MESH" and ob.bf_namelist_export)
+            if ob.type in ("MESH", "EMPTY",) and ob.parent == None and ob.bf_export)
         obs.sort(key=lambda k:k.name) # Alphabetic order by element name
         children.extend(obs)
+        print("Scene children:", children) # FIXME
         # Return
         return BFList(children)
 
@@ -679,7 +772,7 @@ class BFScene(BFObject):
         if progress: wm.progress_update(20)
         obs = (ob for ob in context.scene.objects if ob.type == "MESH"
             and not ob.hide_render # hide some objects if requested
-            and ob.bf_namelist_export
+            and ob.bf_export
             and ob.bf_namelist in ("bf_obst", "bf_vent")
         ) # FIXME bf_hole?
         gefaces = list()

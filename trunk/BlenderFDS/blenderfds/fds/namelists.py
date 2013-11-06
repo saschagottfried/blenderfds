@@ -100,7 +100,7 @@ BFNamelist(
     fds_label = "OBST",
     enum_id = 1000,
     bpy_type = bpy.types.Object,
-    bf_prop_export = "bf_namelist_export",
+    bf_prop_export = "bf_export",
     bf_props = ("bf_id", "bf_fyi", "bf_surf_id", "bf_xb_solid",),
     bf_prop_custom = "bf_custom",
 )
@@ -112,7 +112,7 @@ BFNamelist(
     fds_label = "HOLE",
     enum_id = 1009,
     bpy_type = bpy.types.Object,
-    bf_prop_export = "bf_namelist_export",
+    bf_prop_export = "bf_export",
     bf_props = ("bf_id", "bf_fyi", "bf_xb_solid",),
     bf_prop_custom = "bf_custom",
     bf_other = {"draw_type": "WIRE"},
@@ -125,7 +125,7 @@ BFNamelist(
     fds_label = "VENT",
     enum_id = 1010,
     bpy_type = bpy.types.Object,
-    bf_prop_export = "bf_namelist_export",
+    bf_prop_export = "bf_export",
     bf_props = ("bf_id", "bf_fyi", "bf_surf_id", "bf_xb_faces", "bf_xyz", "bf_pb",),
 	bf_prop_custom = "bf_custom",
 )
@@ -137,7 +137,7 @@ BFNamelist(
     fds_label = "DEVC",
     enum_id = 1011,
     bpy_type = bpy.types.Object,
-    bf_prop_export = "bf_namelist_export",
+    bf_prop_export = "bf_export",
     bf_props = ("bf_id", "bf_fyi", "bf_quantity", "bf_devc_setpoint", "bf_devc_initial_state", "bf_devc_latch", "bf_devc_prop_id", "bf_xb", "bf_xyz",),
     bf_prop_custom = "bf_custom",
 )
@@ -149,7 +149,7 @@ BFNamelist(
     fds_label = "SLCF",
     enum_id = 1012,
     bpy_type = bpy.types.Object,
-    bf_prop_export = "bf_namelist_export",
+    bf_prop_export = "bf_export",
     bf_props = ("bf_id", "bf_fyi", "bf_quantity", "bf_slcf_vector", "bf_xb_faces", "bf_pb",),
     bf_prop_custom = "bf_custom",
     bf_other = {"hide": True},
@@ -162,7 +162,7 @@ BFNamelist(
     fds_label = "PROF",
     enum_id = 1013,
     bpy_type = bpy.types.Object,
-    bf_prop_export = "bf_namelist_export",
+    bf_prop_export = "bf_export",
     bf_props = ("bf_id", "bf_fyi", "bf_quantity", "bf_xyz",),
     bf_prop_custom = "bf_custom",
 )
@@ -174,7 +174,7 @@ BFNamelist(
     fds_label = "MESH",
     enum_id = 1014,
     bpy_type = bpy.types.Object,
-    bf_prop_export = "bf_namelist_export",
+    bf_prop_export = "bf_export",
     bf_props = ("bf_id", "bf_fyi", "bf_ijk", "bf_xb_bbox",),
     bf_prop_custom = "bf_custom",
     bf_other = {"draw_type": "WIRE"},
@@ -187,7 +187,7 @@ BFNamelist(
     fds_label = "INIT",
     enum_id = 1015,
     bpy_type = bpy.types.Object,
-    bf_prop_export = "bf_namelist_export",
+    bf_prop_export = "bf_export",
     bf_props = ("bf_id", "bf_fyi", "bf_xb_solid", "bf_xyz",),
     bf_prop_custom = "bf_custom",
     bf_other = {"draw_type": "WIRE", "hide": True},
@@ -200,7 +200,7 @@ BFNamelist(
     fds_label = "ZONE",
     enum_id = 1016,
     bpy_type = bpy.types.Object,
-    bf_prop_export = "bf_namelist_export",
+    bf_prop_export = "bf_export",
     bf_props = ("bf_id", "bf_fyi", "bf_xb_bbox",),
     bf_prop_custom = "bf_custom",
     bf_other = {"draw_type": "WIRE", "hide": True},
@@ -213,45 +213,56 @@ BFNamelist(
     fds_label = None,
     enum_id = 1007,
     bpy_type = bpy.types.Object,
-    bf_prop_export = "bf_namelist_export",
+    bf_prop_export = "bf_export",
     bf_props = ("bf_custom_namelist", "bf_id", "bf_fyi", "bf_surf_id", "bf_xb", "bf_xyz", "bf_pb",),
     bf_prop_custom = None,
 )
 
 ### Material namelists
 
-BFNamelist(
+class BFNamelistSurf(BFNamelist):
+    def get_my_res(self, context, element, ui=False) -> "BFResult or None":
+        if not self.get_exported(context, element): return None
+        if ui and len(context.active_object.material_slots) > 1: msg = "Several material slots available, using active material only. "
+        else: msg = None
+        return BFResult(
+            sender = self,
+            value = None, 
+            msg = msg, 
+        )
+
+BFNamelistSurf(
     idname = "bf_surf",
     label = "SURF",
     description = "Generic Boundary Condition",
     fds_label = "SURF",
     enum_id = 2000,
     bpy_type = bpy.types.Material,
-    bf_prop_export = "bf_namelist_export",
+    bf_prop_export = "bf_export",
     bf_props = ("bf_id_ma", "bf_fyi", "bf_rgb", "bf_transparency", "bf_matl_id", ),
     bf_prop_custom = "bf_custom",
 )
 
-BFNamelist(
+BFNamelistSurf(
     idname = "bf_surf_burner",
     label = "SURF",
     description = "Spec'd rate burner",
     fds_label = "SURF",
     enum_id = 2001,
     bpy_type = bpy.types.Material,
-    bf_prop_export = "bf_namelist_export",
+    bf_prop_export = "bf_export",
     bf_props = ("bf_id_ma", "bf_fyi", "bf_rgb", "bf_transparency", "bf_hrrpua", "bf_tau_q", ),
     bf_prop_custom = "bf_custom",
 )
 
-BFNamelist(
+BFNamelistSurf(
     idname = "bf_surf_solid",
     label = "SURF",
     description = "Spec'd rate burning solid",
     fds_label = "SURF",
     enum_id = 2002,
     bpy_type = bpy.types.Material,
-    bf_prop_export = "bf_namelist_export",
+    bf_prop_export = "bf_export",
     bf_props = ("bf_id_ma", "bf_fyi", "bf_rgb", "bf_transparency", "bf_hrrpua", "bf_tau_q", "bf_matl_id", "bf_ignition_temperature", "bf_thickness", ),
     bf_prop_custom = "bf_custom",
 )

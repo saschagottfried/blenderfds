@@ -56,44 +56,17 @@ class OBJECT_PT_BF(bpy.types.Panel):
     @classmethod
     def poll(cls, context):
         ob = context.active_object
-        return ob and ob.type == "MESH"
+        return ob and ob.type in ("MESH", "EMPTY")
 
     def draw_header(self, context):
         layout = self.layout
         element = context.active_object
-        # Header for temporary element
-        if element.bf_is_tmp:
-            self.bl_label = "BlenderFDS Temporary Object"
-            return
-        # Header for normal element
-        bf_namelist = bf_namelists[element.bf_namelist] # get self bf_namelist object from element
-        self.bl_label = bf_namelist.draw_header(context, element, layout)
+        self.bl_label = element.draw_header(context, element, layout)
 
     def draw(self, context):
         layout = self.layout
         element = context.active_object
-        # Panel for temporary element
-        if element.bf_is_tmp:
-            layout.operator("scene.bf_del_all_tmp_objects")
-            return
-        # Panel for normal element
-        # Static part of the panel
-        split = layout.split(.6)  # namelist
-        split.prop(element, "bf_namelist", text="")
-        row = split.row(align=True)  # aspect
-        row.prop(element, "show_transparent", icon="GHOST", text="")
-        row.prop(element, "draw_type", text="")
-        row.prop(element, "hide", text="")
-        row.prop(element, "hide_select", text="")
-        row.prop(element, "hide_render", text="")
-        # Dynamic part of the panel
-        bf_namelist = bf_namelists[element.bf_namelist] # get self bf_namelist object from element
-        bf_namelist.draw(context, element, layout)
-        # Static part of the panel
-        row = layout.row()
-        if element.bf_has_tmp: row.operator("scene.bf_del_all_tmp_objects")
-        else: row.operator("object.bf_show_fds_geometries")
-        row.operator("object.bf_props_to_sel_obs")
+        element.draw(context, element, layout)
 
 class MATERIAL_PT_BF(bpy.types.Panel):
     bl_label = "FDS Boundary Condition"
