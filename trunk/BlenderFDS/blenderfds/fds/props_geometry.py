@@ -23,13 +23,13 @@ from .props import BFPropString
 class BFPropGeometry(BFProp):
     items = "NONE",
 
-    def _get_layout(self, context, element, layout):
+    def _get_layout(self, layout, context, element):
         split = layout.split(.1)
         col1, col2 = split.row(), split.column(align=True)
         col1.label(text="{}:".format(self.label))
         return col2
         
-    def _draw_body(self, context, element, layout):
+    def _draw_body(self, layout, context, element):
         # Draw enum
         row = layout.row(align=True)
         for item in self.items: row.prop_enum(element, self.bpy_idname, item)
@@ -39,7 +39,7 @@ class BFPropGeometry(BFProp):
 class BFPropXB(BFPropGeometry):
     items = "NONE", "BBOX", "VOXELS", "FACES", "EDGES",
 
-    def _draw_extra(self, context, element, layout):
+    def _draw_extra(self, layout, context, element):
         if element.bf_xb == "VOXELS":
             row = layout.row()
             row.prop(element, "bf_xb_voxel_size")
