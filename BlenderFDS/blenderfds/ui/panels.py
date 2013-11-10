@@ -14,22 +14,22 @@ class SCENE_PT_BF(): # No bpy.types.Panel, so it's not registered
         layout = self.layout
         element = context.scene
         bf_namelist = bf_namelists[type(self).bf_namelist] # access Class variable and get self bf_namelist object
-        self.bl_label = bf_namelist.draw_header(context, element, layout)
+        self.bl_label = bf_namelist.draw_header(layout, context, element)
 
-    def draw_extra(self, context, element, layout):
+    def draw_extra(self, layout, context, element):
         pass
 
     def draw(self, context):
         layout = self.layout
         element = context.scene
         bf_namelist = bf_namelists[type(self).bf_namelist] # access Class variable and get self bf_namelist object
-        bf_namelist.draw(context, element, layout)
-        self.draw_extra(context, element, layout)
+        bf_namelist.draw(layout, context, element)
+        self.draw_extra(layout, context, element)
         
 class SCENE_PT_BF1(SCENE_PT_BF, bpy.types.Panel):
     bf_namelist = "bf_head"
 
-    def draw_extra(self, context, element, layout):
+    def draw_extra(self, layout, context, element):
         row = layout.row()
         row.label(text="")
         row.operator("scene.bf_props_to_scene")
@@ -61,12 +61,12 @@ class OBJECT_PT_BF(bpy.types.Panel):
     def draw_header(self, context):
         layout = self.layout
         element = context.active_object
-        self.bl_label = element.draw_header(context, element, layout)
+        self.bl_label = element.draw_header(layout, context, element)
 
     def draw(self, context):
         layout = self.layout
         element = context.active_object
-        element.draw(context, element, layout)
+        element.draw(layout, context, element)
 
 class MATERIAL_PT_BF(bpy.types.Panel):
     bl_label = "FDS Boundary Condition"
@@ -86,7 +86,7 @@ class MATERIAL_PT_BF(bpy.types.Panel):
         element = context.material
         # Header for normal element
         bf_namelist = bf_namelists[element.bf_namelist] # get self bf_namelist object from element
-        self.bl_label = bf_namelist.draw_header(context, element, layout)
+        self.bl_label = bf_namelist.draw_header(layout, context, element)
  
     def draw(self, context):
         layout = self.layout
@@ -100,7 +100,7 @@ class MATERIAL_PT_BF(bpy.types.Panel):
         row.prop(element, "alpha", text="")
         # Dynamic part of the panel
         bf_namelist = bf_namelists[element.bf_namelist] # get self bf_namelist object from element
-        bf_namelist.draw(context, element, layout)
+        bf_namelist.draw(layout, context, element)
         # Static part of the panel
         row = layout.row()
         if fds_surf.has_predefined: row.label("")

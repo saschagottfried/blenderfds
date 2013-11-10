@@ -33,8 +33,15 @@ class BFPropString(BFProp):
         
 ### General BFProp
 
+BFProp( # System property
+    idname = "bf_export",
+    label = "Export",
+    description = "Export element to FDS",
+    bpy_idname = "bf_export",
+)
+
 class BFPropFYI(BFPropString):
-    def _draw_body(self, context, element, layout):
+    def _draw_body(self, layout, context, element):
         row = layout.row()
         row.prop(element, self.bpy_idname, text="", icon="INFO")
 
@@ -58,7 +65,7 @@ class BFPropCustom(BFProp):
         if err_msgs: raise BFException(sender=self, msgs=err_msgs)
         return value
 
-    def _draw_body(self, context, element, layout):
+    def _draw_body(self, layout, context, element):
         row = layout.row()
         row.prop(element, self.bpy_idname, text="", icon="TEXT")
 
@@ -77,7 +84,7 @@ BFPropCustom(
 ### Scene
 
 class BFPropCHID(BFPropString):
-    def _draw_body(self, context, element, layout):
+    def _draw_body(self, layout, context, element):
         row = layout.row()
         row.prop(element, "name", text="", icon="COPY_ID")
 
@@ -124,7 +131,7 @@ BFPropPath(
 )
 
 class BFPropText(BFProp):
-    def _draw_body(self, context, element, layout):
+    def _draw_body(self, layout, context, element):
         row = layout.row(align=True)
         row.prop_search(element, self.bpy_idname, bpy.data, "texts")
         row.operator("scene.bf_edit_head_custom_text", icon="FILESEL", text="")
@@ -404,7 +411,7 @@ BFProp(
 )
 
 class BFPropID(BFPropString):
-    def _draw_body(self, context, element, layout):
+    def _draw_body(self, layout, context, element):
         row = layout.row(align=True)
         row.prop(element, "show_name", text="", icon="COPY_ID")
         row = row.split(.8, align=True)
@@ -430,7 +437,7 @@ class BFPropSURFID(BFProp):
     def set_value(self, context, element, value):
         element.active_material = geometry.get_material(str(value))
         
-    def _draw_body(self, context, element, layout):
+    def _draw_body(self, layout, context, element):
         row = layout.row()
         row.prop_search(element, self.bpy_idname, bpy.data, "materials", text="SURF_ID")
 
@@ -563,7 +570,7 @@ BFPropCustomNamelist(
 ### Material
 
 class BFPropIDMaterial(BFPropString):
-    def _draw_body(self, context, element, layout):
+    def _draw_body(self, layout, context, element):
         row = layout.row()
         row.prop(element, "name", text="", icon="COPY_ID")
 
