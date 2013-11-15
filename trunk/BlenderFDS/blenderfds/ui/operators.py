@@ -7,6 +7,29 @@ from blenderfds.fds import *
 
 DEBUG = True
 
+### Set default homefile
+
+# FIXME
+# read_factory_settings()
+#bpy.ops.wm.save_homefile()
+# bpy.ops.wm.open_mainfile(filepath="", filter_blender=True, filter_backup=False, filter_image=False, filter_movie=False, filter_python=False, filter_font=False, filter_sound=False, filter_text=False, filter_btx=False, filter_collada=False, filter_folder=True, filemode=8, display_type='FILE_DEFAULTDISPLAY', load_ui=True, use_scripts=True)
+
+import sys
+
+class WM_OT_bf_set_bf_homefile(bpy.types.Operator):
+    bl_label = "Open and Set Default Settings"
+    bl_idname = "wm.bf_set_bf_homefile"
+    bl_description = "Set default settings for BlenderFDS"
+
+    def execute(self, context):
+        bf_default_filepath = sys.path[0] + "/blenderfds/bf_default.blend"
+        # FIXME check existence
+        bpy.ops.wm.open_mainfile(filepath=bf_default_filepath)
+        # filemode=8, display_type='FILE_DEFAULTDISPLAY', load_ui=True, use_scripts=True)
+        bpy.ops.wm.save_homefile() # FIXME context
+        self.report({"INFO"}, "Default settings loaded")
+        return {'FINISHED'}
+
 ### MESH and IJK
 
 class OBJECT_OT_bf_set_cell_size(bpy.types.Operator):
@@ -161,7 +184,7 @@ class MATERIAL_OT_bf_assign_BC_to_sel_obs(bpy.types.Operator):
             ob.active_material = active_material
             print("BlenderFDS: Assign material '{}' -> {}".format(active_material.name, ob.name))
         # Set myself as exported
-        active_material.bf_namelist_export = True
+        active_material.bf_export = True
         # Return
         self.report({"INFO"}, "Assigned to selected objects")
         return {'FINISHED'}
@@ -290,7 +313,7 @@ class MATERIAL_OT_bf_set_tau_q(bpy.types.Operator):
         # Calc burner area
         burner_area = 0.
         obs = (ob for ob in context.scene.objects \
-            if ob.type == "MESH" and ob.bf_namelist_export \
+            if ob.type == "MESH" and ob.bf_export \
             and ob.active_material == ma and "bf_surf_id" in ob.descendants)
         for ob in obs: burner_area += geometry.get_global_area(context, ob)
         # Set defaults to estimated values

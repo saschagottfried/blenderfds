@@ -19,8 +19,8 @@ class BFNamelistHead(BFNamelist):
             if not element.bf_head_custom_text in bpy.data.texts:
                 raise BFException(sender=self, msg="Custom text file not existing")
             else:
-                value = bpy.data.texts[element.bf_head_custom_text].as_string() + "\n"
-                msg = "Custom text file '{}' appended".format(element.bf_head_custom_text)
+                value = bpy.data.texts[element.bf_head_custom_text].as_string() + "\n! End of custom text\n"
+                msg = "Custom text '{}' appended".format(element.bf_head_custom_text)
         else: value, msg = None, None
         # No need for msg or value
         if ui: return None
