@@ -135,69 +135,183 @@ def ob_to_xbs_voxels(context, ob):
     # Init
     t0 = time()
     voxel_size = ob.bf_xb_voxel_size
-    progress = True
-    if progress:
-        wm = context.window_manager
-        wm.progress_begin(0, 100)
     # Create a new tmp object from original object, link it to the scene and update the scene
     # The new object mesh has modifiers, scale, rotation, and location applied
     me_tmp = get_global_mesh(context, ob)
     ob_tmp = bpy.data.objects.new("{}_tmp".format(ob.name), me_tmp)
     ob_tmp.bf_is_tmp = True
-    # Add new Remesh modifier to the tmp object
-    dimension = max(ob_tmp.dimensions) # before appling the modifier
-    mo = ob_tmp.modifiers.new('voxels_tmp','REMESH')
-    mo.octree_depth, mo.scale, voxel_size, dimension_too_large = _calc_remesh(context, dimension, voxel_size)
+    # Get dimensions before appling the modifier
+    dimensions = ob_tmp.dimensions
+    # Apply Remesh modifier to the tmp object
+    mo = ob_tmp.modifiers.new('voxels_tmp','REMESH') # apply modifier
+    mo.octree_depth, mo.scale, voxel_size, dimension_too_large = _calc_remesh(context, dimensions, voxel_size)
     if dimension_too_large: raise BFException(ob, msg="Object '{}' too large for desired voxel size, split it in parts.".format(ob.name))
     mo.mode = 'BLOCKS'
     mo.use_remove_disconnected = False
     # Extract tessfaces from the object mesh as modified by Remesh (modifiers applied)
-    if progress: wm.progress_update(20)
     me_tmp = get_global_mesh(context, ob_tmp)
     tessfaces = get_tessfaces(context, me_tmp)
-    if not tessfaces:
-        if progress: wm.progress_end()
-        return None, "No voxel created"
-    # Clean unneeded tmp object
+    if not tessfaces: return None, "No voxel created"
+    # Clean unneeded tmp object and tmp mesh
     bpy.data.objects.remove(ob_tmp)
-    # Classify tessfaces
-    if progress: wm.progress_update(30)
-    voxel_size_half = voxel_size / 2.
-    origin = me_tmp.vertices[0].co
-    facezs = dict()
-    for tessface in tessfaces:
-        center_loc = tessface.center - origin
-        if abs(tessface.normal[2]) >.9:  # tessface is normal to z axis
-            ix = round((center_loc[0] - voxel_size_half) / voxel_size)
-            iy = round((center_loc[1] - voxel_size_half) / voxel_size)
-            iz = round( center_loc[2] / voxel_size)
-            if (ix, iy) in facezs: facezs[(ix, iy)].append(iz)
-            else: facezs[(ix, iy)] = [iz,]
-    # Create boxes along z axis, then grow them in x and y direction
-    if progress: wm.progress_update(60)
-    boxes = set()
-    while facezs:
-        key, values = facezs.popitem()
-        values.sort()
-        while values:
-            end = values.pop()
-            start = values.pop()
-            boxes.add((key[0], key[0] + 1, key[1], key[1] + 1, start, end,))
-    boxes = _grow_boxes_along_y(_grow_boxes_along_x(boxes))
-    # Prepare XBs
-    if progress: wm.progress_update(80)
-    result = list()
-    for box in boxes:
-        a = origin + Vector((box[0], box[2], box[4])) * voxel_size
-        b = origin + Vector((box[1], box[3], box[5])) * voxel_size
-        result.append((a[0]-epsilon, b[0]+epsilon, a[1]-epsilon, b[1]+epsilon, a[2]-epsilon, b[2]+epsilon),)
-    # Clean up temporary mesh
+    #bpy.context.scene.objects.link(ob_tmp) # leave temp object DEBUG
     bpy.data.meshes.remove(me_tmp)
+    # Classify tessfaces in z direction
+    z_tessfaces = _classify_z_tessfaces(tessfaces, voxel_size)
+    # Create boxes along z axis and grow them along x and y direction
+    boxes = _grow_boxes_along_y(_grow_boxes_along_x(_z_tessfaces_to_boxes(z_tessfaces)))
+    # Prepare XBs
+    result = _boxes_to_xbs(boxes, voxel_size)
     # Return
-    if progress: wm.progress_end()
     msg = len(result) > 1 and "{0} voxels of size {1:.3f} m, in {2:.3f} s".format(len(result), voxel_size, time() - t0) or None
     return result, msg
+
+# When appling a remesh modifier, object max dimension is scaled by scale value
+# and divided in 2 ** octree_depth voxels
+
+def _calc_remesh(context, dimensions, voxel_size):
+    """Calc Remesh modifier parameters."""
+    # Fix voxel_size for Blender remesh algorithms
+    # If dimension / voxel_size is "too integer" voxelization is not very good.
+    broken = [True, True, True]
+    while any(broken):
+        for index, dimension in enumerate(dimensions):
+            if (dimension / voxel_size) - round(dimension / voxel_size) < 1E-6: voxel_size -= 1E-6
+            else: broken[index] = False
+    # Get max dimension and init flag
+    dimension = max(dimensions)
+    dimension_too_large = True
+    # Find righ octree_depth and relative scale
+    for octree_depth in range(1,11):
+        scale = dimension / voxel_size / 2 ** octree_depth
+        if 0.010 < scale < 0.990:
+            dimension_too_large = False
+            break
+    if dimension_too_large: scale = 0.990
+    # Recalc true voxel_size and return
+    voxel_size = dimension / scale / 2 ** octree_depth
+    return octree_depth, scale, voxel_size, dimension_too_large
+
+# (ix, iy, iz) : absolute int coordinates of center of a tessface normal to z axis
+#   ix = round(center[0] / voxel_size)
+#   iy = round(center[1] / voxel_size)
+#   iz = round(center[2] / voxel_size)
+# the absolute origin point (0, 0, 0) is used as reference,
+# voxel_size is used as step.  
+
+def _classify_z_tessfaces(tessfaces, voxel_size):
+    """Classify centers of tessfaces normal to z axis in absolute int coordinates:
+    (ix, iy -> int coordinates): (iz0, iz1, ... -> floors int coordinates, an even number for closed geometry)"""
+    z_tessfaces = dict() # {(3,4):(3,4,15,25,), (3,5):(3,4,15,25), ...}
+    for tessface in tessfaces:
+        if abs(tessface.normal[2]) > .9:  # tessface is normal to z axis
+            center = tessface.center
+            ix = round(center[0] / voxel_size) # face index, round returns an int
+            iy = round(center[1] / voxel_size)
+            iz = round(center[2] / voxel_size)
+            if (ix, iy) in z_tessfaces: z_tessfaces[(ix, iy)].append(iz) # append face iz to existing list of izs
+            else: z_tessfaces[(ix, iy)] = [iz,] # create new list of izs from face iz
+    return z_tessfaces    
+
+# Use z_tessfaces levels to detect solid volumes:
+# At int coordinates (ix, iy), at z level izs[0] go into solid, at izs[1] go out of solid, at izs[2] go into solid, ...
+# If solid is manifold, len(izs) is an even number: go into solid at izs[0], get at last out of it at izs[-1].
+
+def _z_tessfaces_to_boxes(z_tessfaces):
+    """Create minimal boxes from classified centers of tessfaces normal to z axis:
+    [(ix, ix, iy, iy, iz0, iz1 -> int coordinates), (...), ...]"""
+    boxes = list()
+    while z_tessfaces:
+        (ix, iy), izs = z_tessfaces.popitem()
+        izs.sort() # sort from bottom to top in +z direction
+        while izs:
+            iz1 = izs.pop() # pop from top to bottom in -z direction
+            iz0 = izs.pop()
+            boxes.append((ix, ix, iy, iy, iz0, iz1,))
+    return boxes
+
+# Try to merge each solid box with other available boxes on +x and -x direction
+
+def _grow_boxes_along_x(boxes):
+    """Grow boxes along x axis:
+    [(ix0, ix1, iy0, iy1, iz0, iz1 -> int coordinates), (...), ...]"""
+    boxes_grown = list()
+    while boxes:
+        ix0, ix1, iy0, iy1, iz0, iz1 = boxes.pop()
+        while True: # fatten into +x direction
+            box_desired = (ix1 + 1, ix1 + 1, iy0, iy1, iz0, iz1,)
+            if box_desired not in boxes: break # desired box not available!
+            boxes.remove(box_desired)
+            ix1 += 1
+        while True: # fatten into -x direction
+            box_desired = (ix0 - 1, ix0 - 1, iy0, iy1, iz0, iz1,)
+            if box_desired not in boxes: break # desired box not available!
+            boxes.remove(box_desired)
+            ix0 -= 1
+        boxes_grown.append((ix0, ix1, iy0, iy1, iz0, iz1))
+    return boxes_grown
+
+# Try to merge each solid box with other available boxes on +y and -y direction
+
+def _grow_boxes_along_y(boxes):
+    """Grow boxes along y axis:
+    [(ix0, ix1, iy0, iy1, iz0, iz1 -> int coordinates), (...), ...]"""
+    boxes_grown = list()
+    while boxes:
+        ix0, ix1, iy0, iy1, iz0, iz1 = boxes.pop()
+        while True: # fatten into +y direction
+            box_desired = (ix0, ix1, iy1 + 1, iy1 + 1, iz0, iz1)
+            if box_desired not in boxes: break # desired box not available!
+            boxes.remove(box_desired)
+            iy1 += 1
+        while True: # fatten into -y direction
+            box_desired = (ix0, ix1, iy0 - 1, iy0 - 1, iz0, iz1)
+            if box_desired not in boxes: break # desired box not available!
+            boxes.remove(box_desired)
+            iy0 -= 1
+        boxes_grown.append((ix0, ix1, iy0, iy1, iz0, iz1))
+    return boxes_grown
+
+# Try to merge each solid box with other available boxes on +z and -z direction
     
+def _grow_boxes_along_z(boxes): # currently not used
+    """Grow boxes along z axis:
+    [(ix0, ix1, iy0, iy1, iz0, iz1 -> int coordinates), (...), ...]"""
+    boxes_grown = list()
+    while boxes:
+        ix0, ix1, iy0, iy1, iz0, iz1 = boxes.pop()
+        while True: # fatten into +z direction
+            box_desired = (ix0, ix1, iy0, iy1, iz1 + 1, iz1 + 1)
+            if box_desired not in boxes: break # desired box not available!
+            boxes.remove(box_desired)
+            iz1 += 1
+        while True: # fatten into -z direction
+            box_desired = (ix0, ix1, iy0, iy1, iz0 - 1, iz0 - 1)
+            if box_desired not in boxes: break # desired box not available!
+            boxes.remove(box_desired)
+            iz0 -= 1
+        boxes_grown.append((ix0, ix1, iy0, iy1, iz0, iz1))
+    return boxes_grown
+
+# Convert back int coordinates to real world coordinates
+
+def _boxes_to_xbs(boxes, voxel_size):
+    """Transform boxes in int absolute coordinates to xbs in true absolute coordinates:
+    [(x0, x1, y0, y1, z0, z1 -> true coordinates), (...), ...]"""
+    xbs = list()
+    while boxes:
+        ix0, ix1, iy0, iy1, iz0, iz1 = boxes.pop()
+        # Absolute int coordinates refer to the absolute origin point (0, 0, 0).
+        # voxel_size is the step of int coordinates.
+        # For x0 and y0 -.5 is used to reach box corner from z_tessface center.
+        # For x1 and y1 +.5 is used to reach box corner from z_tessface center.
+        # z0 and z1 are already at the right height, as z_tessfaces are normal to z axis.
+        x0, y0, z0 = (ix0 - .5) * voxel_size, (iy0 - .5) * voxel_size, iz0 * voxel_size
+        x1, y1, z1 = (ix1 + .5) * voxel_size, (iy1 + .5) * voxel_size, iz1 * voxel_size 
+        xbs.append((x0, x1, y0, y1, z0, z1),)
+    return xbs
+
+
 def ob_to_xbs_bbox(context, ob):
     """Return a list of object bounding box XBs and a msg:
     ((x0,x1,y0,y1,z0,z1,), ...), "Message"."""
@@ -380,72 +494,8 @@ def pbs_planes_to_mesh(pbs, me=None):
 
 ### Auxiliary functions for ob_to_xbs_voxels()
 
-def _calc_remesh(context, dimension, voxel_size):
-    """Calc Remesh modifier parameters."""
-    for octree_depth in range(1,11):
-        scale = dimension / voxel_size / 2 ** octree_depth
-        if 0.010 < scale < 0.990:
-            dimension_too_large = False
-            break
-    if dimension_too_large: scale = 0.990
-    voxel_size = dimension / scale / 2 ** octree_depth
-    return octree_depth, scale, voxel_size, dimension_too_large
 
-# Grow boxes for voxels->boxels
 
-def _grow_boxes_along_x(boxes):
-    """Grow boxes along x axis."""
-    boxes_grown = set()
-    while boxes:
-        box = list(boxes.pop())
-        while True: # fatten into +x direction
-            box_desired = (box[1], box[1] + 1, box[2], box[3], box[4], box[5],)
-            if box_desired not in boxes: break
-            boxes.remove(box_desired)
-            box[1] += 1
-        while True: # fatten into -x direction
-            box_desired = (box[0] - 1, box[0], box[2], box[3], box[4], box[5],)
-            if box_desired not in boxes: break
-            boxes.remove(box_desired)
-            box[0] -= 1
-        boxes_grown.add(tuple(box))
-    return boxes_grown
-
-def _grow_boxes_along_y(boxes):
-    """Grow boxes along y axis."""
-    boxes_grown = set()
-    while boxes:
-        box = list(boxes.pop())
-        while True: # fatten into +y direction
-            box_desired = (box[0], box[1], box[3], box[3] + 1, box[4], box[5],)
-            if box_desired not in boxes: break
-            boxes.remove(box_desired)
-            box[3] += 1
-        while True: # fatten into -y direction
-            box_desired = (box[0], box[1], box[2] - 1, box[2], box[4], box[5],)
-            if box_desired not in boxes: break
-            boxes.remove(box_desired)
-            box[2] -= 1
-        boxes_grown.add(tuple(box))
-    return boxes_grown
-    
-def _grow_boxes_along_z(boxes): # currently not used
-    """Grow boxes along z axis."""
-    boxes_grown = set()
-    while boxes:
-        box = list(boxes.pop())
-        while True: # fatten into +z direction
-            box_desired = (box[0], box[1], box[2], box[3], box[5], box[5] + 1,)
-            if box_desired not in boxes: break
-            boxes.remove(box_desired)
-            box[5] += 1
-        while True: # fatten into -z direction
-            box_desired = (box[0], box[1], box[2], box[3], box[4] - 1, box[4],)
-            if box_desired not in boxes: break
-            boxes.remove(box_desired)
-            box[4] -= 1
-        boxes_grown.add(tuple(box))
-    return boxes_grown
 
 ### Geometry choice matrix for functions
 

@@ -9,12 +9,6 @@ from blenderfds.lib.utilities import isiterable
 
 DEBUG = False
 
-# FIXME
-# read_factory_settings()
-#bpy.ops.wm.save_homefile()
-# bpy.ops.wm.open_mainfile(filepath="", filter_blender=True, filter_backup=False, filter_image=False, filter_movie=False, filter_python=False, filter_font=False, filter_sound=False, filter_text=False, filter_btx=False, filter_collada=False, filter_folder=True, filemode=8, display_type='FILE_DEFAULTDISPLAY', load_ui=True, use_scripts=True)
-
-
 ### BFCommon
 
 class BFCommon(BFAutoItem):

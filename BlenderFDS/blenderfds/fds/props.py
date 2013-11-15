@@ -224,6 +224,7 @@ BFPropDumpRenderFile(
 
 class BFPropNFRAMES(BFProp):
     def get_res(self, context, element, ui=False):
+        if not self.get_exported(context, element): return None
         return BFResult(
             sender = self,
             value = self._format_value(context, element, element.bf_dump_nframes),
@@ -513,6 +514,7 @@ BFProp(
 
 class BFPropIJK(BFProp):
     def get_res(self, context, element, ui=False):
+        if not self.get_exported(context, element): return None
         # Init
         has_good_ijk, cell_sizes, cell_number, cell_aspect_ratio  = fds_mesh.get_cell_infos(context, element)
         res = BFResult(sender=self)
@@ -668,6 +670,7 @@ BFProp(
 
 class BFPropTAUQ(BFProp):
     def get_res(self, context, element, ui=False):
+        if not self.get_exported(context, element): return None
         return BFResult(
             sender = self,
             value = self._format_value(context, element, element.bf_tau_q),
