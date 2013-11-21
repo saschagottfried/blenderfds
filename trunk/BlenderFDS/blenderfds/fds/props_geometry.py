@@ -37,10 +37,10 @@ class BFPropGeometry(BFProp):
 ### XB
 
 class BFPropXB(BFPropGeometry):
-    items = "NONE", "BBOX", "VOXELS", "FACES", "EDGES",
+    items = "NONE", "BBOX", "VOXELS", "FACES", "PIXELS", "EDGES",
 
     def _draw_extra(self, layout, context, element):
-        if element.bf_xb == "VOXELS":
+        if element.bf_xb in ("VOXELS", "PIXELS") :
             row = layout.row()
             row.prop(element, "bf_xb_voxel_size")
     
@@ -111,7 +111,7 @@ class BFPropXB(BFPropGeometry):
         scale_length = context.scene.unit_settings.scale_length
         value = [coo / scale_length for coo in value]
         # Set value
-        geometry.xbs_to_ob(xbs=(value,), context=context, ob=element, bf_xb=element.bf_xb) # Send existing element.bf_xyz for evaluation. FIXME EDGE recognition!
+        geometry.xbs_to_ob(xbs=(value,), context=context, ob=element, bf_xb=element.bf_xb) # Send existing element.bf_xb for evaluation. FIXME EDGE recognition!
 
 def update_bf_xb_voxel_size(self, context):
     """Update function for bf_xb_voxel_size"""
@@ -120,7 +120,7 @@ def update_bf_xb_voxel_size(self, context):
 
 BFProp(
     idname = "bf_xb_voxel_size",
-    label = "Voxel Size",
+    label = "Size",
     description = "Minimum resolution for object voxelization",
     flags = NOEXPORT,
     bpy_idname = "bf_xb_voxel_size",
@@ -139,7 +139,7 @@ def update_bf_xb(self, context):
     # Del all tmp_objects, if self has one
     if self.bf_has_tmp: geometry.del_all_tmp_objects(context)
     # Set other geometries to compatible settings
-    if self.bf_xb in ("VOXELS", "FACES", "EDGES"):
+    if self.bf_xb in ("VOXELS", "FACES", "PIXELS", "EDGES"):
         if self.bf_xyz == "VERTICES": self.bf_xyz = "NONE"
         if self.bf_pb == "PLANES": self.bf_pb = "NONE"
 
@@ -156,7 +156,8 @@ BFPropXB(
         ("BBOX", "BBox", "Use object bounding box", 100),
         ("VOXELS", "Voxels", "Export voxels from voxelized solid", 200),
         ("FACES", "Faces", "Faces, one for each face of this object", 300),
-        ("EDGES", "Edges", "Segments, one for each edge of this object", 400),
+        ("PIXELS", "Pixels", "Export pixels from pixelized surface", 400),
+        ("EDGES", "Edges", "Segments, one for each edge of this object", 500),
         ),
     update = update_bf_xb,
 )
@@ -184,7 +185,7 @@ BFPropXBSolid(
 )
 
 class BFPropXBFaces(BFPropXB):
-    items = "NONE", "FACES"
+    items = "NONE", "FACES", "PIXELS"
 
 BFPropXBFaces(
     idname = "bf_xb_faces",
@@ -274,7 +275,7 @@ def update_bf_xyz(self, context):
     if self.bf_has_tmp: geometry.del_all_tmp_objects(context)
     # Set other geometries to compatible settings
     if self.bf_xyz == "VERTICES":
-        if self.bf_xb in ("VOXELS", "FACES", "EDGES"): self.bf_xb = "NONE"
+        if self.bf_xb in ("VOXELS", "FACES", "PIXELS", "EDGES"): self.bf_xb = "NONE"
         if self.bf_pb == "PLANES": self.bf_pb = "NONE"
 
 BFPropXYZ(
@@ -354,7 +355,7 @@ def update_bf_pb(self, context):
     if self.bf_has_tmp: geometry.del_all_tmp_objects(context)
     # Set other geometries to compatible settings
     if self.bf_pb == "PLANES":
-        if self.bf_xb in ("VOXELS", "FACES", "EDGES"): self.bf_xb = "NONE"
+        if self.bf_xb in ("VOXELS", "FACES", "PIXELS", "EDGES"): self.bf_xb = "NONE"
         if self.bf_xyz == "VERTICES": self.bf_xyz = "NONE"
 
 # used for PBX, PBY, PBZ import trapping
