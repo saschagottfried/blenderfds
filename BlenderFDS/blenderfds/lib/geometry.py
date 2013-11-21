@@ -128,27 +128,56 @@ def set_tmp_object(context, ob, ob_tmp):
 def ob_to_none(context, ob):
     return None, None
 
-def ob_to_xbs_voxels(context, ob):
-    """Return a list of object voxels XBs and a msg:
-    ((x0,x1,y0,y1,z0,z1,), ...), "Message"."""
-    print("BFDS: geometry.ob_to_xbs_voxels:", ob.name) 
+def ob_to_xbs_pixels(context, ob):
+    """Return a list of object flat voxels XBs and a msg:
+    ((x0,x0,y0,y1,z0,z1,), ...), "Message"."""
+    print("BFDS: geometry.ob_to_xbs_flat_voxels:", ob.name) 
     # Init
     t0 = time()
     voxel_size = ob.bf_xb_voxel_size
-    # Create a new tmp object from original object, link it to the scene and update the scene
-    # The new object mesh has modifiers, scale, rotation, and location applied
-    me_tmp = get_global_mesh(context, ob)
-    ob_tmp = bpy.data.objects.new("{}_tmp".format(ob.name), me_tmp)
-    ob_tmp.bf_is_tmp = True
-    # Get dimensions before appling the modifier
-    dimensions = ob_tmp.dimensions
-    # Apply Remesh modifier to the tmp object
-    mo = ob_tmp.modifiers.new('voxels_tmp','REMESH') # apply modifier
-    mo.octree_depth, mo.scale, voxel_size, dimension_too_large = _calc_remesh(context, dimensions, voxel_size)
-    if dimension_too_large: raise BFException(ob, msg="Object '{}' too large for desired voxel size, split it in parts.".format(ob.name))
-    mo.mode = 'BLOCKS'
-    mo.use_remove_disconnected = False
-    # Extract tessfaces from the object mesh as modified by Remesh (modifiers applied)
+    ob_tmp = _get_absolute_tmp_object(context, ob)
+
+    if not ob_tmp.data.vertices: return None, "Empty object. No flat voxel created."
+    location = ob_tmp.data.vertices[0].co
+
+    if   not ob_tmp.dimensions[0]: normal = "x" # normal to x
+    elif not ob_tmp.dimensions[1]: normal = "y" # normal to y
+    elif not ob_tmp.dimensions[2]: normal = "z" # normal to z
+    else: return None, "Object is not flat and normal to an axis. No flat voxel created."
+
+    _apply_solidify_modifier(context, ob_tmp, thickness=.02)
+    _apply_remesh_modifier(context, ob_tmp, voxel_size)
+
+    me_tmp = get_global_mesh(context, ob_tmp)
+    tessfaces = get_tessfaces(context, me_tmp)
+    if not tessfaces: return None, "No flat voxel created"
+
+    # Clean unneeded tmp object and tmp mesh
+    bpy.data.objects.remove(ob_tmp)
+    #bpy.context.scene.objects.link(ob_tmp) # leave temp object DEBUG
+    bpy.data.meshes.remove(me_tmp)
+
+    # Classify tessfaces in z direction
+    z_tessfaces = _classify_z_tessfaces(tessfaces, voxel_size)
+    # Create boxes along z axis and grow them along x and y direction
+    boxes = _grow_boxes_along_y(_grow_boxes_along_x(_z_tessfaces_to_boxes(z_tessfaces)))
+
+    # Prepare XBs
+    xbs = _boxes_to_xbs(boxes, voxel_size, flat=True, normal=normal, location=location)
+
+    # Return
+    msg = len(xbs) > 1 and "{0} flat voxels of size {1:.3f} m, in {2:.3f} s".format(len(xbs), voxel_size, time() - t0) or None
+    return xbs, msg
+
+def ob_to_xbs_voxels(context, ob):
+    """Return a list of object voxels XBs and a msg:
+    ((x0,x1,y0,y1,z0,z1,), ...), "Message"."""
+    print("BFDS: geometry.ob_to_xbs_voxels:", ob.name)
+    # Init
+    t0 = time()
+    voxel_size = ob.bf_xb_voxel_size
+    ob_tmp = _get_absolute_tmp_object(context, ob)
+    _apply_remesh_modifier(context, ob_tmp, voxel_size)
     me_tmp = get_global_mesh(context, ob_tmp)
     tessfaces = get_tessfaces(context, me_tmp)
     if not tessfaces: return None, "No voxel created"
@@ -161,22 +190,36 @@ def ob_to_xbs_voxels(context, ob):
     # Create boxes along z axis and grow them along x and y direction
     boxes = _grow_boxes_along_y(_grow_boxes_along_x(_z_tessfaces_to_boxes(z_tessfaces)))
     # Prepare XBs
-    result = _boxes_to_xbs(boxes, voxel_size)
+    xbs = _boxes_to_xbs(boxes, voxel_size)
     # Return
-    msg = len(result) > 1 and "{0} voxels of size {1:.3f} m, in {2:.3f} s".format(len(result), voxel_size, time() - t0) or None
-    return result, msg
+    msg = len(xbs) > 1 and "{0} voxels of size {1:.3f} m, in {2:.3f} s".format(len(xbs), voxel_size, time() - t0) or None
+    return xbs, msg
+
+def _get_absolute_tmp_object(context, ob):
+    """Get absolute tmp object of ob: modifiers, rotation, location and scale are applied."""
+    ob_tmp = bpy.data.objects.new("{}_tmp".format(ob.name), get_global_mesh(context, ob))
+    ob_tmp.bf_is_tmp = True
+    return ob_tmp
+
+def _apply_remesh_modifier(context, ob, voxel_size):
+    """Apply remesh modifier for voxelization."""
+    mo = ob.modifiers.new('voxels_tmp','REMESH') # apply modifier
+    mo.octree_depth, mo.scale, voxel_size, dimension_too_large = _calc_remesh_parameters(context, ob.dimensions, voxel_size)
+    if dimension_too_large: raise BFException(ob, msg="Object '{}' too large for desired voxel size, split it in parts.".format(ob.name))
+    mo.mode, mo.use_remove_disconnected = 'BLOCKS', False
 
 # When appling a remesh modifier, object max dimension is scaled by scale value
 # and divided in 2 ** octree_depth voxels
 
-def _calc_remesh(context, dimensions, voxel_size):
-    """Calc Remesh modifier parameters."""
+def _calc_remesh_parameters(context, dimensions, voxel_size):
+    """Calc Remesh modifier parameters for voxel_size."""
     # Fix voxel_size for Blender remesh algorithms
     # If dimension / voxel_size is "too integer" voxelization is not very good.
     broken = [True, True, True]
     while any(broken):
         for index, dimension in enumerate(dimensions):
-            if (dimension / voxel_size) - round(dimension / voxel_size) < 1E-6: voxel_size -= 1E-6
+            # dimension should not be 0 as in flat objects!
+            if dimension and (dimension / voxel_size) - round(dimension / voxel_size) < 1E-6: voxel_size -= 1E-6
             else: broken[index] = False
     # Get max dimension and init flag
     dimension = max(dimensions)
@@ -191,6 +234,11 @@ def _calc_remesh(context, dimensions, voxel_size):
     # Recalc true voxel_size and return
     voxel_size = dimension / scale / 2 ** octree_depth
     return octree_depth, scale, voxel_size, dimension_too_large
+
+def _apply_solidify_modifier(context, ob, thickness):
+    """Apply solidify modifier with centered thickness."""
+    mo = ob.modifiers.new('solid_tmp','SOLIDIFY') # apply modifier
+    mo.thickness, mo.offset = thickness, thickness / 2. # Set centered thickness
 
 # (ix, iy, iz) : absolute int coordinates of center of a tessface normal to z axis
 #   ix = round(center[0] / voxel_size)
@@ -211,7 +259,7 @@ def _classify_z_tessfaces(tessfaces, voxel_size):
             iz = round(center[2] / voxel_size)
             if (ix, iy) in z_tessfaces: z_tessfaces[(ix, iy)].append(iz) # append face iz to existing list of izs
             else: z_tessfaces[(ix, iy)] = [iz,] # create new list of izs from face iz
-    return z_tessfaces    
+    return z_tessfaces  
 
 # Use z_tessfaces levels to detect solid volumes:
 # At int coordinates (ix, iy), at z level izs[0] go into solid, at izs[1] go out of solid, at izs[2] go into solid, ...
@@ -295,7 +343,7 @@ def _grow_boxes_along_z(boxes): # currently not used
 
 # Convert back int coordinates to real world coordinates
 
-def _boxes_to_xbs(boxes, voxel_size):
+def _boxes_to_xbs(boxes, voxel_size, flat=False, normal="z", location=(0.,0.,0.)):
     """Transform boxes in int absolute coordinates to xbs in true absolute coordinates:
     [(x0, x1, y0, y1, z0, z1 -> true coordinates), (...), ...]"""
     xbs = list()
@@ -308,9 +356,15 @@ def _boxes_to_xbs(boxes, voxel_size):
         # z0 and z1 are already at the right height, as z_tessfaces are normal to z axis.
         x0, y0, z0 = (ix0 - .5) * voxel_size, (iy0 - .5) * voxel_size, iz0 * voxel_size
         x1, y1, z1 = (ix1 + .5) * voxel_size, (iy1 + .5) * voxel_size, iz1 * voxel_size 
-        xbs.append((x0, x1, y0, y1, z0, z1),)
+        xbs.append([x0, x1, y0, y1, z0, z1],)
+        if flat:
+            if normal == "z":
+                for xb in xbs: xb[4] = xb [5] = location[2]
+            elif normal == "y":
+                for xb in xbs: xb[2] = xb [3] = location[1]
+            elif normal == "x":
+                for xb in xbs: xb[0] = xb [1] = location[0]
     return xbs
-
 
 def ob_to_xbs_bbox(context, ob):
     """Return a list of object bounding box XBs and a msg:
@@ -505,6 +559,7 @@ choose_to_geometry = {
         "BBOX"    : (ob_to_xbs_bbox, xbs_bbox_to_mesh,),
         "VOXELS"  : (ob_to_xbs_voxels, xbs_bbox_to_mesh,),
         "FACES"   : (ob_to_xbs_faces, xbs_faces_to_mesh,),
+        "PIXELS"  : (ob_to_xbs_pixels, xbs_bbox_to_mesh,),
         "EDGES"   : (ob_to_xbs_edges, xbs_edges_to_mesh,),
     },
     "xyzs": {
