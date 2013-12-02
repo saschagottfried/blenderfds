@@ -4,50 +4,60 @@ import bpy
 from blenderfds.fds import * # get the reference to the BFNamelist collection
 from blenderfds.lib import fds_surf
 
-class SCENE_PT_BF(): # No bpy.types.Panel, so it's not registered
-    bl_label = "FDS Scene"
+class SCENE_PT_BF():
+    bl_label = "BlenderFDS Case"
+    bl_idname = "SCENE_PT_BF"
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "scene"
+    
+    bf_namelist = None
 
     def draw_header(self, context):
         layout = self.layout
         element = context.scene
-        bf_namelist = bf_namelists[type(self).bf_namelist] # access Class variable and get self bf_namelist object
-        self.bl_label = bf_namelist.draw_header(layout, context, element)
-
-    def draw_extra(self, layout, context, element):
-        pass
+        self.bl_label = bf_namelists[type(self).bf_namelist].draw_header(layout, context, element)
+        
+    def draw(self, context):
+        layout = self.layout
+        element = context.scene
+        # Panel
+        bf_namelists[type(self).bf_namelist].draw(layout, context, element)
+        
+class SCENE_PT_BF_HEAD(SCENE_PT_BF, bpy.types.Panel):
+    bl_idname = "SCENE_PT_BF_HEAD"
+    bf_namelist = "bf_head"
 
     def draw(self, context):
         layout = self.layout
         element = context.scene
-        bf_namelist = bf_namelists[type(self).bf_namelist] # access Class variable and get self bf_namelist object
-        bf_namelist.draw(layout, context, element)
-        self.draw_extra(layout, context, element)
-        
-class SCENE_PT_BF1(SCENE_PT_BF, bpy.types.Panel):
-    bf_namelist = "bf_head"
-
-    def draw_extra(self, layout, context, element):
+        # Draw element messages
+        element.draw_messages(layout, context, element)
+        # Panel
+        bf_namelists[type(self).bf_namelist].draw(layout, context, element)
+        # Other operators
         row = layout.row()
-        row.label(text="")
-        row.operator("scene.bf_props_to_scene")
+        row.label("")
+        row.operator("scene.bf_props_to_scene") 
 
-class SCENE_PT_BF2(SCENE_PT_BF, bpy.types.Panel):
+class SCENE_PT_BF_TIME(SCENE_PT_BF, bpy.types.Panel):
+    bl_idname = "SCENE_PT_BF_TIME"
     bf_namelist = "bf_time"
 
-class SCENE_PT_BF3(SCENE_PT_BF, bpy.types.Panel):
+class SCENE_PT_BF_DUMP(SCENE_PT_BF, bpy.types.Panel):
+    bl_idname = "SCENE_PT_BF_DUMP"
     bf_namelist = "bf_dump"
 
-class SCENE_PT_BF4(SCENE_PT_BF, bpy.types.Panel):
+class SCENE_PT_BF_MISC(SCENE_PT_BF, bpy.types.Panel):
+    bl_idname = "SCENE_PT_BF_MISC"
     bf_namelist = "bf_misc"
 
-class SCENE_PT_BF5(SCENE_PT_BF, bpy.types.Panel):
+class SCENE_PT_BF_REAC(SCENE_PT_BF, bpy.types.Panel):
+    bl_idname = "SCENE_PT_BF_REAC"
     bf_namelist = "bf_reac"
 
 class OBJECT_PT_BF(bpy.types.Panel):
-    bl_label = "FDS Geometric Object"
+    bl_label = "BlenderFDS Geometric Entity"
     bl_idname = "OBJECT_PT_BF"
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
@@ -60,16 +70,48 @@ class OBJECT_PT_BF(bpy.types.Panel):
 
     def draw_header(self, context):
         layout = self.layout
-        element = context.active_object
-        self.bl_label = element.draw_header(layout, context, element)
+        element = context.active_object     
+        # Header for temporary object
+        if   element.bf_is_tmp: self.bl_label = "BlenderFDS Temporary Object"
+        # Header for EMPTY object
+        elif element.type == "EMPTY":
+            layout.prop(element, "bf_export", text="")
+            self.bl_label = "BlenderFDS Empty (Group of namelists)"
+        # Header for MESH object
+        else: self.bl_label = bf_namelists[element.bf_namelist].draw_header(layout, context, element)
 
     def draw(self, context):
         layout = self.layout
         element = context.active_object
-        element.draw(layout, context, element)
+        # Draw element messages
+        element.draw_messages(layout, context, element)
+        # Panel for temporary object
+        if element.bf_is_tmp:
+            layout.operator("scene.bf_del_all_tmp_objects")
+            return
+        # Panel for EMPTY object
+        if element.type == "EMPTY":
+            bf_props["bf_id"].draw(layout, context, element)
+            bf_props["bf_fyi"].draw(layout, context, element)
+            return
+        # Panel for MESH object
+        if element.type == "MESH":
+            split = layout.split(.6)  # namelist
+            split.prop(element, "bf_namelist", text="")
+            row = split.row(align=True)  # aspect
+            row.prop(element, "show_transparent", icon="GHOST", text="")
+            row.prop(element, "draw_type", text="")
+            row.prop(element, "hide", text="")
+            row.prop(element, "hide_select", text="")
+            row.prop(element, "hide_render", text="")
+            bf_namelists[element.bf_namelist].draw(layout, context, element)
+            row = layout.row()
+            if element.bf_has_tmp: row.operator("scene.bf_del_all_tmp_objects")
+            else: row.operator("object.bf_show_fds_geometries")
+            row.operator("object.bf_props_to_sel_obs")
 
 class MATERIAL_PT_BF(bpy.types.Panel):
-    bl_label = "FDS Boundary Condition"
+    bl_label = "BlenderFDS Boundary Condition"
     bl_idname = "MATERIAL_PT_BF"
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
@@ -84,25 +126,22 @@ class MATERIAL_PT_BF(bpy.types.Panel):
     def draw_header(self, context):
         layout = self.layout
         element = context.material
-        # Header for normal element
-        bf_namelist = bf_namelists[element.bf_namelist] # get self bf_namelist object from element
-        self.bl_label = bf_namelist.draw_header(layout, context, element)
- 
+        self.bl_label = bf_namelists[element.bf_namelist].draw_header(layout, context, element)
+
     def draw(self, context):
         layout = self.layout
         element = context.material
-        # Panel for normal element
-        # Static part of the panel
+        # Draw element messages
+        element.draw_messages(layout, context, element)
+        # Panel
         split = layout.split(.7) # namelist
         split.prop(element, "bf_namelist", text="")
         row = split.row(align=True) # aspect
         row.prop(element, "diffuse_color", text="")
         row.prop(element, "alpha", text="")
-        # Dynamic part of the panel
-        bf_namelist = bf_namelists[element.bf_namelist] # get self bf_namelist object from element
-        bf_namelist.draw(layout, context, element)
-        # Static part of the panel
+        bf_namelists[element.bf_namelist].draw(layout, context, element)
+        # Other operators
         row = layout.row()
         if fds_surf.has_predefined: row.label("")
         else: row.operator("material.bf_set_predefined", icon="WARNING")
-        row.operator("material.bf_surf_to_sel_obs")        
+        row.operator("material.bf_surf_to_sel_obs") 

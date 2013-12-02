@@ -59,7 +59,7 @@ def set_balanced_center_position(context, ob):
     bpy.ops.object.select_all(action='DESELECT')
     ob.select = True
     bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY')
-    active_ob.select = True
+    if active_ob: active_ob.select = True
 
 ### Working on Blender materials
 

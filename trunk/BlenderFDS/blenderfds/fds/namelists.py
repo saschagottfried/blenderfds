@@ -103,6 +103,7 @@ BFNamelist(
     bf_prop_export = "bf_export",
     bf_props = ("bf_id", "bf_fyi", "bf_surf_id", "bf_xb_solid",),
     bf_prop_custom = "bf_custom",
+    bf_other = {"show_transparent": True},
 )
 
 BFNamelist(
@@ -115,7 +116,7 @@ BFNamelist(
     bf_prop_export = "bf_export",
     bf_props = ("bf_id", "bf_fyi", "bf_xb_solid",),
     bf_prop_custom = "bf_custom",
-    bf_other = {"draw_type": "WIRE"},
+    bf_other = {"draw_type": "WIRE", "show_transparent": True},
 )
 
 BFNamelist(
@@ -128,6 +129,7 @@ BFNamelist(
     bf_prop_export = "bf_export",
     bf_props = ("bf_id", "bf_fyi", "bf_surf_id", "bf_xb_faces", "bf_xyz", "bf_pb",),
 	bf_prop_custom = "bf_custom",
+    bf_other = {"show_transparent": True},
 )
 
 BFNamelist(
@@ -140,6 +142,7 @@ BFNamelist(
     bf_prop_export = "bf_export",
     bf_props = ("bf_id", "bf_fyi", "bf_quantity", "bf_devc_setpoint", "bf_devc_initial_state", "bf_devc_latch", "bf_devc_prop_id", "bf_xb", "bf_xyz",),
     bf_prop_custom = "bf_custom",
+    bf_other = {"show_transparent": True},
 )
 
 BFNamelist(
@@ -152,7 +155,7 @@ BFNamelist(
     bf_prop_export = "bf_export",
     bf_props = ("bf_id", "bf_fyi", "bf_quantity", "bf_slcf_vector", "bf_xb_faces", "bf_pb",),
     bf_prop_custom = "bf_custom",
-    bf_other = {"hide": True},
+    bf_other = {"hide": True, "show_transparent": True},
 )
 
 BFNamelist(
@@ -206,7 +209,13 @@ BFNamelist(
     bf_other = {"draw_type": "WIRE", "hide": True},
 )
 
-BFNamelist(
+class BFNamelistCustom(BFNamelist):
+    def _draw_body(self, layout, context, element):
+        # Invert drawing order
+        if self.bf_prop_custom: self.bf_prop_custom.draw(layout, context, element)
+        for bf_prop in self.bf_props or tuple(): bf_prop.draw(layout, context, element)
+
+BFNamelistCustom(
     idname = "bf_custom",
     label = "Custom namelist",
     description = None,
@@ -214,8 +223,9 @@ BFNamelist(
     enum_id = 1007,
     bpy_type = bpy.types.Object,
     bf_prop_export = "bf_export",
-    bf_props = ("bf_custom_namelist", "bf_id", "bf_fyi", "bf_surf_id", "bf_xb", "bf_xyz", "bf_pb",),
-    bf_prop_custom = None,
+    bf_props = ("bf_id", "bf_fyi", "bf_surf_id", "bf_xb", "bf_xyz", "bf_pb",),
+    bf_prop_custom = "bf_custom_namelist",
+    bf_other = {"show_transparent": True},
 )
 
 ### Material namelists
