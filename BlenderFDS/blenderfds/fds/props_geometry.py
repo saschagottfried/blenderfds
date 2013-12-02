@@ -154,9 +154,9 @@ BFPropXB(
     items = (
         ("NONE", "None", "Not exported", 0),
         ("BBOX", "BBox", "Use object bounding box", 100),
-        ("VOXELS", "Voxels", "Export voxels from voxelized solid", 200),
+        ("VOXELS", "Voxels", "Export voxels from voxelized solid object", 200),
         ("FACES", "Faces", "Faces, one for each face of this object", 300),
-        ("PIXELS", "Pixels", "Export pixels from pixelized surface", 400),
+        ("PIXELS", "Pixels", "Export pixels from pixelized flat object", 400),
         ("EDGES", "Edges", "Segments, one for each edge of this object", 500),
         ),
     update = update_bf_xb,

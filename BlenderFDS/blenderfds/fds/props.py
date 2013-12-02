@@ -437,13 +437,15 @@ class BFPropSURFID(BFProp):
 
     def set_value(self, context, element, value):
         element.active_material = geometry.get_material(str(value))
+        print(value, element.active_material.name) # FIXME
         
-    def _draw_body(self, layout, context, element):
-        row = layout.row()
-        row.prop_search(element, self.bpy_idname, bpy.data, "materials", text="SURF_ID")
+#    def _draw_body(self, layout, context, element): FIXME
+#        row = layout.row()
+#        row.prop_search(element, self.bpy_idname, bpy.data, "materials", text="SURF_ID")
 
 BFPropSURFID(
     idname = "bf_surf_id",
+    label = "SURF_ID",
     description = "Reference to SURF",
     fds_label = "SURF_ID",
     bpy_idname = "active_material",

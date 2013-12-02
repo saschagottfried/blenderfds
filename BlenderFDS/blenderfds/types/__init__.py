@@ -2,6 +2,7 @@
 
 from .collections import *
 from .interfaces import *
+from .extensions import *
 from .results import *
 
 # Define public interface

@@ -3,7 +3,7 @@
 import bpy
 from .props import bf_props
 from .namelists import bf_namelists
-from blenderfds.types.interfaces import update_ob_bf_namelist
+from blenderfds.types.extensions import update_ob_bf_namelist
 
 # List all bf_namelist.enumproperty_item except for empty ones
 def _get_items(bpy_type):
