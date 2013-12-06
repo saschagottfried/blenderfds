@@ -53,7 +53,7 @@ BFPropFYI(
     bpy_idname = "bf_fyi", # BFDS system bpy property
 )
 
-class BFPropCustom(BFProp):
+class BFPropFree(BFProp):
     def get_value(self, context, element):
         value = super().get_value(context, element)
         if not value: return
@@ -72,13 +72,11 @@ class BFPropCustom(BFProp):
     def _format_value(self, context, element, value) -> "str or None":
         if value: return str(value)
 
-BFPropCustom(
-    idname = "bf_custom",
-    label = "Custom",
-    description = "Custom parameters, use matched single quotes as string delimiters, eg ABC='example'",
-    bpy_idname = "bf_custom",
-    bpy_prop = bpy.props.StringProperty,
-    maxlen = 1024,
+BFPropFree(
+    idname = "bf_free",
+    label = "Free Parameters",
+    description = "Free parameters, use matched single quotes as string delimiters, eg ABC='example'",
+    bpy_idname = "bf_free", # system property
 )
 
 ### Scene
@@ -134,14 +132,14 @@ class BFPropText(BFProp):
     def _draw_body(self, layout, context, element):
         row = layout.row(align=True)
         row.prop_search(element, self.bpy_idname, bpy.data, "texts")
-        row.operator("scene.bf_edit_head_custom_text", icon="FILESEL", text="")
+        row.operator("scene.bf_edit_head_free_text", icon="FILESEL", text="")
 
 BFPropText(
-    idname = "bf_head_custom_text",
-    label = "Custom Text",
-    description = "Name of custom text file inserted into the exported FDS case",
+    idname = "bf_head_free_text",
+    label = "Free Text File",
+    description = "Name of free text file inserted into the exported FDS case",
     flags = NOEXPORT | ACTIVEUI,
-    bpy_idname = "bf_head_custom_text",
+    bpy_idname = "bf_head_free_text",
     bpy_prop = bpy.props.StringProperty,
 )
 
@@ -178,7 +176,7 @@ BFPropTEND(
 )
 
 class BFPropTimeSetupOnly(BFProp):
-    def get_res(self, context, element, ui=False):
+    def get_my_res(self, context, element, ui=False):
         # if SMV setup only, bf_time_t_end = bf_time_t_begin
         if element.bf_time_setup_only and not ui:
             return BFResult(
@@ -196,11 +194,11 @@ BFPropTimeSetupOnly(
     default = False,
 )
 
-BFPropCustom(
-    idname = "bf_time_custom",
-    label = "Custom",
-    description = "Custom parameters, use matched single quotes as string delimiters, eg ABC='example'",
-    bpy_idname = "bf_time_custom",
+BFPropFree(
+    idname = "bf_time_free",
+    label = "Free Parameters",
+    description = "Free parameters, use matched single quotes as string delimiters, eg ABC='example'",
+    bpy_idname = "bf_time_free",
     bpy_prop = bpy.props.StringProperty,
     maxlen = 1024,
 )
@@ -223,7 +221,7 @@ BFPropDumpRenderFile(
 )
 
 class BFPropNFRAMES(BFProp):
-    def get_res(self, context, element, ui=False):
+    def get_my_res(self, context, element, ui=False):
         if not self.get_exported(context, element): return None
         return BFResult(
             sender = self,
@@ -245,20 +243,20 @@ BFPropNFRAMES(
     default = 1000,
 )
 
-BFPropCustom(
-    idname = "bf_dump_custom",
-    label = "Custom",
-    description = "Custom parameters, use matched single quotes as string delimiters, eg ABC='example'",
-    bpy_idname = "bf_dump_custom",
+BFPropFree(
+    idname = "bf_dump_free",
+    label = "Free Parameters",
+    description = "Free parameters, use matched single quotes as string delimiters, eg ABC='example'",
+    bpy_idname = "bf_dump_free",
     bpy_prop = bpy.props.StringProperty,
     maxlen = 1024,
 )
 
-BFPropCustom(
-    idname = "bf_misc_custom",
-    label = "Custom",
-    description = "Custom parameters, use matched single quotes as string delimiters, eg ABC='example'",
-    bpy_idname = "bf_misc_custom",
+BFPropFree(
+    idname = "bf_misc_free",
+    label = "Free Parameters",
+    description = "Free parameters, use matched single quotes as string delimiters, eg ABC='example'",
+    bpy_idname = "bf_misc_free",
     bpy_prop = bpy.props.StringProperty,
     maxlen = 1024,
 )
@@ -348,11 +346,11 @@ BFProp(
     default = False,
 )
 
-BFPropCustom(
-    idname = "bf_reac_custom",
-    label = "Custom",
-    description = "Custom parameters, use matched single quotes as string delimiters, eg ABC='example'",
-    bpy_idname = "bf_reac_custom",
+BFPropFree(
+    idname = "bf_reac_free",
+    label = "Free Parameters",
+    description = "Free parameters, use matched single quotes as string delimiters, eg ABC='example'",
+    bpy_idname = "bf_reac_free",
     bpy_prop = bpy.props.StringProperty,
     maxlen = 1024,
 )
@@ -436,13 +434,8 @@ class BFPropSURFID(BFProp):
         if element.active_material: return element.active_material.name
 
     def set_value(self, context, element, value):
-        element.active_material = geometry.get_material(str(value))
-        print(value, element.active_material.name) # FIXME
+        element.active_material = geometry.get_material(context, str(value))
         
-#    def _draw_body(self, layout, context, element): FIXME
-#        row = layout.row()
-#        row.prop_search(element, self.bpy_idname, bpy.data, "materials", text="SURF_ID")
-
 BFPropSURFID(
     idname = "bf_surf_id",
     label = "SURF_ID",
@@ -515,7 +508,7 @@ BFProp(
 )
 
 class BFPropIJK(BFProp):
-    def get_res(self, context, element, ui=False):
+    def get_my_res(self, context, element, ui=False):
         if not self.get_exported(context, element): return None
         # Init
         has_good_ijk, cell_sizes, cell_number, cell_aspect_ratio  = fds_mesh.get_cell_infos(context, element)
@@ -548,7 +541,7 @@ BFPropIJK(
     min = 1,
 )
 
-class BFPropCustomNamelist(BFPropCustom):    
+class BFPropFreeNamelist(BFPropFree):    
     def get_value(self, context, element):
         value = super().get_value(context, element)
         if not value: return
@@ -562,13 +555,11 @@ class BFPropCustomNamelist(BFPropCustom):
         if err_msgs: raise BFException(sender=self, msgs=err_msgs)
         return value
     
-BFPropCustomNamelist(
-    idname = "bf_custom_namelist",
-    label = "Custom",
-    description = "Custom namelist and parameters, & and / not needed, use matched single quotes as string delimiters, eg OBST PROP1='example'",
-    bpy_idname = "bf_custom",
-    bpy_prop = bpy.props.StringProperty,
-    maxlen = 1024,
+BFPropFreeNamelist(
+    idname = "bf_free_namelist",
+    label = "Free Namelist",
+    description = "Free namelist and parameters, & and / not needed, use matched single quotes as string delimiters, eg OBST PROP1='example'",
+    bpy_idname = "bf_free", # system property
 )
 
 ### Material
@@ -671,7 +662,7 @@ BFProp(
 )
 
 class BFPropTAUQ(BFProp):
-    def get_res(self, context, element, ui=False):
+    def get_my_res(self, context, element, ui=False):
         if not self.get_exported(context, element): return None
         return BFResult(
             sender = self,

@@ -92,11 +92,11 @@ class OBJECT_OT_bf_correct_ijk(bpy.types.Operator):
 def bpy_props_copy(context, source_element, destination_elements):
     """Copy all bpy_props from source_element to destination_elements"""
     # Copy bf_namelist, if present (Scene does not have it)
-    try: bf_namelist = source_element.bf_namelist
+    try: bf_namelist_idname = source_element.bf_namelist_idname
     except AttributeError: pass
     else:
         for destination_element in destination_elements:
-            destination_element.bf_namelist = bf_namelist
+            destination_element.bf_namelist_idname = bf_namelist_idname
     # Copy all other bf_props
     for bf_prop in bf_props:
         if bf_prop.bpy_idname == "name": continue # Do not copy ID and CHID
@@ -246,22 +246,22 @@ def _open_text_in_editor(context, text_name):
         area_te.spaces[0].text = bpy.data.texts[text_name]
     # Move cursor to first line FIXME
     
-class SCENE_OT_bf_edit_head_custom_text(bpy.types.Operator):
+class SCENE_OT_bf_edit_head_free_text(bpy.types.Operator):
     bl_label = "Edit"
-    bl_idname = "scene.bf_edit_head_custom_text"
-    bl_description = "Edit custom text file in separate editor"
+    bl_idname = "scene.bf_edit_head_free_text"
+    bl_description = "Edit free text file in separate editor"
 
     def execute(self, context):
         sc = context.scene
         # Check
-        if not sc.bf_head_custom_text:
-            sc.bf_head_custom_text = "Custom text"
-            bpy.data.texts.new(sc.bf_head_custom_text)
-        if not sc.bf_head_custom_text in bpy.data.texts:
-            self.report({"ERROR"}, "'{}' text not existing".format(sc.bf_head_custom_text))
+        if not sc.bf_head_free_text:
+            sc.bf_head_free_text = "Free text"
+            bpy.data.texts.new(sc.bf_head_free_text)
+        if not sc.bf_head_free_text in bpy.data.texts:
+            self.report({"ERROR"}, "'{}' text not existing".format(sc.bf_head_free_text))
             return{'CANCELLED'}
         # Edit
-        _open_text_in_editor(context, sc.bf_head_custom_text)
+        _open_text_in_editor(context, sc.bf_head_free_text)
         self.report({"INFO"}, "Text Editor open")
         return {'FINISHED'}
 
