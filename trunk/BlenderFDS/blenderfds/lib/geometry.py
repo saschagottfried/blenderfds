@@ -63,14 +63,14 @@ def set_balanced_center_position(context, ob):
 
 ### Working on Blender materials
 
-def get_new_material(name="Material"):
+def get_new_material(context, name="Material"):
     """Create new material, named name."""
     return bpy.data.materials.new(name)
 
-def get_material(name="Material"):
+def get_material(context, name="Material"):
     """Get or create material and return it"""
     if name not in bpy.data.materials:
-        return get_new_material(name)
+        return get_new_material(context, name)
     return bpy.data.materials[name]
 
 ### Working on Blender meshes
@@ -128,6 +128,7 @@ def set_tmp_object(context, ob, ob_tmp):
 def ob_to_none(context, ob):
     return None, None
 
+# FIXME clean up
 def ob_to_xbs_pixels(context, ob):
     """Return a list of object flat voxels XBs and a msg:
     ((x0,x0,y0,y1,z0,z1,), ...), "Message"."""
@@ -137,20 +138,20 @@ def ob_to_xbs_pixels(context, ob):
     voxel_size = ob.bf_xb_voxel_size
     ob_tmp = _get_absolute_tmp_object(context, ob)
 
-    if not ob_tmp.data.vertices: return None, "Empty object. No flat voxel created."
+    if not ob_tmp.data.vertices: return None, "Empty object. No pixel created."
     location = ob_tmp.data.vertices[0].co
 
     if   not ob_tmp.dimensions[0]: normal = "x" # normal to x
     elif not ob_tmp.dimensions[1]: normal = "y" # normal to y
     elif not ob_tmp.dimensions[2]: normal = "z" # normal to z
-    else: return None, "Object is not flat and normal to an axis. No flat voxel created."
+    else: return None, "Object is not flat and normal to an axis. No pixel created."
 
     _apply_solidify_modifier(context, ob_tmp, thickness=.02)
     _apply_remesh_modifier(context, ob_tmp, voxel_size)
 
     me_tmp = get_global_mesh(context, ob_tmp)
     tessfaces = get_tessfaces(context, me_tmp)
-    if not tessfaces: return None, "No flat voxel created"
+    if not tessfaces: return None, "No pixel created"
 
     # Clean unneeded tmp object and tmp mesh
     bpy.data.objects.remove(ob_tmp)
@@ -166,7 +167,7 @@ def ob_to_xbs_pixels(context, ob):
     xbs = _boxes_to_xbs(boxes, voxel_size, flat=True, normal=normal, location=location)
 
     # Return
-    msg = len(xbs) > 1 and "{0} flat voxels of size {1:.3f} m, in {2:.3f} s".format(len(xbs), voxel_size, time() - t0) or None
+    msg = len(xbs) > 1 and "{0} pixels, normal to {1} axis, size {2:.3f} m, in {3:.3f} s".format(len(xbs), normal, voxel_size, time() - t0) or None
     return xbs, msg
 
 def ob_to_xbs_voxels(context, ob):
@@ -192,7 +193,7 @@ def ob_to_xbs_voxels(context, ob):
     # Prepare XBs
     xbs = _boxes_to_xbs(boxes, voxel_size)
     # Return
-    msg = len(xbs) > 1 and "{0} voxels of size {1:.3f} m, in {2:.3f} s".format(len(xbs), voxel_size, time() - t0) or None
+    msg = len(xbs) > 1 and "{0} voxels, size {1:.3f} m, in {2:.3f} s".format(len(xbs), voxel_size, time() - t0) or None
     return xbs, msg
 
 def _get_absolute_tmp_object(context, ob):

@@ -11,22 +11,22 @@ class SCENE_PT_BF():
     bl_region_type = 'WINDOW'
     bl_context = "scene"
     
-    bf_namelist = None
+    bf_namelist_idname = None
 
     def draw_header(self, context):
         layout = self.layout
         element = context.scene
-        self.bl_label = bf_namelists[type(self).bf_namelist].draw_header(layout, context, element)
+        self.bl_label = bf_namelists[type(self).bf_namelist_idname].draw_header(layout, context, element)
         
     def draw(self, context):
         layout = self.layout
         element = context.scene
         # Panel
-        bf_namelists[type(self).bf_namelist].draw(layout, context, element)
+        bf_namelists[type(self).bf_namelist_idname].draw(layout, context, element)
         
 class SCENE_PT_BF_HEAD(SCENE_PT_BF, bpy.types.Panel):
     bl_idname = "SCENE_PT_BF_HEAD"
-    bf_namelist = "bf_head"
+    bf_namelist_idname = "bf_head"
 
     def draw(self, context):
         layout = self.layout
@@ -34,7 +34,7 @@ class SCENE_PT_BF_HEAD(SCENE_PT_BF, bpy.types.Panel):
         # Draw element messages
         element.draw_messages(layout, context, element)
         # Panel
-        bf_namelists[type(self).bf_namelist].draw(layout, context, element)
+        bf_namelists[type(self).bf_namelist_idname].draw(layout, context, element)
         # Other operators
         row = layout.row()
         row.label("")
@@ -42,19 +42,19 @@ class SCENE_PT_BF_HEAD(SCENE_PT_BF, bpy.types.Panel):
 
 class SCENE_PT_BF_TIME(SCENE_PT_BF, bpy.types.Panel):
     bl_idname = "SCENE_PT_BF_TIME"
-    bf_namelist = "bf_time"
+    bf_namelist_idname = "bf_time"
 
 class SCENE_PT_BF_DUMP(SCENE_PT_BF, bpy.types.Panel):
     bl_idname = "SCENE_PT_BF_DUMP"
-    bf_namelist = "bf_dump"
+    bf_namelist_idname = "bf_dump"
 
 class SCENE_PT_BF_MISC(SCENE_PT_BF, bpy.types.Panel):
     bl_idname = "SCENE_PT_BF_MISC"
-    bf_namelist = "bf_misc"
+    bf_namelist_idname = "bf_misc"
 
 class SCENE_PT_BF_REAC(SCENE_PT_BF, bpy.types.Panel):
     bl_idname = "SCENE_PT_BF_REAC"
-    bf_namelist = "bf_reac"
+    bf_namelist_idname = "bf_reac"
 
 class OBJECT_PT_BF(bpy.types.Panel):
     bl_label = "BlenderFDS Geometric Entity"
@@ -78,7 +78,7 @@ class OBJECT_PT_BF(bpy.types.Panel):
             layout.prop(element, "bf_export", text="")
             self.bl_label = "BlenderFDS Empty (Group of namelists)"
         # Header for MESH object
-        else: self.bl_label = bf_namelists[element.bf_namelist].draw_header(layout, context, element)
+        else: self.bl_label = bf_namelists[element.bf_namelist_idname].draw_header(layout, context, element)
 
     def draw(self, context):
         layout = self.layout
@@ -97,14 +97,14 @@ class OBJECT_PT_BF(bpy.types.Panel):
         # Panel for MESH object
         if element.type == "MESH":
             split = layout.split(.6)  # namelist
-            split.prop(element, "bf_namelist", text="")
+            split.prop(element, "bf_namelist_idname", text="")
             row = split.row(align=True)  # aspect
             row.prop(element, "show_transparent", icon="GHOST", text="")
             row.prop(element, "draw_type", text="")
             row.prop(element, "hide", text="")
             row.prop(element, "hide_select", text="")
             row.prop(element, "hide_render", text="")
-            bf_namelists[element.bf_namelist].draw(layout, context, element)
+            bf_namelists[element.bf_namelist_idname].draw(layout, context, element)
             row = layout.row()
             if element.bf_has_tmp: row.operator("scene.bf_del_all_tmp_objects")
             else: row.operator("object.bf_show_fds_geometries")
@@ -126,7 +126,7 @@ class MATERIAL_PT_BF(bpy.types.Panel):
     def draw_header(self, context):
         layout = self.layout
         element = context.material
-        self.bl_label = bf_namelists[element.bf_namelist].draw_header(layout, context, element)
+        self.bl_label = bf_namelists[element.bf_namelist_idname].draw_header(layout, context, element)
 
     def draw(self, context):
         layout = self.layout
@@ -135,11 +135,11 @@ class MATERIAL_PT_BF(bpy.types.Panel):
         element.draw_messages(layout, context, element)
         # Panel
         split = layout.split(.7) # namelist
-        split.prop(element, "bf_namelist", text="")
+        split.prop(element, "bf_namelist_idname", text="")
         row = split.row(align=True) # aspect
         row.prop(element, "diffuse_color", text="")
         row.prop(element, "alpha", text="")
-        bf_namelists[element.bf_namelist].draw(layout, context, element)
+        bf_namelists[element.bf_namelist_idname].draw(layout, context, element)
         # Other operators
         row = layout.row()
         if fds_surf.has_predefined: row.label("")

@@ -77,7 +77,8 @@ def tokenize(fds_file):
             fds_original = "=".join((fds_label, fds_value))
             # Translate value from FDS to Py
             try: fds_value = eval(choose_fds_to_py.get(fds_value, fds_value))
-            except: raise ValueError("BFDS: fds_to_py.tokenize: '{}' parameter evaluation error:\n<{}>".format(fds_label, fds_original))
+            except:
+                print("BFDS: fds_to_py.tokenize: '{}' parameter evaluation error:\n<{}>".format(fds_label, fds_original))
             # Append
             params.append((fds_original, fds_label, fds_value))
         # Update extracted

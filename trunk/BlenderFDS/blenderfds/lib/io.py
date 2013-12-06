@@ -87,7 +87,7 @@ def load(operator, context, filepath=""):
     if DEBUG: print("BFDS: io.load: importing.")
     try: context.scene.from_fds(context=context, value=bpy.data.texts[-1].as_string(), progress=True)
     except BFException as err:
-        operator.report({"ERROR"}, "Errors reported, check custom text file")
+        operator.report({"ERROR"}, "Errors reported, check free text file")
         return {'CANCELLED'}
 
     # End

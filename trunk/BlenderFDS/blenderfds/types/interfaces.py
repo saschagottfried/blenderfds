@@ -19,10 +19,10 @@ class BFCommon(BFAutoItem):
     description -- UI help text. Type: string, None. Eg: "For your information"
     enum_id -- Instance unique numeric id for EnumProperty item. Type: int, never None. Eg: "1023"    
     flags -- define specific behaviours, see types.flags. Eg: NOUI | NOEXPORT
-    fds_label -- FDS label. Type: string, if None this is a custom property. Eg: "ID"
+    fds_label -- FDS label. Type: string, if None this is a free property. Eg: "ID"
     bf_props -- List of related BFProp idnames. Type: tuple of strings, None.
     bf_prop_export -- idname of related export BFProp. Type: string, None. Eg: "bf_fyi_export"
-    bf_prop_custom -- idname of related custom BFProp. Type: string, None. Eg: "bf_fyi_custom"
+    bf_prop_free -- idname of related free BFProp. Type: string, None. Eg: "bf_fyi_free"
     bf_other -- Other optional BlenderFDS parameters. Type: dict, None. Eg: "{'prop1': value1, 'prop2': value2}"
     bpy_type -- Blender type of self. Eg: bpy.types.Scene, bpy.types.Object, bpy.types.Material
     bpy_idname -- idname of related Blender property. Type: string, None. Eg: "bf_fyi" or "name".
@@ -32,7 +32,7 @@ class BFCommon(BFAutoItem):
     bf_list = BFList() # contains all instances of this class
 
     def __init__(self, idname, label=None, description=None, enum_id=0, flags=0, \
-        fds_label=None, bf_props=None, bf_prop_export=None, bf_prop_custom=None, bf_other=None, \
+        fds_label=None, bf_props=None, bf_prop_export=None, bf_prop_free=None, bf_other=None, \
         bpy_type=None, bpy_idname=None, bpy_prop=None, **kwargs):
         # Check enum_id unicity
         if enum_id and enum_id in (item.enum_id for item in self.bf_list):
@@ -63,9 +63,9 @@ class BFCommon(BFAutoItem):
                     default = False,
                     )
         else: self.bf_prop_export = None
-        # Set custom BFProp: transform idname in BFProp, do not create default it shall exist
-        if bf_prop_custom: self.bf_prop_custom = BFProp.bf_list[bf_prop_custom]
-        else: self.bf_prop_custom = None
+        # Set free BFProp: transform idname in BFProp, do not create default it shall exist
+        if bf_prop_free: self.bf_prop_free = BFProp.bf_list[bf_prop_free]
+        else: self.bf_prop_free = None
         # Set bf_other
         self.bf_other = bf_other
         # Set related Blender property
@@ -73,16 +73,16 @@ class BFCommon(BFAutoItem):
         self.bpy_prop = bpy_prop
         self.bpy_other = kwargs
 
-    # Register/Unregister (me, each from self.bf_props, self.bf_prop_export, self.bf_prop_custom)
+    # Register/Unregister (me, each from self.bf_props, self.bf_prop_export, self.bf_prop_free)
 
     def register(self, bpy_type=None):
         """Register all related Blender properties."""
         # Get bpy_type: mine or that sent as parameter from caller object
         if not bpy_type: bpy_type = self.bpy_type
-        # Register children, export and custom
+        # Register children, export and free BFProp
         for child in self.children: child.register(bpy_type)
         if self.bf_prop_export: self.bf_prop_export.register(bpy_type)
-        if self.bf_prop_custom: self.bf_prop_custom.register(bpy_type)
+        if self.bf_prop_free: self.bf_prop_free.register(bpy_type)
         # Register my own Blender property
         if self.bpy_prop and self.bpy_idname:
             if DEBUG: print("BFDS: BFCommon.register:", bpy_type, self.bpy_idname) 
@@ -93,10 +93,10 @@ class BFCommon(BFAutoItem):
         """Unregister all related Blender properties."""
         # Get bpy_type: mine or that sent as parameter from caller object
         if not bpy_type: bpy_type = self.bpy_type
-        # Unregister children, export and custom
+        # Unregister children, export and free BFProp
         for child in self.children: child.unregister(bpy_type)
         if self.bf_prop_export: self.bf_prop_export.unregister(bpy_type)
-        if self.bf_prop_custom: self.bf_prop_custom.unregister(bpy_type)
+        if self.bf_prop_free: self.bf_prop_free.unregister(bpy_type)
         # and unregister my own Blender property
         if self.bpy_idname:
             if DEBUG: print("BFDS: BFCommon.unregister:", bpy_type, self.bpy_idname) 
@@ -137,7 +137,7 @@ class BFCommon(BFAutoItem):
         """Get my children, bf_prop_export is not a children."""
         children = BFList()
         if self.bf_props: children.extend(self.bf_props) # self.bf_props could be None
-        if self.bf_prop_custom: children.append(self.bf_prop_custom) # self.bf_prop_custom could be None
+        if self.bf_prop_free: children.append(self.bf_prop_free) # self.bf_prop_free could be None
         return children
     
     children = property(_get_children)
@@ -307,7 +307,7 @@ class BFProp(BFCommon):
         """Format value in FDS notation for me. On error raise BFException."""
         # Expected output:
         #   ID='example' or PI=3.14 or COLOR=3,4,5
-        # Custom parameters (no self.fds_label) needs special treatment in fds.props or fds.props_geometry
+        # Free parameters (no self.fds_label) needs special treatment in fds.props or fds.props_geometry
         if value is None: return None
         # If value is not an iterable, then put it in a tuple
         if not isiterable(value): values = tuple((value,)) 
@@ -319,15 +319,20 @@ class BFProp(BFCommon):
         else: value = ",".join("'{}'".format(value) for value in values)
         return "=".join((self.fds_label, value))
 
-    # There is no get_my_res
-
-    def get_res(self, context, element, ui=False) -> "BFResult or None":
-        """Get BFResult. On error raise BFException."""
+    def get_my_res(self, context, element, ui=False) -> "BFResult or None":
+        """Get my BFResult. On error raise BFException."""
         if not self.get_exported(context, element): return None
-        res = BFResult(sender=self,)
+        res = BFResult(
+            sender = self,
+            msg = DEBUG and "Debug message from BFProp.get_my_res of '{}'".format(self.idname) or None, 
+        )
         value = self.get_value(context, element)
         if not ui: res.value = self._format_value(context, element, value)
         return res
+
+    def get_res(self, context, element, ui=False) -> "BFResult or None":
+        """Get full BFResult (children and mine). On error raise BFException."""
+        return self.get_my_res(context, element, ui)    
 
     # Import
 
@@ -357,14 +362,14 @@ class BFNamelist(BFCommon):
     bf_list = BFList() # contains all instances of this class
 
     def __init__(self, idname, label=None, description=None, enum_id=0, flags=0, \
-        fds_label=None, bf_props=None, bf_prop_export=None, bf_prop_custom=None, bf_other=None, \
+        fds_label=None, bf_props=None, bf_prop_export=None, bf_prop_free=None, bf_other=None, \
         bpy_type=None):
         # Parent class, partially use its features
         BFCommon.__init__(self, idname=idname, label=label, description=description, enum_id=enum_id, flags=flags, \
-            fds_label=fds_label, bf_props=bf_props, bf_prop_export=bf_prop_export, bf_prop_custom=bf_prop_custom, bf_other=bf_other, \
+            fds_label=fds_label, bf_props=bf_props, bf_prop_export=bf_prop_export, bf_prop_free=bf_prop_free, bf_other=bf_other, \
             bpy_type=bpy_type)
 
-    # UI: draw panel (me, self.bf_prop_export, self.bf_props, self.bf_prop_custom)
+    # UI: draw panel (me, self.bf_prop_export, self.bf_props, self.bf_prop_free)
     # Override methods for custom panel
     
     def draw_header(self, layout, context, element):
@@ -381,7 +386,7 @@ class BFNamelist(BFCommon):
     def _draw_body(self, layout, context, element):
         """Draw panel body."""
         for bf_prop in self.bf_props or tuple(): bf_prop.draw(layout, context, element)
-        if self.bf_prop_custom: self.bf_prop_custom.draw(layout, context, element)
+        if self.bf_prop_free: self.bf_prop_free.draw(layout, context, element)
 
     def draw(self, layout, context, element):
         """Draw Blender panel."""
@@ -422,7 +427,7 @@ class BFNamelist(BFCommon):
                 # Each multivalue contains its multi ID, then remove ordinary single ID sent by "bf_id"
                 children_res.remove(children_res["bf_id"])
                 break
-        # Set fds_label: use self.fds_label or last children_res value, that should be bf_custom
+        # Set fds_label: use self.fds_label or last children_res value, that should be bf_free
         # When using last children value, remove child from BFList 
         if self.fds_label: fds_label = self.fds_label
         else: fds_label = children_res.pop().value
@@ -451,7 +456,7 @@ class BFNamelist(BFCommon):
             Eg: (("ID='example'", "ID", "example"), ("XB=...", "XB", (1., 2., 3., 4., 5., 6.,)), ...)
         """
         # Init
-        if DEBUG: print("BFDS: BFNamelist.from_fds:", self.idname, element.name, "\n", tokens)
+        if DEBUG: print("BFDS: BFNamelist.from_fds: <{}>, <{}>\n".format(self.idname, element.name), tokens)
         if not tokens: return
         # Order tokens: SURF_ID needs a working mesh, so treat last
         tokens.sort(key=lambda k:k[1]==("SURF_ID")) # Order is: False then True
@@ -462,8 +467,8 @@ class BFNamelist(BFCommon):
             if "draw_type" in self.bf_other: element.draw_type = self.bf_other["draw_type"]
             if "hide" in self.bf_other: element.hide = self.bf_other["hide"]
             if "hide_select" in self.bf_other: element.hide_select = self.bf_other["hide_select"]
-        # For each token set corresponding descendant or custom_texts
-        err_msgs, custom_texts = list(), list()
+        # For each token set corresponding descendant or free_texts
+        err_msgs, free_texts = list(), list()
         for token in tokens:
             fds_original, fds_label, fds_value = token
             is_token_imported = False
@@ -479,12 +484,12 @@ class BFNamelist(BFCommon):
             # Check if import was succesful
             if not is_token_imported:
                 # The token could not be imported because of a raised exception or corresponding descendant not found,
-                # so pile the original token into custom_texts.
-                custom_texts.append(fds_original)
-                print("BFDS: BFNamelist.from_fds: to custom param:\n ", fds_original) 
-        # Set final bf_prop_custom. If no self.bf_prop_custom, then the saved fds_origins are lost
-        if custom_texts and self.bf_prop_custom:
-            self.bf_prop_custom.set_value(context, element, " ".join(custom_texts))
+                # so pile the original token into free_texts.
+                free_texts.append(fds_original)
+                print("BFDS: BFNamelist.from_fds: to free param:\n ", fds_original) 
+        # Set final bf_prop_free. If no self.bf_prop_free, then the saved fds_origins are lost
+        if free_texts and self.bf_prop_free:
+            self.bf_prop_free.set_value(context, element, " ".join(free_texts)) # Set new value
         # Raise all piled exceptions to parent
         if err_msgs: raise BFException(sender=self, msgs=err_msgs)
 

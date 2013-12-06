@@ -3,7 +3,7 @@
 import bpy
 from .props import bf_props
 from .namelists import bf_namelists
-from blenderfds.types.extensions import update_ob_bf_namelist
+from blenderfds.types.extensions import update_ob_bf_namelist_idname
 
 # List all bf_namelist.enumproperty_item except for empty ones
 def _get_items(bpy_type):
@@ -12,11 +12,11 @@ def _get_items(bpy_type):
         if bf_namelist.bpy_type == bpy_type \
         and bf_namelist.enumproperty_item])
 
-bpy.types.Object.bf_namelist = bpy.props.EnumProperty(  # link each object to related BFNamelist
+bpy.types.Object.bf_namelist_idname = bpy.props.EnumProperty(  # link each object to related BFNamelist
     name="Namelist", description="Type of FDS namelist",
-    items=_get_items(bpy.types.Object), default="bf_obst", update=update_ob_bf_namelist) # now items are updated
+    items=_get_items(bpy.types.Object), default="bf_obst", update=update_ob_bf_namelist_idname) # now items are updated
     
-bpy.types.Material.bf_namelist = bpy.props.EnumProperty( # link each material to related BFNamelist
+bpy.types.Material.bf_namelist_idname = bpy.props.EnumProperty( # link each material to related BFNamelist
     name="Namelist", description="Type of FDS namelist",
     items=_get_items(bpy.types.Material), default="bf_surf") # now items are updated
     

@@ -8,19 +8,19 @@ from blenderfds.types.flags import *
 
 ### Expose collection
 
-bf_namelists = BFNamelist.bf_list
+bf_namelists = BFNamelist.bf_list # FIXME to interfaces?
 
 ### Scene namelists
 
 class BFNamelistHead(BFNamelist):
     def get_my_res(self, context, element, ui=False):
-        # Export custom text file
-        if element.bf_head_custom_text:
-            if not element.bf_head_custom_text in bpy.data.texts:
-                raise BFException(sender=self, msg="Custom text file not existing")
+        # Export free text file
+        if element.bf_head_free_text:
+            if not element.bf_head_free_text in bpy.data.texts:
+                raise BFException(sender=self, msg="Free text file not existing")
             else:
-                value = bpy.data.texts[element.bf_head_custom_text].as_string() + "\n! End of custom text\n"
-                msg = "Custom text '{}' appended".format(element.bf_head_custom_text)
+                value = bpy.data.texts[element.bf_head_free_text].as_string() + "\n! End of free text\n"
+                msg = "Free text '{}' appended".format(element.bf_head_free_text)
         else: value, msg = None, None
         # No need for msg or value
         if ui: return None
@@ -33,7 +33,7 @@ BFNamelistHead(
     fds_label = "HEAD",
     enum_id = 1001,
     bpy_type = bpy.types.Scene,
-    bf_props = ("bf_head_chid", "bf_head_title", "bf_head_directory", "bf_head_custom_text",),
+    bf_props = ("bf_head_chid", "bf_head_title", "bf_head_directory", "bf_head_free_text",),
 )
 
 BFNamelist(
@@ -45,7 +45,7 @@ BFNamelist(
     bpy_type = bpy.types.Scene,
     bf_prop_export = "bf_time_export",
     bf_props = ("bf_time_t_begin", "bf_time_t_end", "bf_time_setup_only", ),
-    bf_prop_custom = "bf_time_custom",
+    bf_prop_free = "bf_time_free",
 )
 
 BFNamelist(
@@ -57,7 +57,7 @@ BFNamelist(
     bpy_type = bpy.types.Scene,
     bf_prop_export = "bf_misc_export",
     bf_props = None,
-    bf_prop_custom = "bf_misc_custom",
+    bf_prop_free = "bf_misc_free",
 )
 
 BFNamelist(
@@ -69,7 +69,7 @@ BFNamelist(
     bpy_type = bpy.types.Scene,
     bf_prop_export = "bf_reac_export",
     bf_props = ("bf_reac_fuel", "bf_reac_fyi", "bf_reac_formula", "bf_reac_co_yield", "bf_reac_soot_yield", "bf_reac_heat_of_combustion", "bf_reac_ideal", ),
-    bf_prop_custom = "bf_reac_custom",
+    bf_prop_free = "bf_reac_free",
 )
 
 BFNamelist(
@@ -81,7 +81,7 @@ BFNamelist(
     bpy_type = bpy.types.Scene,
     bf_prop_export = "bf_dump_export",
     bf_props = ("bf_dump_render_file", "bf_dump_nframes", ),
-    bf_prop_custom = "bf_dump_custom",
+    bf_prop_free = "bf_dump_free",
 )
 
 BFNamelist(
@@ -102,7 +102,7 @@ BFNamelist(
     bpy_type = bpy.types.Object,
     bf_prop_export = "bf_export",
     bf_props = ("bf_id", "bf_fyi", "bf_surf_id", "bf_xb_solid",),
-    bf_prop_custom = "bf_custom",
+    bf_prop_free = "bf_free",
     bf_other = {"show_transparent": True},
 )
 
@@ -115,7 +115,7 @@ BFNamelist(
     bpy_type = bpy.types.Object,
     bf_prop_export = "bf_export",
     bf_props = ("bf_id", "bf_fyi", "bf_xb_solid",),
-    bf_prop_custom = "bf_custom",
+    bf_prop_free = "bf_free",
     bf_other = {"draw_type": "WIRE", "show_transparent": True},
 )
 
@@ -128,7 +128,7 @@ BFNamelist(
     bpy_type = bpy.types.Object,
     bf_prop_export = "bf_export",
     bf_props = ("bf_id", "bf_fyi", "bf_surf_id", "bf_xb_faces", "bf_xyz", "bf_pb",),
-	bf_prop_custom = "bf_custom",
+	bf_prop_free = "bf_free",
     bf_other = {"show_transparent": True},
 )
 
@@ -141,7 +141,7 @@ BFNamelist(
     bpy_type = bpy.types.Object,
     bf_prop_export = "bf_export",
     bf_props = ("bf_id", "bf_fyi", "bf_quantity", "bf_devc_setpoint", "bf_devc_initial_state", "bf_devc_latch", "bf_devc_prop_id", "bf_xb", "bf_xyz",),
-    bf_prop_custom = "bf_custom",
+    bf_prop_free = "bf_free",
     bf_other = {"show_transparent": True},
 )
 
@@ -154,7 +154,7 @@ BFNamelist(
     bpy_type = bpy.types.Object,
     bf_prop_export = "bf_export",
     bf_props = ("bf_id", "bf_fyi", "bf_quantity", "bf_slcf_vector", "bf_xb_faces", "bf_pb",),
-    bf_prop_custom = "bf_custom",
+    bf_prop_free = "bf_free",
     bf_other = {"hide": True, "show_transparent": True},
 )
 
@@ -167,7 +167,7 @@ BFNamelist(
     bpy_type = bpy.types.Object,
     bf_prop_export = "bf_export",
     bf_props = ("bf_id", "bf_fyi", "bf_quantity", "bf_xyz",),
-    bf_prop_custom = "bf_custom",
+    bf_prop_free = "bf_free",
 )
 
 BFNamelist(
@@ -179,7 +179,7 @@ BFNamelist(
     bpy_type = bpy.types.Object,
     bf_prop_export = "bf_export",
     bf_props = ("bf_id", "bf_fyi", "bf_ijk", "bf_xb_bbox",),
-    bf_prop_custom = "bf_custom",
+    bf_prop_free = "bf_free",
     bf_other = {"draw_type": "WIRE"},
 )
 
@@ -192,7 +192,7 @@ BFNamelist(
     bpy_type = bpy.types.Object,
     bf_prop_export = "bf_export",
     bf_props = ("bf_id", "bf_fyi", "bf_xb_solid", "bf_xyz",),
-    bf_prop_custom = "bf_custom",
+    bf_prop_free = "bf_free",
     bf_other = {"draw_type": "WIRE", "hide": True},
 )
 
@@ -205,26 +205,26 @@ BFNamelist(
     bpy_type = bpy.types.Object,
     bf_prop_export = "bf_export",
     bf_props = ("bf_id", "bf_fyi", "bf_xb_bbox",),
-    bf_prop_custom = "bf_custom",
+    bf_prop_free = "bf_free",
     bf_other = {"draw_type": "WIRE", "hide": True},
 )
 
-class BFNamelistCustom(BFNamelist):
+class BFNamelistFree(BFNamelist):
     def _draw_body(self, layout, context, element):
         # Invert drawing order
-        if self.bf_prop_custom: self.bf_prop_custom.draw(layout, context, element)
+        if self.bf_prop_free: self.bf_prop_free.draw(layout, context, element)
         for bf_prop in self.bf_props or tuple(): bf_prop.draw(layout, context, element)
 
-BFNamelistCustom(
-    idname = "bf_custom",
-    label = "Custom namelist",
+BFNamelistFree(
+    idname = "bf_free",
+    label = "Free namelist",
     description = None,
     fds_label = None,
     enum_id = 1007,
     bpy_type = bpy.types.Object,
     bf_prop_export = "bf_export",
     bf_props = ("bf_id", "bf_fyi", "bf_surf_id", "bf_xb", "bf_xyz", "bf_pb",),
-    bf_prop_custom = "bf_custom_namelist",
+    bf_prop_free = "bf_free_namelist",
     bf_other = {"show_transparent": True},
 )
 
@@ -250,7 +250,7 @@ BFNamelistSurf(
     bpy_type = bpy.types.Material,
     bf_prop_export = "bf_export",
     bf_props = ("bf_id_ma", "bf_fyi", "bf_rgb", "bf_transparency", "bf_matl_id", ),
-    bf_prop_custom = "bf_custom",
+    bf_prop_free = "bf_free",
 )
 
 BFNamelistSurf(
@@ -262,7 +262,7 @@ BFNamelistSurf(
     bpy_type = bpy.types.Material,
     bf_prop_export = "bf_export",
     bf_props = ("bf_id_ma", "bf_fyi", "bf_rgb", "bf_transparency", "bf_hrrpua", "bf_tau_q", ),
-    bf_prop_custom = "bf_custom",
+    bf_prop_free = "bf_free",
 )
 
 BFNamelistSurf(
@@ -274,5 +274,5 @@ BFNamelistSurf(
     bpy_type = bpy.types.Material,
     bf_prop_export = "bf_export",
     bf_props = ("bf_id_ma", "bf_fyi", "bf_rgb", "bf_transparency", "bf_hrrpua", "bf_tau_q", "bf_matl_id", "bf_ignition_temperature", "bf_thickness", ),
-    bf_prop_custom = "bf_custom",
+    bf_prop_free = "bf_free",
 )
