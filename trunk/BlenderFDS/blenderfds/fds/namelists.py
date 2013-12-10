@@ -4,11 +4,7 @@ import bpy
 from blenderfds.types import *
 from blenderfds.types.flags import *
 
-# FIXME evacuation namelists
-
-### Expose collection
-
-bf_namelists = BFNamelist.bf_list # FIXME to interfaces?
+# FUTURE: evacuation namelists
 
 ### Scene namelists
 

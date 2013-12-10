@@ -128,7 +128,6 @@ def set_tmp_object(context, ob, ob_tmp):
 def ob_to_none(context, ob):
     return None, None
 
-# FIXME clean up
 def ob_to_xbs_pixels(context, ob):
     """Return a list of object flat voxels XBs and a msg:
     ((x0,x0,y0,y1,z0,z1,), ...), "Message"."""
@@ -137,35 +136,31 @@ def ob_to_xbs_pixels(context, ob):
     t0 = time()
     voxel_size = ob.bf_xb_voxel_size
     ob_tmp = _get_absolute_tmp_object(context, ob)
-
+    # Check and set location
     if not ob_tmp.data.vertices: return None, "Empty object. No pixel created."
     location = ob_tmp.data.vertices[0].co
-
-    if   not ob_tmp.dimensions[0]: normal = "x" # normal to x
-    elif not ob_tmp.dimensions[1]: normal = "y" # normal to y
-    elif not ob_tmp.dimensions[2]: normal = "z" # normal to z
+    # Choose flat dimension or return None
+    if   ob_tmp.dimensions[0] < epsilon: normal = "x" # the face is normal to x axis
+    elif ob_tmp.dimensions[1] < epsilon: normal = "y" # ...to y axis
+    elif ob_tmp.dimensions[2] < epsilon: normal = "z" # ...to z axis
     else: return None, "Object is not flat and normal to an axis. No pixel created."
-
-    _apply_solidify_modifier(context, ob_tmp, thickness=.02)
+    # Solidify and remesh
+    _apply_solidify_modifier(context, ob_tmp, thickness=voxel_size/3.)
     _apply_remesh_modifier(context, ob_tmp, voxel_size)
-
+    # Get absolute faces
     me_tmp = get_global_mesh(context, ob_tmp)
     tessfaces = get_tessfaces(context, me_tmp)
-    if not tessfaces: return None, "No pixel created"
-
+    if not tessfaces: return None, "No pixel created."
     # Clean unneeded tmp object and tmp mesh
     bpy.data.objects.remove(ob_tmp)
-    #bpy.context.scene.objects.link(ob_tmp) # leave temp object DEBUG
-    bpy.data.meshes.remove(me_tmp)
-
+    #bpy.context.scene.objects.link(ob_tmp) # DEBUG uncomment to leave temp object
+    bpy.data.meshes.remove(me_tmp) # DEBUG comment out to leave tmp object
     # Classify tessfaces in z direction
     z_tessfaces = _classify_z_tessfaces(tessfaces, voxel_size)
     # Create boxes along z axis and grow them along x and y direction
     boxes = _grow_boxes_along_y(_grow_boxes_along_x(_z_tessfaces_to_boxes(z_tessfaces)))
-
     # Prepare XBs
     xbs = _boxes_to_xbs(boxes, voxel_size, flat=True, normal=normal, location=location)
-
     # Return
     msg = len(xbs) > 1 and "{0} pixels, normal to {1} axis, size {2:.3f} m, in {3:.3f} s".format(len(xbs), normal, voxel_size, time() - t0) or None
     return xbs, msg
@@ -178,7 +173,9 @@ def ob_to_xbs_voxels(context, ob):
     t0 = time()
     voxel_size = ob.bf_xb_voxel_size
     ob_tmp = _get_absolute_tmp_object(context, ob)
+    # Apply remesh
     _apply_remesh_modifier(context, ob_tmp, voxel_size)
+    # Get absolute tessfaces
     me_tmp = get_global_mesh(context, ob_tmp)
     tessfaces = get_tessfaces(context, me_tmp)
     if not tessfaces: return None, "No voxel created"
@@ -365,6 +362,8 @@ def _boxes_to_xbs(boxes, voxel_size, flat=False, normal="z", location=(0.,0.,0.)
                 for xb in xbs: xb[2] = xb [3] = location[1]
             elif normal == "x":
                 for xb in xbs: xb[0] = xb [1] = location[0]
+            else:
+                raise ValueError("Unrecognized normal.")
     return xbs
 
 def ob_to_xbs_bbox(context, ob):
@@ -547,15 +546,11 @@ def pbs_planes_to_mesh(pbs, me=None):
     # Call companion function
     return xbs_faces_to_mesh(xbs, me)
 
-### Auxiliary functions for ob_to_xbs_voxels()
-
-
-
-
 ### Geometry choice matrix for functions
 
 choose_to_geometry = {
     "xbs": {
+        # name       to FDS      from FDS
         "NONE"    : (ob_to_none, none_to_mesh,),
         "BBOX"    : (ob_to_xbs_bbox, xbs_bbox_to_mesh,),
         "VOXELS"  : (ob_to_xbs_voxels, xbs_bbox_to_mesh,),
@@ -640,9 +635,8 @@ def show_ob_fds_geometries(context, ob):
     msgs = list()
     # Manage XB: get coordinates, show them in a tmp object, prepare msg
     xbs = None
-    xbs, msg  = ob_to_xbs(context, ob) # FIXME
-    #try: xbs, msg  = ob_to_xbs(context, ob)
-    #except: print("BFDS: show_ob_fds_geometries: error in xbs for object '{}'".format(ob.name))
+    try: xbs, msg  = ob_to_xbs(context, ob)
+    except: print("BFDS: show_ob_fds_geometries: error in xbs for object '{}'".format(ob.name))
     if xbs:
         ob_tmp = xbs_to_ob(xbs, context, bf_xb=ob.bf_xb)
         set_tmp_object(context, ob, ob_tmp)

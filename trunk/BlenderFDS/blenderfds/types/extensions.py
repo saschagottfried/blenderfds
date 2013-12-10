@@ -4,9 +4,9 @@ import bpy
 from blenderfds.types.results import BFResult, BFException
 from blenderfds.types.collections import BFList, BFAutoItem
 from blenderfds.types.interfaces import BFCommon, BFNamelist
-from blenderfds.lib import geometry, fds_surf, fds_to_py
+from blenderfds.lib import geometry, fds_surf, fds_to_py, version
 
-DEBUG = True
+DEBUG = False
 
 ### Blender Object <-> BFObject <-> FDS geometric entity (eg. OBST, VENT, HOLE...)
 
@@ -102,6 +102,13 @@ bpy.types.Object.bf_free = bpy.props.StringProperty(
     name="Free",
     description="Free parameters, use matched single quotes as string delimiters, eg ABC='example'",
     maxlen=1024)
+
+# These properties are left from old BlenderFDS to allow some transition
+# and recognition of old files
+
+bpy.types.Object.bf_nl = bpy.props.StringProperty(
+        name="OLD Namelist",
+        description="OLD Namelist group name")
 
 # Add methods to original Blender type
 
@@ -239,7 +246,7 @@ class BFScene(BFObject):
             and not ob.hide_render # hide some objects if requested
             and ob.bf_export
             and ob.bf_namelist_idname in ("bf_obst", "bf_vent")
-        ) # FIXME bf_hole is not cut
+        ) # FUTURE: bf_hole is not cut for now
         gefaces = list()
         for ob in obs:
             me = geometry.get_global_mesh(context, ob)
@@ -337,7 +344,10 @@ class BFScene(BFObject):
         # Report error
         if is_error_reported: raise BFException(sender=self, msg="Errors reported while importing, see free text file.")
 
-# System properties: None
+# System properties:
+
+bpy.types.Scene.bf_file_version = bpy.props.IntVectorProperty(
+    name="BlenderFDS File Version", description="BlenderFDS file format version", size=3, default=version.blenderfds_version)
 
 # Add methods to original Blender type
 
@@ -353,3 +363,4 @@ bpy.types.Scene.get_res = BFScene.get_res
 bpy.types.Scene.to_fds = BFScene.to_fds
 bpy.types.Scene.to_ge1 = BFScene.to_ge1
 bpy.types.Scene.from_fds = BFScene.from_fds
+

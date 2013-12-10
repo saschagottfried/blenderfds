@@ -1,6 +1,6 @@
 """BlenderFDS, FDS MESH routines"""
 
-from . import geometry, utilities
+from blenderfds.lib import geometry, utilities
 
 def n_for_poisson(n):
     """Get a good number for poisson solver at least bigger than n"""
@@ -62,7 +62,7 @@ def get_cell_infos(context, ob):
     # Cell aspect ratio
     cell_sizes.sort()
     try: cell_aspect_ratio = max(cell_sizes[2] / cell_sizes[0], cell_sizes[2] / cell_sizes[1], cell_sizes[1] / cell_sizes[0])
-    except ZeroDivisionError: cell_aspect_ratio = 0.
+    except ZeroDivisionError: cell_aspect_ratio = 999.
     # Return
     return has_good_ijk, cell_sizes, cell_number, cell_aspect_ratio
 

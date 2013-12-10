@@ -4,7 +4,7 @@ import bpy
 from blenderfds.types import *
 from blenderfds.types.flags import *
 from blenderfds.lib import geometry
-from .props import BFPropString
+from blenderfds.fds.props import BFPropString
 
 ### scale_lenght
 # Blender internally uses invariant units for length: Blender units.
@@ -111,7 +111,8 @@ class BFPropXB(BFPropGeometry):
         scale_length = context.scene.unit_settings.scale_length
         value = [coo / scale_length for coo in value]
         # Set value
-        geometry.xbs_to_ob(xbs=(value,), context=context, ob=element, bf_xb=element.bf_xb) # Send existing element.bf_xb for evaluation. FIXME EDGE recognition!
+        geometry.xbs_to_ob(xbs=(value,), context=context, ob=element, bf_xb=element.bf_xb) # Send existing element.bf_xb for evaluation.
+        # FUTURE: EDGE recognition!
 
 def update_bf_xb_voxel_size(self, context):
     """Update function for bf_xb_voxel_size"""

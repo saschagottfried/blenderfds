@@ -1,8 +1,7 @@
 """BlenderFDS, update FDS props"""
 
 import bpy
-from .props import bf_props
-from .namelists import bf_namelists
+from blenderfds.types import *
 from blenderfds.types.extensions import update_ob_bf_namelist_idname
 
 # List all bf_namelist.enumproperty_item except for empty ones

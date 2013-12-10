@@ -5,10 +5,6 @@ from blenderfds.types import *
 from blenderfds.types.flags import *
 from blenderfds.lib import geometry, fds_mesh, fds_tables
 
-### Expose collection
-
-bf_props = BFProp.bf_list
-
 ### Common special BFProp
         
 class BFPropString(BFProp):
@@ -205,7 +201,7 @@ BFPropFree(
 
 class BFPropDumpRenderFile(BFProp):
     def get_value(self, context, element):
-        if element.bf_dump_render_file: return bpy.path.clean_name(element.name) + ".GE1" # FIXME not good!
+        if element.bf_dump_render_file: return bpy.path.clean_name(element.name) + ".GE1" # FUTURE: this is hardcoded, improve!
 
     def set_value(self, context, element, value):
         if value: element.bf_dump_render_file = True
