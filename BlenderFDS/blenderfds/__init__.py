@@ -25,7 +25,7 @@ print("""
 bl_info = {
     "name": "BlenderFDS",
     "author": "Emanuele Gissi",
-    "version": (2, 9, 1),
+    "version": (3, 0, 0),
     "blender": (2, 6, 9),
     "api": 35622,
     "location": "File > Export > FDS Case (.fds)",
@@ -43,10 +43,12 @@ if "bpy" in locals():
     import imp
     imp.reload(fds)
     imp.reload(ui)
+    imp.reload(types)
 else:
     import bpy
     from . import fds
     from . import ui
+    from . import types
 
 ### Registration/Unregistration
 
@@ -55,26 +57,26 @@ def register():
     # Register module classes (Eg. panels, ...)
     bpy.utils.register_module(__name__)
     # Register namelists, their properties, and the panels
-    for bf_namelist in fds.bf_namelists: bf_namelist.register()
+    for bf_namelist in types.bf_namelists: bf_namelist.register()
     # Register menus
     bpy.types.INFO_MT_file_export.append(ui.menus.export_fds_menu)
     bpy.types.INFO_MT_file_import.append(ui.menus.import_fds_menu)
     # Register handlers
     bpy.app.handlers.load_post.append(ui.handlers.load_post)
-    bpy.app.handlers.save_post.append(ui.handlers.save_post)    
+    bpy.app.handlers.save_pre.append(ui.handlers.save_pre)    
     
 def unregister():
     """Unregister Blender types"""
     # Unregister module classes
     bpy.utils.unregister_module(__name__)
     # Unregister namelists, their properties, and the panels
-    for bf_namelist in fds.bf_namelists: bf_namelist.unregister()
+    for bf_namelist in types.bf_namelists: bf_namelist.unregister()
     # Unregister menus
     bpy.types.INFO_MT_file_export.remove(ui.menus.export_fds_menu)
     bpy.types.INFO_MT_file_import.remove(ui.menus.import_fds_menu)
     # Unregister handlers
     bpy.app.handlers.load_post.remove(ui.handlers.load_post)
-    bpy.app.handlers.save_post.remove(ui.handlers.save_post)    
+    bpy.app.handlers.save_post.remove(ui.handlers.save_pre)    
 
 if __name__ == "__main__":
     register()

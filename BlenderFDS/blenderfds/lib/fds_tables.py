@@ -1,6 +1,6 @@
 """BlenderFDS, FDS tables"""
 
-# FIXME add QUANTITY tables
+# FUTURE: add QUANTITY tables
 
 ### Colors table from FDS source code (data.f90)
 

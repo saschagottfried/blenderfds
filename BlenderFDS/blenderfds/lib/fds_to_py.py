@@ -25,7 +25,7 @@ def tokenize(fds_file):
     Input:  "&OBST ID='Hello' XB=1,2,3,4,5,6 /"
     Output: [[fds_original, fds_label, [[fds_original, fds_label, fds_value], ...]], ...]
     Output: [["&OBST ID='Hello' XB=1,2,3,4,5,6 /", "OBST", [["ID='Hello'", "ID", "Hello"], ...]], ...]
-"""
+    """
     # Extract namelists
     regex = r"""
         .*?    # zero or more chars of any type (not greedy) (re.DOTALL) 

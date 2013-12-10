@@ -1,33 +1,67 @@
 """BlenderFDS, Blender operators"""
 
-import bpy
+import bpy, time
 from blenderfds.types import *
 from blenderfds.lib import geometry, fds_mesh, fds_surf
-from blenderfds.fds import *
 
-DEBUG = True
+### Dialog box
+
+class WM_OT_bf_dialog(bpy.types.Operator):
+    bl_label = "BlenderFDS"
+    bl_idname = "wm.bf_dialog"
+    bl_description = "BlenderFDS Dialog"
+
+    type = bpy.props.EnumProperty(
+        name = "Type",
+        items = (("INFO", "Information", "Information",), ("ERROR", "Error", "Error")),
+        description = "Dialog type",
+        default="INFO",
+    )
+
+    msg = bpy.props.StringProperty(
+        name="Message",
+        description="Dialog message",
+        default="No message",
+    )
+
+    description = bpy.props.StringProperty(
+        name="Description",
+        description="Dialog description",
+    )
+
+    def execute(self, context):
+        return {'FINISHED'}
+ 
+    def invoke(self, context, event):
+        wm = context.window_manager
+        return wm.invoke_props_dialog(self)
+
+    def draw(self, context):
+        layout = self.layout
+        col = layout.column()
+        col.label(text=self.msg, icon=self.type)
+        if self.description:
+            col.separator()
+            descriptions = self.description.splitlines()
+            for description in descriptions:
+                row = col.row()
+                row.label(description)
 
 ### Set default homefile
-
-# FIXME
-# read_factory_settings()
-#bpy.ops.wm.save_homefile()
-# bpy.ops.wm.open_mainfile(filepath="", filter_blender=True, filter_backup=False, filter_image=False, filter_movie=False, filter_python=False, filter_font=False, filter_sound=False, filter_text=False, filter_btx=False, filter_collada=False, filter_folder=True, filemode=8, display_type='FILE_DEFAULTDISPLAY', load_ui=True, use_scripts=True)
+# FUTURE: this can be used on Blender 2.70
 
 import sys
 
 class WM_OT_bf_set_bf_homefile(bpy.types.Operator):
-    bl_label = "Open and Set Default Settings"
+    bl_label = "Set Default User Settings"
     bl_idname = "wm.bf_set_bf_homefile"
-    bl_description = "Set default settings for BlenderFDS"
+    bl_description = "Set default user settings for BlenderFDS"
 
     def execute(self, context):
         bf_default_filepath = sys.path[0] + "/blenderfds/bf_default.blend"
-        # FIXME check existence
-        bpy.ops.wm.open_mainfile(filepath=bf_default_filepath)
-        # filemode=8, display_type='FILE_DEFAULTDISPLAY', load_ui=True, use_scripts=True)
-        bpy.ops.wm.save_homefile() # FIXME context
-        self.report({"INFO"}, "Default settings loaded")
+        bpy.ops.wm.open_mainfile(filepath=bf_default_filepath, load_ui=True, use_scripts=True)
+        bpy.ops.wm.save_homefile()
+        self.report({"INFO"}, "Default user settings loaded")
         return {'FINISHED'}
 
 ### MESH and IJK
@@ -244,7 +278,7 @@ def _open_text_in_editor(context, text_name):
     # Show requested text
     if text_name in bpy.data.texts:
         area_te.spaces[0].text = bpy.data.texts[text_name]
-    # Move cursor to first line FIXME
+    # FUTURE: Move cursor to first line
     
 class SCENE_OT_bf_edit_head_free_text(bpy.types.Operator):
     bl_label = "Edit"

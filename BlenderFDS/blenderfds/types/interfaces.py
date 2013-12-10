@@ -7,7 +7,7 @@ from blenderfds.types.flags import *
 from blenderfds.lib import fds_format
 from blenderfds.lib.utilities import isiterable
 
-DEBUG = True
+DEBUG = False
 
 ### BFCommon
 
@@ -355,6 +355,10 @@ class BFProp(BFCommon):
         self.set_exported(context, element, True)
         self.set_value(context, element, value)
 
+# Expose collection
+
+bf_props = BFProp.bf_list
+
 ### Blender group of variables or panel <-> BFNamelist <-> FDS namelist
 
 class BFNamelist(BFCommon):
@@ -492,4 +496,8 @@ class BFNamelist(BFCommon):
             self.bf_prop_free.set_value(context, element, " ".join(free_texts)) # Set new value
         # Raise all piled exceptions to parent
         if err_msgs: raise BFException(sender=self, msgs=err_msgs)
+
+# Expose collection
+
+bf_namelists = BFNamelist.bf_list
 

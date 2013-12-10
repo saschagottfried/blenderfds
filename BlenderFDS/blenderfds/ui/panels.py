@@ -1,7 +1,7 @@
 """BlenderFDS, Blender panels"""
 
 import bpy
-from blenderfds.fds import * # get the reference to the BFNamelist collection
+from blenderfds.types import *
 from blenderfds.lib import fds_surf
 
 class SCENE_PT_BF():
@@ -78,7 +78,7 @@ class OBJECT_PT_BF(bpy.types.Panel):
             layout.prop(element, "bf_export", text="")
             self.bl_label = "BlenderFDS Empty (Group of namelists)"
         # Header for MESH object
-        else: self.bl_label = bf_namelists[element.bf_namelist_idname].draw_header(layout, context, element)
+        else: self.bl_label = element.bf_namelist.draw_header(layout, context, element)
 
     def draw(self, context):
         layout = self.layout
@@ -104,7 +104,7 @@ class OBJECT_PT_BF(bpy.types.Panel):
             row.prop(element, "hide", text="")
             row.prop(element, "hide_select", text="")
             row.prop(element, "hide_render", text="")
-            bf_namelists[element.bf_namelist_idname].draw(layout, context, element)
+            element.bf_namelist.draw(layout, context, element)
             row = layout.row()
             if element.bf_has_tmp: row.operator("scene.bf_del_all_tmp_objects")
             else: row.operator("object.bf_show_fds_geometries")
@@ -126,7 +126,7 @@ class MATERIAL_PT_BF(bpy.types.Panel):
     def draw_header(self, context):
         layout = self.layout
         element = context.material
-        self.bl_label = bf_namelists[element.bf_namelist_idname].draw_header(layout, context, element)
+        self.bl_label = element.bf_namelist.draw_header(layout, context, element)
 
     def draw(self, context):
         layout = self.layout
@@ -139,7 +139,7 @@ class MATERIAL_PT_BF(bpy.types.Panel):
         row = split.row(align=True) # aspect
         row.prop(element, "diffuse_color", text="")
         row.prop(element, "alpha", text="")
-        bf_namelists[element.bf_namelist_idname].draw(layout, context, element)
+        element.bf_namelist.draw(layout, context, element)
         # Other operators
         row = layout.row()
         if fds_surf.has_predefined: row.label("")

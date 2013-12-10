@@ -1,7 +1,5 @@
 """BlenderFDS, flags"""
 
-import bpy
-
 # Flags for BFProp and BFNamelist definition
 NOEXPORT = 2
 NOUI = 4
