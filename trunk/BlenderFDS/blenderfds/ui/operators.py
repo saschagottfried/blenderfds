@@ -243,7 +243,13 @@ class OBJECT_OT_bf_show_fds_geometries(bpy.types.Operator):
     bl_description = "Show geometries as exported to FDS"
 
     def execute(self, context):
+        # Cursor FIXME manage error here?
+        w = context.window_manager.windows[0]
+        w.cursor_modal_set("WAIT")
+        #
         report = geometry.show_ob_fds_geometries(context, context.object)
+        # Return
+        w.cursor_modal_restore()
         self.report(*report)
         return{'FINISHED'}
 

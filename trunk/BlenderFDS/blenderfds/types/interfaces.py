@@ -7,7 +7,7 @@ from blenderfds.types.flags import *
 from blenderfds.lib import fds_format
 from blenderfds.lib.utilities import isiterable
 
-DEBUG = False
+DEBUG = True
 
 ### BFCommon
 
@@ -122,8 +122,8 @@ class BFCommon(BFAutoItem):
     def draw_messages(self, layout, context, element):
         """Draw messages and exceptions."""
         try: res = self.get_my_res(context, element, ui=True)
-        except BFException as err: err.draw(layout, box=True) # Use box
-        else: res and res.draw(layout, box=True) # Use box, check res existence before...    
+        except BFException as err: err.draw(layout)
+        else: res and res.draw(layout) # Check res existence before...    
 
     # Export
 
@@ -142,18 +142,13 @@ class BFCommon(BFAutoItem):
     
     children = property(_get_children)
 
-    def _get_children_res(self, context, element, ui=False, progress=False) -> "BFList of BFResult, never None":
+    def _get_children_res(self, context, element, ui=False) -> "BFList of BFResult, never None":
         """Return a BFlist of children BFResult. On error raise joined BFException."""
         if DEBUG: print("BFDS: BFCommon._get_children_res:", self.idname, element.idname) 
         # Init
         children, children_res, err_msgs = self.children, BFList(), list()
-        if progress:
-            wm = context.window_manager
-            wm.progress_begin(0, 100)
-            index_max = len(children)
         # Get children res, manage exceptions
         for index, child in enumerate(children):
-            if progress: wm.progress_update(int(index/index_max*100))
             try: child_res = child.get_res(context, element, ui=False)
             except BFException as child_err:
                 # The child sends exceptions, take note. Labels attach sender name to msgs.
@@ -164,7 +159,6 @@ class BFCommon(BFAutoItem):
                 # The child result is appended to the BFList
                 children_res.append(child_res) 
         # Return
-        if progress: wm.progress_end()
         if err_msgs: raise BFException(sender=self, msgs=err_msgs) # Raise all piled exceptions to parent
         return children_res
 
@@ -275,12 +269,6 @@ class BFProp(BFCommon):
         if not self.bpy_idname: return
         row = layout.row()
         row.prop(element, self.bpy_idname, text=self.label)
-    
-    def draw_messages(self, layout, context, element):
-        """Draw messages and exceptions."""
-        try: res = self.get_my_res(context, element, ui=True)
-        except BFException as err: err.draw(layout, box=False) # No box
-        else: res and res.draw(layout, box=False) # No box, check res existence before...    
 
     def draw(self, layout, context, element):
         """Draw my part of Blender panel."""

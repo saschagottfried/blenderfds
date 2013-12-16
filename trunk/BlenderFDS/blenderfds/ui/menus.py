@@ -30,7 +30,7 @@ class ExportFDS(bpy.types.Operator, ExportHelper):
     filter_glob = bpy.props.StringProperty(default="*.fds", options={'HIDDEN'})
 
     def execute(self, context):
-        return io.to_fds(self, context, **self.as_keywords(ignore=("check_existing", "filter_glob")))
+        return io.scene_to_fds(self, context, **self.as_keywords(ignore=("check_existing", "filter_glob")))
 
 ### Import from FDS
 
@@ -47,4 +47,4 @@ class ImportFDS(bpy.types.Operator, ImportHelper):
     filter_glob = bpy.props.StringProperty(default="*.fds", options={'HIDDEN'})
 
     def execute(self, context):
-        return io.from_fds(self, context, **self.as_keywords(ignore=("check_existing", "filter_glob")))
+        return io.scene_from_fds(self, context, **self.as_keywords(ignore=("check_existing", "filter_glob")))

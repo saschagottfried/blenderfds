@@ -48,11 +48,10 @@ class BFResult():
     
     labels = property(_get_labels)
 
-    def draw(self, layout, box=False):
+    def draw(self, layout):
         """Draw self user interface"""
         if not self.msgs: return
-        if box: layout = layout.box()
-        else: layout = layout.column()
+        layout = layout.column()
         for index, msg in enumerate(self.msgs):
             try: operator = self.operators[index]
             except IndexError: operator = None
