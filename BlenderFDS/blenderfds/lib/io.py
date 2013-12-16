@@ -10,6 +10,8 @@ def scene_to_fds(operator, context, filepath=""):
     """Export current Blender Scene to an FDS case file"""
 
     # Init
+    w = context.window_manager.windows[0]
+    w.cursor_modal_set("WAIT")
     to_fds_error = False
     to_ge1_error = False
     if not filepath.lower().endswith('.fds'): filepath += '.fds'
@@ -19,6 +21,7 @@ def scene_to_fds(operator, context, filepath=""):
     # Prepare FDS filepath
     print("BFDS: io.scene_to_fds: Exporting current scene to FDS case file: {}".format(sc.name))
     if not utilities.is_writable(filepath):
+        w.cursor_modal_restore()
         operator.report({"ERROR"}, "FDS file not writable, cannot export")
         return {'CANCELLED'}
 
@@ -36,6 +39,7 @@ def scene_to_fds(operator, context, filepath=""):
 
     # Write FDS file
     if not utilities.write_to_file(filepath, fds_file):
+        w.cursor_modal_restore()
         operator.report({"ERROR"}, "FDS file not writable, cannot export")
         return {'CANCELLED'}
         
@@ -43,6 +47,7 @@ def scene_to_fds(operator, context, filepath=""):
     print("BFDS: io.scene_to_fds: Exporting current scene to GE1 render file: {}".format(sc.name))
     filepath = filepath[:-4] + '.GE1'
     if not utilities.is_writable(filepath):
+        w.cursor_modal_restore()
         operator.report({"ERROR"}, "GE1 file not writable, cannot export")
         return {'CANCELLED'}
         
@@ -54,18 +59,22 @@ def scene_to_fds(operator, context, filepath=""):
 
     # Write GE1 file
     if not utilities.write_to_file(filepath, ge1_file):
+        w.cursor_modal_restore()
         operator.report({"ERROR"}, "GE1 file not writable, cannot export")
         return {'CANCELLED'}
-                
+
     # Check errors
     if to_fds_error:
+        w.cursor_modal_restore()
         operator.report({"ERROR"}, "Errors reported, check exported FDS file")
         return {'CANCELLED'}
     if to_ge1_error:
+        w.cursor_modal_restore()
         operator.report({"ERROR"}, "Errors reported, check exported GE1 file")
         return {'CANCELLED'}
-
+        
     # End
+    w.cursor_modal_restore()
     print("BFDS: io.scene_to_fds: End.")
     operator.report({"INFO"}, "FDS File exported")
     return {'FINISHED'}
@@ -75,23 +84,29 @@ def scene_from_fds(operator, context, filepath=""):
     """Import FDS file to new Blender Scene"""
 
     # Init
+    w = context.window_manager.windows[0]
+    w.cursor_modal_set("WAIT")
     sc = context.scene
 
     # Read file to Text Editor
     print("BFDS: io.scene_from_fds: Importing:", filepath)
     try: bpy.data.texts.load(filepath, internal=True)
     except:
+        w.cursor_modal_restore()
         operator.report({"ERROR"}, "FDS file not readable, cannot import")
         return {'CANCELLED'}
     bpy.data.texts[-1].name = "Original FDS file"
 
     # Import to current scene
-    try: sc.from_fds(context=context, value=bpy.data.texts[-1].as_string(), progress=True)
+    try: sc.from_fds(context=context, value=bpy.data.texts[-1].as_string())
     except BFException as err:
+        w.cursor_modal_restore()
         operator.report({"ERROR"}, "Errors reported, check free text file")
         return {'CANCELLED'}
 
     # End
+    w.cursor_modal_restore()
     print("BFDS: io.scene_from_fds: End.")
     operator.report({"INFO"}, "FDS File imported")
-    return {'FINISHED'} 
+    return {'FINISHED'}
+

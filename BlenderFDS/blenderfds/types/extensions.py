@@ -69,9 +69,14 @@ class BFObject(BFCommon):
     
     def to_fds(self, context=None) -> "str or None":
         """Export me in FDS notation, on error raise BFException."""
+        # Cursor
+        w = context.window_manager.windows[0]
+        w.cursor_modal_set("WAIT")
+        # Get
         if not context: context = bpy.context
         res = self.get_res(context, self)
         if res: return res.value
+        w.cursor_modal_restore()
 
 def update_ob_bf_namelist_idname(self, context):
     """Update function for object.bf_namelist_idname bpy_prop"""
@@ -204,9 +209,6 @@ class BFScene(BFObject):
         return BFList(children)
 
     children = property(_get_children)
-
-    def _get_children_res(self, context, element, ui=False, progress=False) -> "BFList of BFResult, never None":
-        return BFObject._get_children_res(self, context, element, ui, True) # set progress to True
             
     def get_my_res(self, context, element, ui=False) -> "BFResult or None":
         """Get my BFResult. On error raise BFException."""
@@ -229,6 +231,9 @@ class BFScene(BFObject):
         # 6.0 3.9 0.5 6.0 1.9 0.5 6.0 1.9 1.9 6.0 3.9 1.9 0 < x0, y0, z0, x1, y1, z1, ..., ref to appearance index
         # 6.0 3.9 0.5 6.0 1.9 0.5 6.0 1.9 1.9 6.0 3.9 1.9 0
         # EOF
+        # Cursor
+        w = context.window_manager.windows[0]
+        w.cursor_modal_set("WAIT")
         # Get GE1 appearances from materials
         appearances = list()
         ma_to_appearance = dict()
@@ -268,31 +273,29 @@ class BFScene(BFObject):
         # Prepare GE1 file and return
         ge1_file_a = "[APPEARANCE]\n{}\n{}".format(len(appearances), "".join(appearances))
         ge1_file_f = "[FACES]\n{}\n{}".format(len(gefaces), "".join(gefaces))
+        w.cursor_modal_restore()
         return "".join((ge1_file_a, ge1_file_f))
 
     # Import
 
-    def from_fds(self, context, value=None, progress=False) -> "None":
+    def from_fds(self, context, value=None) -> "None":
         """Import a text in FDS notation into self. On error raise BFException.
         Value is any text in good FDS notation.
         """
-        # Progress
-        if progress:
-            wm = context.window_manager
-            wm.progress_begin(0, 100)
+        # Cursor
+        w = context.window_manager.windows[0]
+        w.cursor_modal_set("WAIT")
         # Tokenize value and manage exception
         try: tokens = fds_to_py.tokenize(value)
         except Exception as err:
-            if progress: wm.progress_end()
+            w.cursor_modal_restore()
             raise BFException(sender=self, msg="Unrecognized FDS syntax, cannot import.")
         # Init
         free_texts = list()
         is_error_reported = False
-        if progress: index_max = len(tokens)
         bf_namelist_choice = {bf_namelist.fds_label: (bf_namelist, bf_namelist.bpy_type) for bf_namelist in BFNamelist.bf_list} 
         # Handle tokens: create corresponding elements
         for index, token in enumerate(tokens):
-            if progress: wm.progress_update(int(index/index_max))
             # Unpack
             element = None
             fds_original, fds_label, fds_value = token
@@ -339,9 +342,8 @@ class BFScene(BFObject):
             self.bf_head_free_text = "Imported text"
             bpy.data.texts.new(self.bf_head_free_text)
             bpy.data.texts[self.bf_head_free_text].from_string("".join(free_texts))
-        # End progress
-        if progress: wm.progress_end()
         # Report error
+        w.cursor_modal_restore()
         if is_error_reported: raise BFException(sender=self, msg="Errors reported while importing, see free text file.")
 
 # System properties:

@@ -137,20 +137,23 @@ def ob_to_xbs_pixels(context, ob):
     voxel_size = ob.bf_xb_voxel_size
     ob_tmp = _get_absolute_tmp_object(context, ob)
     # Check and set location
-    if not ob_tmp.data.vertices: return None, "Empty object. No pixel created."
+    if not ob_tmp.data.vertices:
+        return None, "Empty object. No pixel created."
     location = ob_tmp.data.vertices[0].co
     # Choose flat dimension or return None
     if   ob_tmp.dimensions[0] < epsilon: normal = "x" # the face is normal to x axis
     elif ob_tmp.dimensions[1] < epsilon: normal = "y" # ...to y axis
     elif ob_tmp.dimensions[2] < epsilon: normal = "z" # ...to z axis
-    else: return None, "Object is not flat and normal to an axis. No pixel created."
+    else:
+        return None, "Object is not flat and normal to an axis. No pixel created."
     # Solidify and remesh
     _apply_solidify_modifier(context, ob_tmp, thickness=voxel_size/3.)
     _apply_remesh_modifier(context, ob_tmp, voxel_size)
     # Get absolute faces
     me_tmp = get_global_mesh(context, ob_tmp)
     tessfaces = get_tessfaces(context, me_tmp)
-    if not tessfaces: return None, "No pixel created."
+    if not tessfaces:
+        return None, "No pixel created."
     # Clean unneeded tmp object and tmp mesh
     bpy.data.objects.remove(ob_tmp)
     #bpy.context.scene.objects.link(ob_tmp) # DEBUG uncomment to leave temp object
@@ -178,7 +181,8 @@ def ob_to_xbs_voxels(context, ob):
     # Get absolute tessfaces
     me_tmp = get_global_mesh(context, ob_tmp)
     tessfaces = get_tessfaces(context, me_tmp)
-    if not tessfaces: return None, "No voxel created"
+    if not tessfaces:
+        return None, "No voxel created"
     # Clean unneeded tmp object and tmp mesh
     bpy.data.objects.remove(ob_tmp)
     #bpy.context.scene.objects.link(ob_tmp) # leave temp object DEBUG
@@ -203,7 +207,7 @@ def _apply_remesh_modifier(context, ob, voxel_size):
     """Apply remesh modifier for voxelization."""
     mo = ob.modifiers.new('voxels_tmp','REMESH') # apply modifier
     mo.octree_depth, mo.scale, voxel_size, dimension_too_large = _calc_remesh_parameters(context, ob.dimensions, voxel_size)
-    if dimension_too_large: raise BFException(ob, msg="Object '{}' too large for desired voxel size, split it in parts.".format(ob.name))
+    if dimension_too_large: raise BFException(sender=ob, msg="Object '{}' too large for desired voxel size, split it in parts.".format(ob.name))
     mo.mode, mo.use_remove_disconnected = 'BLOCKS', False
 
 # When appling a remesh modifier, object max dimension is scaled by scale value
@@ -357,14 +361,15 @@ def _boxes_to_xbs(boxes, voxel_size, flat=False, normal="z", location=(0.,0.,0.)
         xbs.append([x0, x1, y0, y1, z0, z1],)
         if flat:
             if normal == "z":
-                for xb in xbs: xb[4] = xb [5] = location[2]
+                for xb in xbs: xb[4] = xb[5] = location[2]
             elif normal == "y":
-                for xb in xbs: xb[2] = xb [3] = location[1]
+                for xb in xbs: xb[2] = xb[3] = location[1]
             elif normal == "x":
-                for xb in xbs: xb[0] = xb [1] = location[0]
-            else:
-                raise ValueError("Unrecognized normal.")
+                for xb in xbs: xb[0] = xb[1] = location[0]
+            else: raise ValueError("BFDS: Unrecognized normal.")
     return xbs
+
+# Other
 
 def ob_to_xbs_bbox(context, ob):
     """Return a list of object bounding box XBs and a msg:
@@ -469,7 +474,7 @@ def ob_to_pbs_planes(context, ob):
         if   abs(xb[1] - xb[0]) < epsilon: result.append(("X", xb[0],),)
         elif abs(xb[3] - xb[2]) < epsilon: result.append(("Y", xb[2],),)
         elif abs(xb[5] - xb[4]) < epsilon: result.append(("Z", xb[4],),)
-        else: raise Exception("Building a plane is impossible, problem with received faces")
+        else: raise ValueError("BFDS: Building a plane is impossible, problem in ob_to_xbs_faces.")
     result.sort()
     # Nothing to clean up, return
     msg = len(result) > 1 and "{0} planes".format(len(result)) or None
@@ -635,8 +640,9 @@ def show_ob_fds_geometries(context, ob):
     msgs = list()
     # Manage XB: get coordinates, show them in a tmp object, prepare msg
     xbs = None
-    try: xbs, msg  = ob_to_xbs(context, ob)
-    except: print("BFDS: show_ob_fds_geometries: error in xbs for object '{}'".format(ob.name))
+    #try:  FIXME
+    xbs, msg  = ob_to_xbs(context, ob)
+    #except: print("BFDS: show_ob_fds_geometries: error in xbs for object '{}'".format(ob.name))
     if xbs:
         ob_tmp = xbs_to_ob(xbs, context, bf_xb=ob.bf_xb)
         set_tmp_object(context, ob, ob_tmp)
