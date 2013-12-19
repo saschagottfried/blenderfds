@@ -144,8 +144,7 @@ def ob_to_xbs_pixels(context, ob):
     if   ob_tmp.dimensions[0] < epsilon: normal = "x" # the face is normal to x axis
     elif ob_tmp.dimensions[1] < epsilon: normal = "y" # ...to y axis
     elif ob_tmp.dimensions[2] < epsilon: normal = "z" # ...to z axis
-    else:
-        return None, "Object is not flat and normal to an axis. No pixel created."
+    else: raise BFException(sender=ob, msg="Not flat and normal to axis, no pixels created.".format(ob.name))
     # Solidify and remesh
     _apply_solidify_modifier(context, ob_tmp, thickness=voxel_size/3.)
     _apply_remesh_modifier(context, ob_tmp, voxel_size)
@@ -207,7 +206,7 @@ def _apply_remesh_modifier(context, ob, voxel_size):
     """Apply remesh modifier for voxelization."""
     mo = ob.modifiers.new('voxels_tmp','REMESH') # apply modifier
     mo.octree_depth, mo.scale, voxel_size, dimension_too_large = _calc_remesh_parameters(context, ob.dimensions, voxel_size)
-    if dimension_too_large: raise BFException(sender=ob, msg="Object '{}' too large for desired voxel size, split it in parts.".format(ob.name))
+    if dimension_too_large: raise BFException(sender=ob, msg="Too large for desired voxel size, split it in parts.".format(ob.name))
     mo.mode, mo.use_remove_disconnected = 'BLOCKS', False
 
 # When appling a remesh modifier, object max dimension is scaled by scale value
@@ -366,7 +365,7 @@ def _boxes_to_xbs(boxes, voxel_size, flat=False, normal="z", location=(0.,0.,0.)
                 for xb in xbs: xb[2] = xb[3] = location[1]
             elif normal == "x":
                 for xb in xbs: xb[0] = xb[1] = location[0]
-            else: raise ValueError("BFDS: Unrecognized normal.")
+            else: raise ValueError("BFDS: Unrecognized normal, problem in _boxes_to_xbs.")
     return xbs
 
 # Other
@@ -474,7 +473,7 @@ def ob_to_pbs_planes(context, ob):
         if   abs(xb[1] - xb[0]) < epsilon: result.append(("X", xb[0],),)
         elif abs(xb[3] - xb[2]) < epsilon: result.append(("Y", xb[2],),)
         elif abs(xb[5] - xb[4]) < epsilon: result.append(("Z", xb[4],),)
-        else: raise ValueError("BFDS: Building a plane is impossible, problem in ob_to_xbs_faces.")
+        else: raise ValueError("BFDS: Building planes impossible, problem in ob_to_xbs_faces.")
     result.sort()
     # Nothing to clean up, return
     msg = len(result) > 1 and "{0} planes".format(len(result)) or None
@@ -637,34 +636,35 @@ def show_ob_fds_geometries(context, ob):
     """Create temporary objects from object exported FDS geometries. Return report arguments."""
     # Init
     if context.mode != 'OBJECT': bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+    msg = None    
     msgs = list()
+    err_msgs = list()
     # Manage XB: get coordinates, show them in a tmp object, prepare msg
     xbs = None
-    #try:  FIXME
-    xbs, msg  = ob_to_xbs(context, ob)
-    #except: print("BFDS: show_ob_fds_geometries: error in xbs for object '{}'".format(ob.name))
+    try:  xbs, msg  = ob_to_xbs(context, ob)
+    except BFException as err: err_msgs.extend(err.labels)
+    if msg: msgs.append(msg)
     if xbs:
         ob_tmp = xbs_to_ob(xbs, context, bf_xb=ob.bf_xb)
         set_tmp_object(context, ob, ob_tmp)
-        if msg: msgs.append(msg)
     # Manage XYZ: get coordinates, show them in a tmp object, prepare msg
     xyzs = None
     try: xyzs, msg = ob_to_xyzs(context, ob)
-    except: print("BFDS: show_ob_fds_geometries: error in xyzs for object '{}'".format(ob.name))
+    except BFException as err: err_msgs.extend(err.labels)
+    if msg: msgs.append(msg)
     if xyzs:
         ob_tmp = xyzs_to_ob(xyzs, context, bf_xyz=ob.bf_xyz)
         set_tmp_object(context, ob, ob_tmp)
-        if msg: msgs.append(msg)
     # Manage PB*: get coordinates, show them in a tmp object, prepare msg
     pbs  = None        
     try: pbs, msg  = ob_to_pbs(context, ob)
-    except: print("BFDS: show_ob_fds_geometries: error in pbs for object '{}'".format(ob.name))
+    except BFException as err: err_msgs.extend(err.labels)
+    if msg: msgs.append(msg)
     if pbs:
         ob_tmp = pbs_to_ob(pbs, context, bf_pb=ob.bf_pb)
         set_tmp_object(context, ob, ob_tmp)
-        if msg: msgs.append(msg)
     # Return report
-    if xbs or xyzs or pbs:
-        if msgs: return {"INFO"}, ", ".join(msgs)
-        else: return {"INFO"}, "FDS geometries shown"
-    else: return {"WARNING"}, "Nothing to show"
+    if err_msgs: return {"ERROR"}, "; ".join(err_msgs)
+    if msgs: return {"INFO"}, "; ".join(msgs)
+    if xbs or xyzs or pbs: return {"INFO"}, "FDS geometries shown"
+    return {"WARNING"}, "No geometry to show"

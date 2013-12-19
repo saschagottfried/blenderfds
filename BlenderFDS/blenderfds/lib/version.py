@@ -2,8 +2,8 @@
 
 import bpy, sys
 
-blender_version = bpy.app.version_string
-blender_version_string = "{0[0]}.{0[1]}.{0[2]}".format(blender_version)
+blender_version = bpy.app.version
+blender_version_string = bpy.app.version_string
 
 blenderfds_version = sys.modules.get("blenderfds").bl_info["version"]
 blenderfds_version_string = "{0[0]}.{0[1]}.{0[2]}".format(blenderfds_version)
@@ -12,8 +12,10 @@ blenderfds_version_string = "{0[0]}.{0[1]}.{0[2]}".format(blenderfds_version)
 def get_file_version(context):
     file_version = context.scene.bf_file_version
     # This is an hack. No way to detect old files...
-    for ob in bpy.data.objects[:10]: # Check first 10 objects only
-        if ob.bf_nl: return 0,0,0 # This file is older than 2.0.1
+    for ob in bpy.data.objects[:10]: # Check first objects only
+        if ob.bf_nl: # Check if an old namelist is set
+            for ob in bpy.data.objects: ob.bf_nl = str() # Clear it  
+            return 0,0,0 # This file is older than 2.0.1
     else: file_version = tuple(context.scene.bf_file_version)
     return file_version
 
