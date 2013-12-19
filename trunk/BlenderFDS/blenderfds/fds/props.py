@@ -178,7 +178,7 @@ class BFPropTimeSetupOnly(BFProp):
             return BFResult(
                 sender = self,
                 value = "T_END={}".format(element.bf_time_t_begin),
-                msg = "Smokeview setup only" # This message does not appear on ui
+                msg = "Set" # This message does not appear on ui
             )    
 
 BFPropTimeSetupOnly(
@@ -297,7 +297,7 @@ BFProp(
     bpy_idname = "bf_reac_co_yield",
     bpy_prop = bpy.props.FloatProperty,
     step = 1.,
-    precision = 2,
+    precision = 6,
     min = 0.,
     max = 1.,
     default = 0.,
@@ -312,7 +312,7 @@ BFProp(
     bpy_idname = "bf_reac_soot_yield",
     bpy_prop = bpy.props.FloatProperty,
     step = 1.,
-    precision = 2,
+    precision = 6,
     min = 0.,
     max = 1.,
     default = 0.,

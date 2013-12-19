@@ -7,7 +7,7 @@ from blenderfds.types.flags import *
 from blenderfds.lib import fds_format
 from blenderfds.lib.utilities import isiterable
 
-DEBUG = True
+DEBUG = False
 
 ### BFCommon
 
