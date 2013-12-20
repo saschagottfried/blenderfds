@@ -10,6 +10,7 @@ def scene_to_fds(operator, context, filepath=""):
     """Export current Blender Scene to an FDS case file"""
 
     # Init
+    t0 = time.time()
     w = context.window_manager.windows[0]
     w.cursor_modal_set("WAIT")
     to_fds_error = False
@@ -38,6 +39,7 @@ def scene_to_fds(operator, context, filepath=""):
         to_fds_error = True
 
     # Write FDS file
+    fds_file += "! Generated in {0:.0f} s.\n".format(time.time()-t0)
     if not utilities.write_to_file(filepath, fds_file):
         w.cursor_modal_restore()
         operator.report({"ERROR"}, "FDS file not writable, cannot export")

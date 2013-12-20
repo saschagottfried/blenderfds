@@ -121,7 +121,7 @@ def update_bf_xb_voxel_size(self, context):
 
 BFProp(
     idname = "bf_xb_voxel_size",
-    label = "Size",
+    label = "Resolution",
     description = "Minimum resolution for object voxelization",
     flags = NOEXPORT,
     bpy_idname = "bf_xb_voxel_size",
