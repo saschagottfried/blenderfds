@@ -459,7 +459,7 @@ BFProp(
     bpy_idname = "bf_devc_setpoint",
     bpy_prop = bpy.props.FloatProperty,
     step = 10,
-    precision = 1,
+    precision = 3,
     default = 100.,
 )
 
@@ -652,7 +652,7 @@ BFProp(
     bpy_idname = "bf_hrrpua",
     bpy_prop = bpy.props.FloatProperty,
     step = 1000,
-    precision = 1,
+    precision = 3,
     min = 0.,
     default = 1000.,
 )

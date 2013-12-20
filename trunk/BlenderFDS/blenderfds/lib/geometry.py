@@ -6,6 +6,8 @@ from time import time
 from blenderfds.types import *
 from blenderfds.types.flags import *
 
+DEBUG = True
+
 ### Constants
 
 epsilon = .0001
@@ -128,6 +130,8 @@ def set_tmp_object(context, ob, ob_tmp):
 def ob_to_none(context, ob):
     return None, None
 
+# FIXME common code in pixels and voxels!!!
+
 def ob_to_xbs_pixels(context, ob):
     """Return a list of object flat voxels XBs and a msg:
     ((x0,x0,y0,y1,z0,z1,), ...), "Message"."""
@@ -137,8 +141,7 @@ def ob_to_xbs_pixels(context, ob):
     voxel_size = ob.bf_xb_voxel_size
     ob_tmp = _get_absolute_tmp_object(context, ob)
     # Check and set location
-    if not ob_tmp.data.vertices:
-        return None, "Empty object. No pixel created."
+    if not ob_tmp.data.vertices: return None, "Empty object. No pixel created."
     location = ob_tmp.data.vertices[0].co
     # Choose flat dimension or return None
     if   ob_tmp.dimensions[0] < epsilon: normal = "x" # the face is normal to x axis
@@ -151,21 +154,48 @@ def ob_to_xbs_pixels(context, ob):
     # Get absolute faces
     me_tmp = get_global_mesh(context, ob_tmp)
     tessfaces = get_tessfaces(context, me_tmp)
-    if not tessfaces:
-        return None, "No pixel created."
-    # Clean unneeded tmp object and tmp mesh
-    bpy.data.objects.remove(ob_tmp)
-    #bpy.context.scene.objects.link(ob_tmp) # DEBUG uncomment to leave temp object
-    bpy.data.meshes.remove(me_tmp) # DEBUG comment out to leave tmp object
-    # Classify tessfaces in z direction
-    z_tessfaces = _classify_z_tessfaces(tessfaces, voxel_size)
-    # Create boxes along z axis and grow them along x and y direction
-    boxes = _grow_boxes_along_y(_grow_boxes_along_x(_z_tessfaces_to_boxes(z_tessfaces)))
+    if not tessfaces: return None, "No pixel created."
+    # Sort tessfaces centers by face normal
+    t1 = time()
+    x_tessfaces, y_tessfaces, z_tessfaces = _sort_tessfaces_by_normal(tessfaces)
+    # Choose procedure FIXME clean up
+    t2 = time()
+    choice = (len(x_tessfaces), len(y_tessfaces), len(z_tessfaces))
+    sorted_choice = sorted(choice)
+    choice0 = choice.index(sorted_choice[0]) # 1st min
+    choice1 = choice.index(sorted_choice[1]) # 2nd 
+    choice2 = choice.index(sorted_choice[2]) # 3nd max
+    # Create boxes
+    t3 = time()
+    if   choice0 == 0:
+        x_floors = _get_x_floors(x_tessfaces, voxel_size)
+        boxes = _x_floors_to_boxes(x_floors)
+    elif choice0 == 1:
+        y_floors = _get_y_floors(y_tessfaces, voxel_size)
+        boxes = _y_floors_to_boxes(y_floors)
+    else:
+        z_floors = _get_z_floors(z_tessfaces, voxel_size)
+        boxes = _z_floors_to_boxes(z_floors)
+    # Grow boxes along the other two directions
+    t4 = time()
+    if   choice1 == 0: boxes = _grow_boxes_along_x(boxes)
+    elif choice1 == 1: boxes = _grow_boxes_along_y(boxes)
+    else: boxes = _grow_boxes_along_z(boxes)
+    t5 = time()
+    if   choice2 == 0: boxes = _grow_boxes_along_x(boxes)
+    elif choice2 == 1: boxes = _grow_boxes_along_y(boxes)
+    else: boxes = _grow_boxes_along_z(boxes)
+    t6 = time()
     # Prepare XBs
     xbs = _boxes_to_xbs(boxes, voxel_size, flat=True, normal=normal, location=location)
+    # Clean unneeded tmp object and tmp mesh
+    bpy.data.objects.remove(ob_tmp) # DEBUG comment out to leave tmp object
+    bpy.data.meshes.remove(me_tmp) # DEBUG comment out to leave tmp object
+    #bpy.context.scene.objects.link(ob_tmp) # DEBUG uncomment to leave temp object
     # Return
-    msg = len(xbs) > 1 and "{0} pixels, normal to {1} axis, size {2:.3f} m, in {3:.3f} s".format(len(xbs), normal, voxel_size, time() - t0) or None
-    return xbs, msg
+    msg = "{0} pixels, normal to {1} axis, resolution {2:.3f} m, in {3:.3f} s".format(len(xbs), normal, voxel_size, time()-t0) or None
+    if DEBUG and msg: msg += " (s:{0:.0f} c:{1:.0f} fb:{2:.0f}, g1:{3:.0f}, g2:{4:.0f})".format(t2-t1, t3-t2, t4-t3, t5-t4, t6-t5)
+    return xbs, msg    
 
 def ob_to_xbs_voxels(context, ob):
     """Return a list of object voxels XBs and a msg:
@@ -180,20 +210,47 @@ def ob_to_xbs_voxels(context, ob):
     # Get absolute tessfaces
     me_tmp = get_global_mesh(context, ob_tmp)
     tessfaces = get_tessfaces(context, me_tmp)
-    if not tessfaces:
-        return None, "No voxel created"
-    # Clean unneeded tmp object and tmp mesh
-    bpy.data.objects.remove(ob_tmp)
-    #bpy.context.scene.objects.link(ob_tmp) # leave temp object DEBUG
-    bpy.data.meshes.remove(me_tmp)
-    # Classify tessfaces in z direction
-    z_tessfaces = _classify_z_tessfaces(tessfaces, voxel_size)
-    # Create boxes along z axis and grow them along x and y direction
-    boxes = _grow_boxes_along_y(_grow_boxes_along_x(_z_tessfaces_to_boxes(z_tessfaces)))
+    if not tessfaces: return None, "No voxel created"
+    # Sort tessfaces centers by face normal
+    t1 = time()
+    x_tessfaces, y_tessfaces, z_tessfaces = _sort_tessfaces_by_normal(tessfaces)
+    # Choose procedure FIXME clean up
+    t2 = time()
+    choice = (len(x_tessfaces), len(y_tessfaces), len(z_tessfaces))
+    sorted_choice = sorted(choice)
+    choice0 = choice.index(sorted_choice[0]) # 1st min
+    choice1 = choice.index(sorted_choice[1]) # 2nd 
+    choice2 = choice.index(sorted_choice[2]) # 3nd max
+    # Create boxes
+    t3 = time()
+    if   choice0 == 0:
+        x_floors = _get_x_floors(x_tessfaces, voxel_size)
+        boxes = _x_floors_to_boxes(x_floors)
+    elif choice0 == 1:
+        y_floors = _get_y_floors(y_tessfaces, voxel_size)
+        boxes = _y_floors_to_boxes(y_floors)
+    else:
+        z_floors = _get_z_floors(z_tessfaces, voxel_size)
+        boxes = _z_floors_to_boxes(z_floors)
+    # Grow boxes along the other two directions
+    t4 = time()
+    if   choice1 == 0: boxes = _grow_boxes_along_x(boxes)
+    elif choice1 == 1: boxes = _grow_boxes_along_y(boxes)
+    else: boxes = _grow_boxes_along_z(boxes)
+    t5 = time()
+    if   choice2 == 0: boxes = _grow_boxes_along_x(boxes)
+    elif choice2 == 1: boxes = _grow_boxes_along_y(boxes)
+    else: boxes = _grow_boxes_along_z(boxes)
+    t6 = time()
     # Prepare XBs
     xbs = _boxes_to_xbs(boxes, voxel_size)
+    # Clean unneeded tmp object and tmp mesh
+    bpy.data.objects.remove(ob_tmp) # DEBUG comment out to leave tmp object
+    bpy.data.meshes.remove(me_tmp) # DEBUG comment out to leave tmp object
+    #bpy.context.scene.objects.link(ob_tmp) # DEBUG uncomment to leave temp object
     # Return
-    msg = len(xbs) > 1 and "{0} voxels, size {1:.3f} m, in {2:.3f} s".format(len(xbs), voxel_size, time() - t0) or None
+    msg = "{0} voxels, resolution {1:.3f} m, in {2:.0f} s".format(len(xbs), voxel_size, time()-t0) or None
+    if DEBUG and msg: msg += " (s:{0:.0f} c:{1:.0f} fb:{2:.0f}, g1:{3:.0f}, g2:{4:.0f})".format(t2-t1, t3-t2, t4-t3, t5-t4, t6-t5)
     return xbs, msg
 
 def _get_absolute_tmp_object(context, ob):
@@ -234,6 +291,7 @@ def _calc_remesh_parameters(context, dimensions, voxel_size):
     if dimension_too_large: scale = 0.990
     # Recalc true voxel_size and return
     voxel_size = dimension / scale / 2 ** octree_depth
+    if DEBUG: print("BFDS: _calc_remesh_parameters: octree_depth, scale, voxel_size, dimension_too_large:\n", octree_depth, scale, voxel_size, dimension_too_large)
     return octree_depth, scale, voxel_size, dimension_too_large
 
 def _apply_solidify_modifier(context, ob, thickness):
@@ -241,41 +299,111 @@ def _apply_solidify_modifier(context, ob, thickness):
     mo = ob.modifiers.new('solid_tmp','SOLIDIFY') # apply modifier
     mo.thickness, mo.offset = thickness, thickness / 2. # Set centered thickness
 
-# (ix, iy, iz) : absolute int coordinates of center of a tessface normal to z axis
+# Sort tessfaces by normal
+
+def _sort_tessfaces_by_normal(tessfaces):
+    """Sort tessfaces: normal to x axis, y axis, z axis."""
+    x_tessfaces, y_tessfaces, z_tessfaces = list(), list(), list()
+    for tessface in tessfaces:
+        normal = tessface.normal
+        if   abs(normal[2]) > .9: z_tessfaces.append(tessface) # tessface is normal to z axis
+        elif abs(normal[1]) > .9: y_tessfaces.append(tessface) # tessface is normal to y axis
+        else: x_tessfaces.append(tessface)                     # tessface is normal to x axis
+    return x_tessfaces, y_tessfaces, z_tessfaces
+
+# (ix, iy, iz) : absolute int coordinates of center of a tessface normal to an axis
 #   ix = round(center[0] / voxel_size)
 #   iy = round(center[1] / voxel_size)
 #   iz = round(center[2] / voxel_size)
 # the absolute origin point (0, 0, 0) is used as reference,
-# voxel_size is used as step.  
+# voxel_size is used as step.
 
-def _classify_z_tessfaces(tessfaces, voxel_size):
+def _get_x_floors(x_tessfaces, voxel_size):
+    """Classify centers of tessfaces normal to x axis in absolute int coordinates:
+    (iy, iz -> location int coordinates):
+    (ix0, ix1, ... -> list of floors int coordinates, an even number for closed geometry)"""
+    if DEBUG: print("BFDS: _get_x_floors:", len(x_tessfaces))
+    x_floors = dict() # {(3,4):(3,4,15,25,), (3,5):(3,4,15,25), ...}
+    for tessface in x_tessfaces:
+        center = tuple(tessface.center)        
+        ix = round(center[0] / voxel_size) # face index, round returns an int
+        iy = round(center[1] / voxel_size)
+        iz = round(center[2] / voxel_size)
+        try: x_floors[(iy, iz)].append(ix) # append face ix to list of ixs
+        except: x_floors[(iy, iz)] = [ix,] # or create new list of ixs from face ix
+    return x_floors
+
+def _get_y_floors(y_tessfaces, voxel_size):
+    """Classify centers of tessfaces normal to y axis in absolute int coordinates:
+    (ix, iz -> location int coordinates):
+    (iy0, iy1, ... -> list of floors int coordinates, an even number for closed geometry)"""
+    if DEBUG: print("BFDS: _get_x_floors:", len(y_tessfaces))
+    y_floors = dict() # {(3,4):(3,4,15,25,), (3,5):(3,4,15,25), ...}
+    for tessface in y_tessfaces:
+        center = tuple(tessface.center)
+        ix = round(center[0] / voxel_size) # face index, round returns an int
+        iy = round(center[1] / voxel_size)
+        iz = round(center[2] / voxel_size)
+        try: y_floors[(ix, iz)].append(iy) # append face iy to existing list of iys
+        except: y_floors[(ix, iz)] = [iy,] # or create new list of iys from face iy
+    return y_floors
+
+def _get_z_floors(z_tessfaces, voxel_size):
     """Classify centers of tessfaces normal to z axis in absolute int coordinates:
-    (ix, iy -> int coordinates): (iz0, iz1, ... -> floors int coordinates, an even number for closed geometry)"""
-    z_tessfaces = dict() # {(3,4):(3,4,15,25,), (3,5):(3,4,15,25), ...}
-    for tessface in tessfaces:
-        if abs(tessface.normal[2]) > .9:  # tessface is normal to z axis
-            center = tessface.center
-            ix = round(center[0] / voxel_size) # face index, round returns an int
-            iy = round(center[1] / voxel_size)
-            iz = round(center[2] / voxel_size)
-            if (ix, iy) in z_tessfaces: z_tessfaces[(ix, iy)].append(iz) # append face iz to existing list of izs
-            else: z_tessfaces[(ix, iy)] = [iz,] # create new list of izs from face iz
-    return z_tessfaces  
+    (ix, iy -> location int coordinates):
+    (iz0, iz1, ... -> list of floors int coordinates, an even number for closed geometry)"""
+    if DEBUG: print("BFDS: _get_x_floors:", len(z_tessfaces))
+    z_floors = dict() # {(3,4):(3,4,15,25,), (3,5):(3,4,15,25), ...}
+    for tessface in z_tessfaces:
+        center = tuple(tessface.center)
+        ix = round(center[0] / voxel_size) # face index, round returns an int
+        iy = round(center[1] / voxel_size)
+        iz = round(center[2] / voxel_size)
+        try: z_floors[(ix, iy)].append(iz) # append face iz to existing list of izs
+        except: z_floors[(ix, iy)] = [iz,] # or create new list of izs from face iz
+    return z_floors  
 
-# Use z_tessfaces levels to detect solid volumes:
-# At int coordinates (ix, iy), at z level izs[0] go into solid, at izs[1] go out of solid, at izs[2] go into solid, ...
+# Use floor levels to detect solid volumes:
+# Eg. at location of int coordinates (ix, iy), at z floor izs[0] go into solid, at izs[1] go out of solid, at izs[2] go into solid, ...
 # If solid is manifold, len(izs) is an even number: go into solid at izs[0], get at last out of it at izs[-1].
+# --> z axis, izs: |==solid==| void |==solid==|
 
-def _z_tessfaces_to_boxes(z_tessfaces):
-    """Create minimal boxes from classified centers of tessfaces normal to z axis:
-    [(ix, ix, iy, iy, iz0, iz1 -> int coordinates), (...), ...]"""
+def _x_floors_to_boxes(x_floors):
+    """Create minimal boxes from x_floors:
+    [(ix0, ix1, iy, iy, iz, iz -> int coordinates), (...), ...]"""
+    if DEBUG: print("BFDS: _x_floors_to_boxes:", len(x_floors))
     boxes = list()
-    while z_tessfaces:
-        (ix, iy), izs = z_tessfaces.popitem()
+    while x_floors:
+        (iy, iz), ixs = x_floors.popitem()
+        ixs.sort() # sort from bottom to top in +x direction
+        while ixs:
+            ix1, ix0 = ixs.pop(), ixs.pop() # pop from top to bottom in -x direction
+            boxes.append((ix0, ix1, iy, iy, iz, iz,))
+    return boxes
+    
+def _y_floors_to_boxes(y_floors):
+    """Create minimal boxes from y_floors:
+    [(ix, ix, iy0, iy1, iz, iz -> int coordinates), (...), ...]"""
+    if DEBUG: print("BFDS: _y_floors_to_boxes:", len(y_floors))
+    boxes = list()
+    while y_floors:
+        (ix, iz), iys = y_floors.popitem()
+        iys.sort() # sort from bottom to top in +y direction
+        while iys:
+            iy1, iy0 = iys.pop(), iys.pop() # pop from top to bottom in -x direction
+            boxes.append((ix, ix, iy0, iy1, iz, iz,))
+    return boxes
+
+def _z_floors_to_boxes(z_floors):
+    """Create minimal boxes from z_floors:
+    [(ix, ix, iy, iy, iz0, iz1 -> int coordinates), (...), ...]"""
+    if DEBUG: print("BFDS: _z_floors_to_boxes:", len(z_floors))
+    boxes = list()
+    while z_floors:
+        (ix, iy), izs = z_floors.popitem()
         izs.sort() # sort from bottom to top in +z direction
         while izs:
-            iz1 = izs.pop() # pop from top to bottom in -z direction
-            iz0 = izs.pop()
+            iz1, iz0 = izs.pop(), izs.pop() # pop from top to bottom in -z direction
             boxes.append((ix, ix, iy, iy, iz0, iz1,))
     return boxes
 
@@ -284,18 +412,19 @@ def _z_tessfaces_to_boxes(z_tessfaces):
 def _grow_boxes_along_x(boxes):
     """Grow boxes along x axis:
     [(ix0, ix1, iy0, iy1, iz0, iz1 -> int coordinates), (...), ...]"""
+    if DEBUG: print("BFDS: _grow_boxes_along_x:", len(boxes))
     boxes_grown = list()
     while boxes:
         ix0, ix1, iy0, iy1, iz0, iz1 = boxes.pop()
         while True: # fatten into +x direction
             box_desired = (ix1 + 1, ix1 + 1, iy0, iy1, iz0, iz1,)
-            if box_desired not in boxes: break # desired box not available!
-            boxes.remove(box_desired)
+            try: boxes.remove(box_desired)
+            except: break
             ix1 += 1
         while True: # fatten into -x direction
             box_desired = (ix0 - 1, ix0 - 1, iy0, iy1, iz0, iz1,)
-            if box_desired not in boxes: break # desired box not available!
-            boxes.remove(box_desired)
+            try: boxes.remove(box_desired)
+            except: break
             ix0 -= 1
         boxes_grown.append((ix0, ix1, iy0, iy1, iz0, iz1))
     return boxes_grown
@@ -305,39 +434,41 @@ def _grow_boxes_along_x(boxes):
 def _grow_boxes_along_y(boxes):
     """Grow boxes along y axis:
     [(ix0, ix1, iy0, iy1, iz0, iz1 -> int coordinates), (...), ...]"""
+    if DEBUG: print("BFDS: _grow_boxes_along_y:", len(boxes))
     boxes_grown = list()
     while boxes:
         ix0, ix1, iy0, iy1, iz0, iz1 = boxes.pop()
         while True: # fatten into +y direction
             box_desired = (ix0, ix1, iy1 + 1, iy1 + 1, iz0, iz1)
-            if box_desired not in boxes: break # desired box not available!
-            boxes.remove(box_desired)
+            try: boxes.remove(box_desired)
+            except: break
             iy1 += 1
         while True: # fatten into -y direction
             box_desired = (ix0, ix1, iy0 - 1, iy0 - 1, iz0, iz1)
-            if box_desired not in boxes: break # desired box not available!
-            boxes.remove(box_desired)
+            try: boxes.remove(box_desired)
+            except: break
             iy0 -= 1
         boxes_grown.append((ix0, ix1, iy0, iy1, iz0, iz1))
     return boxes_grown
 
 # Try to merge each solid box with other available boxes on +z and -z direction
     
-def _grow_boxes_along_z(boxes): # currently not used
+def _grow_boxes_along_z(boxes):
     """Grow boxes along z axis:
     [(ix0, ix1, iy0, iy1, iz0, iz1 -> int coordinates), (...), ...]"""
+    if DEBUG: print("BFDS: _grow_boxes_along_z:", len(boxes))
     boxes_grown = list()
     while boxes:
         ix0, ix1, iy0, iy1, iz0, iz1 = boxes.pop()
         while True: # fatten into +z direction
             box_desired = (ix0, ix1, iy0, iy1, iz1 + 1, iz1 + 1)
-            if box_desired not in boxes: break # desired box not available!
-            boxes.remove(box_desired)
+            try: boxes.remove(box_desired)
+            except: break
             iz1 += 1
         while True: # fatten into -z direction
             box_desired = (ix0, ix1, iy0, iy1, iz0 - 1, iz0 - 1)
-            if box_desired not in boxes: break # desired box not available!
-            boxes.remove(box_desired)
+            try: boxes.remove(box_desired)
+            except: break
             iz0 -= 1
         boxes_grown.append((ix0, ix1, iy0, iy1, iz0, iz1))
     return boxes_grown
@@ -347,18 +478,18 @@ def _grow_boxes_along_z(boxes): # currently not used
 def _boxes_to_xbs(boxes, voxel_size, flat=False, normal="z", location=(0.,0.,0.)):
     """Transform boxes in int absolute coordinates to xbs in true absolute coordinates:
     [(x0, x1, y0, y1, z0, z1 -> true coordinates), (...), ...]"""
+    if DEBUG: print("BFDS: _boxes_to_xbs:", len(boxes))
     xbs = list()
     while boxes:
         ix0, ix1, iy0, iy1, iz0, iz1 = boxes.pop()
         # Absolute int coordinates refer to the absolute origin point (0, 0, 0).
         # voxel_size is the step of int coordinates.
-        # For x0 and y0 -.5 is used to reach box corner from z_tessface center.
-        # For x1 and y1 +.5 is used to reach box corner from z_tessface center.
-        # z0 and z1 are already at the right height, as z_tessfaces are normal to z axis.
-        x0, y0, z0 = (ix0 - .5) * voxel_size, (iy0 - .5) * voxel_size, iz0 * voxel_size
-        x1, y1, z1 = (ix1 + .5) * voxel_size, (iy1 + .5) * voxel_size, iz1 * voxel_size 
+        # -.5 and +.5 are used to reach box corner from tessface center.
+        x0, y0, z0 = (ix0 - .5) * voxel_size, (iy0 - .5) * voxel_size, (iz0 - .5) * voxel_size
+        x1, y1, z1 = (ix1 + .5) * voxel_size, (iy1 + .5) * voxel_size, (iz1 + .5) * voxel_size  
         xbs.append([x0, x1, y0, y1, z0, z1],)
         if flat:
+            # Flatten object to location, a flat object is required here!
             if normal == "z":
                 for xb in xbs: xb[4] = xb[5] = location[2]
             elif normal == "y":

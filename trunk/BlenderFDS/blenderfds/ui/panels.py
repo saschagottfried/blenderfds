@@ -31,6 +31,9 @@ class SCENE_PT_BF_HEAD(SCENE_PT_BF, bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         element = context.scene
+        # Restore cursor in case of unhandled Exception
+        w = context.window_manager.windows[0]
+        w.cursor_modal_restore()
         # Draw element messages
         element.draw_messages(layout, context, element)
         # Panel
@@ -83,6 +86,9 @@ class OBJECT_PT_BF(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         element = context.active_object
+        # Restore cursor in case of unhandled Exception
+        w = context.window_manager.windows[0]
+        w.cursor_modal_restore()
         # Draw element messages
         element.draw_messages(layout, context, element)
         # Panel for temporary object
@@ -131,6 +137,9 @@ class MATERIAL_PT_BF(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         element = context.material
+        # Restore cursor in case of unhandled Exception
+        w = context.window_manager.windows[0]
+        w.cursor_modal_restore()
         # Draw element messages
         element.draw_messages(layout, context, element)
         # Panel
