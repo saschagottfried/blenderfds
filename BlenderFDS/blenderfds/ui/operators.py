@@ -2,7 +2,8 @@
 
 import bpy, time
 from blenderfds.types import *
-from blenderfds.lib import geometry, fds_mesh, fds_surf
+from blenderfds.lib import fds_mesh, fds_surf
+from blenderfds import geometry
 
 ### Dialog box
 
@@ -243,11 +244,45 @@ class OBJECT_OT_bf_show_fds_geometries(bpy.types.Operator):
     bl_description = "Show geometries as exported to FDS"
 
     def execute(self, context):
-        # Cursor FIXME manage error here?
+        # Init
         w = context.window_manager.windows[0]
         w.cursor_modal_set("WAIT")
-        #
-        report = geometry.show_ob_fds_geometries(context, context.object)
+        if context.mode != 'OBJECT': bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+        ob = context.object
+        msgs = list()
+        err_msgs = list()
+        # Manage XB: get coordinates, show them in a tmp object, prepare msg
+        xbs = None
+        msg = None
+        try:  xbs, msg  = geometry.to_fds.ob_to_xbs(context, ob)
+        except BFException as err: err_msgs.extend(err.labels)
+        if msg: msgs.append(msg)
+        if xbs:
+            ob_tmp = geometry.from_fds.xbs_to_ob(xbs, context, bf_xb=ob.bf_xb)
+            geometry.tmp.set_tmp_object(context, ob, ob_tmp)
+        # Manage XYZ: get coordinates, show them in a tmp object, prepare msg
+        xyzs = None
+        msg = None
+        try: xyzs, msg = geometry.to_fds.ob_to_xyzs(context, ob)
+        except BFException as err: err_msgs.extend(err.labels)
+        if msg: msgs.append(msg)
+        if xyzs:
+            ob_tmp = geometry.from_fds.xyzs_to_ob(xyzs, context, bf_xyz=ob.bf_xyz)
+            geometry.tmp.set_tmp_object(context, ob, ob_tmp)
+        # Manage PB*: get coordinates, show them in a tmp object, prepare msg
+        pbs  = None
+        msg = None        
+        try: pbs, msg  = geometry.to_fds.ob_to_pbs(context, ob)
+        except BFException as err: err_msgs.extend(err.labels)
+        if msg: msgs.append(msg)
+        if pbs:
+            ob_tmp = geometry.from_fds.pbs_to_ob(pbs, context, bf_pb=ob.bf_pb)
+            geometry.tmp.set_tmp_object(context, ob, ob_tmp)
+        # Set report
+        if err_msgs: report = {"ERROR"}, "; ".join(err_msgs)
+        elif msgs: report = {"INFO"}, "; ".join(msgs)
+        elif xbs or xyzs or pbs: report = {"INFO"}, "FDS geometries shown"
+        else: report = {"WARNING"}, "No geometry to show"
         # Return
         w.cursor_modal_restore()
         self.report(*report)
@@ -259,7 +294,7 @@ class SCENE_OT_bf_del_all_tmp_objects(bpy.types.Operator):
     bl_description = "Delete all temporary objects"
 
     def execute(self, context):
-        geometry.del_all_tmp_objects(context)
+        geometry.tmp.del_all_tmp_objects(context)
         self.report({"INFO"}, "All temporary objects deleted")
         return {'FINISHED'}
 
@@ -355,7 +390,7 @@ class MATERIAL_OT_bf_set_tau_q(bpy.types.Operator):
         obs = (ob for ob in context.scene.objects \
             if ob.type == "MESH" and ob.bf_export \
             and ob.active_material == ma and "bf_surf_id" in ob.descendants)
-        for ob in obs: burner_area += geometry.get_global_area(context, ob)
+        for ob in obs: burner_area += geometry.utilities.get_global_area(context, ob)
         # Set defaults to estimated values
         self.bf_burner_area = burner_area
         self.bf_hrr_max = ma.bf_hrrpua * burner_area

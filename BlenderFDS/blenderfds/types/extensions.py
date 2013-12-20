@@ -4,7 +4,8 @@ import bpy
 from blenderfds.types.results import BFResult, BFException
 from blenderfds.types.collections import BFList, BFAutoItem
 from blenderfds.types.interfaces import BFCommon, BFNamelist
-from blenderfds.lib import geometry, fds_surf, fds_to_py, version
+from blenderfds.lib import fds_surf, fds_to_py, version
+from blenderfds import geometry
 
 DEBUG = False
 
@@ -81,7 +82,7 @@ class BFObject(BFCommon):
 def update_ob_bf_namelist_idname(self, context):
     """Update function for object.bf_namelist_idname bpy_prop"""
     # Del all tmp_objects, if self has one
-    if self.bf_has_tmp: geometry.del_all_tmp_objects(context)
+    if self.bf_has_tmp: geometry.tmp.del_all_tmp_objects(context)
     # Set all geometries to NONE, as different namelists have different geometric possibilities
     self.bf_xb, self.bf_xyz, self.bf_pb = "NONE", "NONE", "NONE"
 
@@ -253,9 +254,9 @@ class BFScene(BFObject):
             and ob.bf_namelist_idname in ("bf_obst", "bf_vent")
         ) # FUTURE: bf_hole is not cut for now
         gefaces = list()
-        for ob in obs:
-            me = geometry.get_global_mesh(context, ob)
-            tessfaces = geometry.get_tessfaces(context, me)
+        for ob in obs: # FIXME new file to_ge1
+            me = geometry.utilities.get_global_mesh(context, ob)
+            tessfaces = geometry.utilities.get_tessfaces(context, me)
             # Transform ob tessfaces in GE1 gefaces
             if ob.active_material: active_material_name = ob.active_material.name
             else: active_material_name = "INERT"
@@ -310,10 +311,10 @@ class BFScene(BFObject):
                 if bpy_type == bpy.types.Scene:
                     element = self
                 elif bpy_type == bpy.types.Object:
-                    element = geometry.get_new_object(context, name=fds_id)
+                    element = geometry.utilities.get_new_object(context, name=fds_id)
                     element.bf_namelist_idname = bf_namelist.idname # link to found namelist
                 elif bpy_type == bpy.types.Material:
-                    element = geometry.get_new_material(context, name=fds_id)
+                    element = geometry.utilities.get_new_material(context, name=fds_id)
                     element.bf_namelist_idname = "bf_surf" # link to generic SURF namelist
                     element.use_fake_user = True # Blender saves it even if it has no users
                 else: raise ValueError("BFDS: BFScene.from_fds: Unrecognized namelist type")
@@ -321,7 +322,7 @@ class BFScene(BFObject):
                 # Free namelist. Is it geometric?
                 if set(("XB", "XYZ", "PBX", "PBY", "PBZ")) & fds_props_set:
                     bf_namelist = BFNamelist.bf_list["bf_free"]
-                    element = geometry.get_new_object(context, name=fds_id)
+                    element = geometry.utilities.get_new_object(context, name=fds_id)
                     element.bf_namelist_idname = bf_namelist.idname
                     # Insert fds_label as first fds_value 
                     fds_value.insert(0, (fds_label, fds_label, None))

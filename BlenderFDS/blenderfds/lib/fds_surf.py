@@ -1,7 +1,6 @@
 """BlenderFDS, FDS SURF routines"""
 
 import bpy
-from blenderfds.lib import geometry
 
 predefined = ("INERT", "OPEN", "MIRROR")
 
