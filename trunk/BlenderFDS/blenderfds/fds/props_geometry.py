@@ -3,7 +3,7 @@
 import bpy
 from blenderfds.types import *
 from blenderfds.types.flags import *
-from blenderfds.lib import geometry
+from blenderfds import geometry
 from blenderfds.fds.props import BFPropString
 
 ### scale_lenght
@@ -90,7 +90,7 @@ class BFPropXB(BFPropGeometry):
         if bf_xb not in self.items or ui: return None
         res = BFResult(sender=self)
         # Get coordinates
-        xbs, msg = geometry.ob_to_xbs(context, element)
+        xbs, msg = geometry.to_fds.ob_to_xbs(context, element)
         if msg: res.msgs.append(msg)
         if not xbs: return res
         # Correct for scale_lenght
@@ -111,13 +111,13 @@ class BFPropXB(BFPropGeometry):
         scale_length = context.scene.unit_settings.scale_length
         value = [coo / scale_length for coo in value]
         # Set value
-        geometry.xbs_to_ob(xbs=(value,), context=context, ob=element, bf_xb=element.bf_xb) # Send existing element.bf_xb for evaluation.
+        geometry.from_fds.xbs_to_ob(xbs=(value,), context=context, ob=element, bf_xb=element.bf_xb) # Send existing element.bf_xb for evaluation.
         # FUTURE: EDGE recognition!
 
 def update_bf_xb_voxel_size(self, context):
     """Update function for bf_xb_voxel_size"""
     # Del all tmp_objects, if self has one
-    if self.bf_has_tmp: geometry.del_all_tmp_objects(context)
+    if self.bf_has_tmp: geometry.tmp.del_all_tmp_objects(context)
 
 BFProp(
     idname = "bf_xb_voxel_size",
@@ -138,7 +138,7 @@ BFProp(
 def update_bf_xb(self, context):
     """Update function for bf_xb"""
     # Del all tmp_objects, if self has one
-    if self.bf_has_tmp: geometry.del_all_tmp_objects(context)
+    if self.bf_has_tmp: geometry.tmp.del_all_tmp_objects(context)
     # Set other geometries to compatible settings
     if self.bf_xb in ("VOXELS", "FACES", "PIXELS", "EDGES"):
         if self.bf_xyz == "VERTICES": self.bf_xyz = "NONE"
@@ -247,7 +247,7 @@ class BFPropXYZ(BFPropGeometry):
         if bf_xyz not in self.items or ui: return None
         res = BFResult(sender=self)
         # Get coordinates
-        xyzs, msg = geometry.ob_to_xyzs(context, element)
+        xyzs, msg = geometry.to_fds.ob_to_xyzs(context, element)
         if msg: res.msgs.append(msg)
         if not xyzs: return res
         # Correct for scale_lenght
@@ -268,12 +268,12 @@ class BFPropXYZ(BFPropGeometry):
         scale_length = context.scene.unit_settings.scale_length
         value = [coo / scale_length for coo in value]
         # Set value
-        geometry.xyzs_to_ob(xyzs=(value,), context=context, ob=element, bf_xyz=element.bf_xyz) # Send existing element.bf_xyz for evaluation
+        geometry.from_fds.xyzs_to_ob(xyzs=(value,), context=context, ob=element, bf_xyz=element.bf_xyz) # Send existing element.bf_xyz for evaluation
 
 def update_bf_xyz(self, context):
     """On bf_prop["XYZ"] update"""
     # Del all tmp_objects, if self has one
-    if self.bf_has_tmp: geometry.del_all_tmp_objects(context)
+    if self.bf_has_tmp: geometry.tmp.del_all_tmp_objects(context)
     # Set other geometries to compatible settings
     if self.bf_xyz == "VERTICES":
         if self.bf_xb in ("VOXELS", "FACES", "PIXELS", "EDGES"): self.bf_xb = "NONE"
@@ -327,7 +327,7 @@ class BFPropPB(BFPropGeometry):
         if bf_pb not in self.items or ui: return None
         res = BFResult(sender=self)
         # Get coordinates
-        pbs, msg = geometry.ob_to_pbs(context, element)
+        pbs, msg = geometry.to_fds.ob_to_pbs(context, element)
         if msg: res.msgs.append(msg)
         if not pbs: return res
         # Correct for scale_lenght
@@ -348,12 +348,12 @@ class BFPropPB(BFPropGeometry):
         value = value / context.scene.unit_settings.scale_length
         # Set value
         pbs = ((self.fds_label[2], value),) # eg: (("X", 3.4),)
-        geometry.pbs_to_ob(pbs=pbs, context=context, ob=element, bf_pb=element.bf_pb) # Send existing element.bf_pb for evaluation
+        geometry.from_fds.pbs_to_ob(pbs=pbs, context=context, ob=element, bf_pb=element.bf_pb) # Send existing element.bf_pb for evaluation
         
 def update_bf_pb(self, context):
     """Update function for bf_pb"""
     # Del all tmp_objects
-    if self.bf_has_tmp: geometry.del_all_tmp_objects(context)
+    if self.bf_has_tmp: geometry.tmp.del_all_tmp_objects(context)
     # Set other geometries to compatible settings
     if self.bf_pb == "PLANES":
         if self.bf_xb in ("VOXELS", "FACES", "PIXELS", "EDGES"): self.bf_xb = "NONE"

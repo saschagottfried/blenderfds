@@ -1,6 +1,7 @@
 """BlenderFDS, FDS MESH routines"""
 
-from blenderfds.lib import geometry, utilities
+from blenderfds.lib import utilities
+from blenderfds import geometry
 
 def n_for_poisson(n):
     """Get a good number for poisson solver at least bigger than n"""
@@ -18,7 +19,7 @@ def get_cell_sizes(context, ob):
     """Get MESH cell sizes from object"""
     # Init
     bf_mesh_ijk = ob.bf_mesh_ijk
-    dimensions = geometry.get_global_dimensions(context, ob)
+    dimensions = geometry.utilities.get_global_dimensions(context, ob)
     return [
         dimensions[0] / bf_mesh_ijk[0],
         dimensions[1] / bf_mesh_ijk[1],
@@ -29,7 +30,7 @@ def set_cell_sizes(context, ob, desired_cell_sizes, align_to_origin=True, poisso
     """Set exact MESH cell size to Blender object by adapting its dimensions.
     Apply Poisson Solver restriction on IJK and alignment to absolute origin of axis, if requested."""
     # Get current_xbs and unpack it
-    current_xbs, msg = geometry.ob_to_xbs_bbox(context, ob)
+    current_xbs, msg = geometry.to_fds.ob_to_xbs_bbox(context, ob)
     x0, x1, y0, y1, z0, z1 = current_xbs[0]
     # Calc nearest ijk values and optimize them for Poisson solver
     new_ijk = (
@@ -48,7 +49,7 @@ def set_cell_sizes(context, ob, desired_cell_sizes, align_to_origin=True, poisso
     z1 = z0 + new_ijk[2] * desired_cell_sizes[2]
     # Send new geometry to object, do not change the center
     ob.bf_mesh_ijk = new_ijk
-    geometry.xbs_to_ob(((x0, x1, y0, y1, z0, z1),), context, ob, bf_xb="BBOX", update_center=False)
+    geometry.from_fds.xbs_to_ob(((x0, x1, y0, y1, z0, z1),), context, ob, bf_xb="BBOX", update_center=False)
     
 def get_cell_infos(context, ob):
     """Get many cell infos from object"""

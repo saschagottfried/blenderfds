@@ -3,7 +3,8 @@
 import re, os.path, bpy
 from blenderfds.types import *
 from blenderfds.types.flags import *
-from blenderfds.lib import geometry, fds_mesh, fds_tables
+from blenderfds.lib import fds_mesh, fds_tables
+from blenderfds import geometry
 
 ### Common special BFProp
         
@@ -430,7 +431,7 @@ class BFPropSURFID(BFProp):
         if element.active_material: return element.active_material.name
 
     def set_value(self, context, element, value):
-        element.active_material = geometry.get_material(context, str(value))
+        element.active_material = geometry.utilities.get_material(context, str(value))
         
 BFPropSURFID(
     idname = "bf_surf_id",
