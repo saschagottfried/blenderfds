@@ -59,8 +59,8 @@ class BFAutoItem():
 
     # Check idname unicity, then append to the class bf_list collection
     def __init__(self, idname):
-        if not idname or not isinstance(idname, str): raise ValueError("Invalid idname '{}'".format(idname))
-        if idname in self.bf_list: raise ValueError("Duplicated idname '{}'".format(idname))
+        if not idname or not isinstance(idname, str): raise ValueError("BFDS: Invalid idname '{}'".format(idname))
+        if idname in self.bf_list: raise ValueError("BFDS: Duplicated idname '{}'".format(idname))
         self.idname = idname
         self.bf_list.append(self)
 

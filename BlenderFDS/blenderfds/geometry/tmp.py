@@ -1,4 +1,4 @@
-"""BlenderFDS, temporary object management"""
+"""BlenderFDS, temporary object management."""
 
 import bpy
 
