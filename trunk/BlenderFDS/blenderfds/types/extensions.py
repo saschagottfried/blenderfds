@@ -252,9 +252,10 @@ class BFScene(BFObject):
             and not ob.hide_render # hide some objects if requested
             and ob.bf_export
             and ob.bf_namelist_idname in ("bf_obst", "bf_vent")
+            and not ob.bf_is_tmp # FIXME check
         ) # FUTURE: bf_hole is not cut for now
         gefaces = list()
-        for ob in obs: # FIXME new file to_ge1
+        for ob in obs:
             me = geometry.utilities.get_global_mesh(context, ob)
             tessfaces = geometry.utilities.get_tessfaces(context, me)
             # Transform ob tessfaces in GE1 gefaces
@@ -317,7 +318,7 @@ class BFScene(BFObject):
                     element = geometry.utilities.get_new_material(context, name=fds_id)
                     element.bf_namelist_idname = "bf_surf" # link to generic SURF namelist
                     element.use_fake_user = True # Blender saves it even if it has no users
-                else: raise ValueError("BFDS: BFScene.from_fds: Unrecognized namelist type")
+                else: raise ValueError("BFDS: BFScene.from_fds: Unrecognized namelist type!")
             else:
                 # Free namelist. Is it geometric?
                 if set(("XB", "XYZ", "PBX", "PBY", "PBZ")) & fds_props_set:

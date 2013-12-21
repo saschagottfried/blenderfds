@@ -1,62 +1,70 @@
-"""BlenderFDS, voxelize algorithms."""
+"""BlenderFDS, voxelize algorithm."""
 
 import bpy
 from time import time
 from blenderfds.geometry.utilities import *
+from blenderfds.types import BFException
 
 DEBUG = True
 
-def voxelize(context, ob, flat=False, normal=None, location=None):
-    """FIXME"""
-    print("BFDS: voxelize.voxelize:", ob.name)
+def voxelize(context, ob, flat=False) -> "(xbs, timing)":
+    """Voxelize object."""
+    if DEBUG: print("BFDS: voxelize.voxelize:", ob.name)
     # Init
     t0 = time()
-    voxel_size = ob.bf_xb_voxel_size
     ob_tmp = _get_absolute_tmp_object(context, ob)
-    # FIXME
-    if flat: pass
-    # Apply remesh modifier
-    _apply_remesh_modifier(context, ob_tmp, voxel_size)
+    if not ob_tmp.data.vertices: raise BFException(sender=ob, msg="Empty object!")
+    # If flat, check flatness and solidify
+    if flat:
+        # Set location (any vertices)
+        location = ob_tmp.data.vertices[0].co
+        # Choose flat dimension and set according xbs flatten function
+        if   ob_tmp.dimensions[0] < epsilon: choose_flatten = _x_flatten_xbs # the face is normal to x axis
+        elif ob_tmp.dimensions[1] < epsilon: choose_flatten = _y_flatten_xbs # ... to y axis
+        elif ob_tmp.dimensions[2] < epsilon: choose_flatten = _z_flatten_xbs # ... to z axis
+        else: raise BFException(sender=ob, msg="Not flat and normal to axis, cannot create pixels.")
+        # Solidify
+        _apply_solidify_modifier(context, ob_tmp, thickness=ob.bf_xb_voxel_size/3.)
+    # Apply remesh modifier, update voxel_size (can be a little different from desired)
+    octree_depth, scale, voxel_size = _calc_remesh_modifier(context, ob.dimensions, ob.bf_xb_voxel_size)
+    _apply_remesh_modifier(context, ob_tmp, octree_depth, scale)
     # Get absolute tessfaces
     me_tmp = get_global_mesh(context, ob_tmp)
     tessfaces = get_tessfaces(context, me_tmp)
-    if not tessfaces: return None
-    # Sort tessfaces centers by face normal
+    if not tessfaces: raise BFException(sender=ob, msg="No faces available, cannot voxelize.")
+    # Sort tessfaces centers by face normal: normal to x, to y, to z.
     t1 = time()
     x_tessfaces, y_tessfaces, z_tessfaces = _sort_tessfaces_by_normal(tessfaces)
     # Choose fastest procedure: less tessfaces => less time required
+    # Better use the smallest collection!
     t2 = time()
-    choose = [ # Here you choose the procedure by hand FIXME
-        (2, x_tessfaces, _x_tessfaces_to_boxes, _grow_boxes_along_x, _x_boxes_to_xbs),
-        (1, y_tessfaces, _y_tessfaces_to_boxes, _grow_boxes_along_y, _y_boxes_to_xbs),
-        (0, z_tessfaces, _z_tessfaces_to_boxes, _grow_boxes_along_z, _z_boxes_to_xbs),
+    choose = [
+        (len(x_tessfaces), x_tessfaces, _x_tessfaces_to_boxes, _grow_boxes_along_x, _x_boxes_to_xbs),
+        (len(y_tessfaces), y_tessfaces, _y_tessfaces_to_boxes, _grow_boxes_along_y, _y_boxes_to_xbs),
+        (len(z_tessfaces), z_tessfaces, _z_tessfaces_to_boxes, _grow_boxes_along_z, _z_boxes_to_xbs),
     ]
-#        (len(x_tessfaces), x_tessfaces, _x_tessfaces_to_boxes, _grow_boxes_along_x, _x_boxes_to_xbs),
-#        (len(y_tessfaces), y_tessfaces, _y_tessfaces_to_boxes, _grow_boxes_along_y, _y_boxes_to_xbs),
-#        (len(z_tessfaces), z_tessfaces, _z_tessfaces_to_boxes, _grow_boxes_along_z, _z_boxes_to_xbs),
-#    ]
     choose.sort(key=lambda k:k[0]) # sort by len(tessfaces)
-    # Build boxes along 1st axis
+    # Build minimal boxes along 1st axis, using floors
     t3 = time()
-    boxes = choose[0][2](choose[0][1], voxel_size)
+    boxes, origin = choose[0][2](choose[0][1], voxel_size) # eg. _x_tessfaces_to_boxes(x_tessfaces, voxel_size)
     # Grow boxes along 2nd axis
     t4 = time()
-    boxes = choose[1][3](boxes)
+    boxes = choose[1][3](boxes) # eg. _grow_boxes_along_y(boxes)
     # Grow boxes along 3rd axis
     t5 = time()
-    boxes = choose[2][3](boxes)
+    boxes = choose[2][3](boxes) # eg. _grow_boxes_along_z(boxes)
+    # Prepare XBs, if flat flatten
     t6 = time()
-    # Prepare XBs
-    xbs = choose[0][4](boxes, voxel_size) #FIXME double check this time!
-    if flat: pass
-    #xbs = _boxes_to_xbs(boxes, voxel_size)
-    # Clean unneeded tmp object and tmp mesh
+    xbs = choose[0][4](boxes, voxel_size, origin) # eg. _x_boxes_to_xbs(boxes, ...)
+    # If flat, flatten xbs at location
+    if flat: xbs = choose_flatten(xbs, location)
+    # Clean unneeded tmp object and tmp mesh, then return
     if DEBUG: bpy.context.scene.objects.link(ob_tmp) # leave tmp object
-    else: # del tmp object
+    else:
+        # del tmp object
         bpy.data.objects.remove(ob_tmp)
         bpy.data.meshes.remove(me_tmp)
-    # Return
-    return xbs
+    return xbs, (t2-t1, t4-t3, t5-t4, t6-t5) # this is timing: sort, 1b, 2g, 3g 
 
 def _get_absolute_tmp_object(context, ob):
     """Get absolute tmp object of ob: modifiers, rotation, location and scale are applied."""
@@ -64,17 +72,10 @@ def _get_absolute_tmp_object(context, ob):
     ob_tmp.bf_is_tmp = True
     return ob_tmp
 
-def _apply_remesh_modifier(context, ob, voxel_size):
-    """Apply remesh modifier for voxelization."""
-    mo = ob.modifiers.new('voxels_tmp','REMESH') # apply modifier
-    mo.octree_depth, mo.scale, voxel_size, dimension_too_large = _calc_remesh_parameters(context, ob.dimensions, voxel_size)
-    if dimension_too_large: raise BFException(sender=ob, msg="Too large for desired voxel size, split it in parts.".format(ob.name))
-    mo.mode, mo.use_remove_disconnected = 'BLOCKS', False
-
 # When appling a remesh modifier, object max dimension is scaled by scale value
 # and divided in 2 ** octree_depth voxels
 
-def _calc_remesh_parameters(context, dimensions, voxel_size):
+def _calc_remesh_modifier(context, dimensions, voxel_size):
     """Calc Remesh modifier parameters for voxel_size."""
     # Fix voxel_size for Blender remesh algorithms
     # If dimension / voxel_size is "too integer" voxelization is not very good.
@@ -93,17 +94,24 @@ def _calc_remesh_parameters(context, dimensions, voxel_size):
         if 0.010 < scale < 0.990:
             dimension_too_large = False
             break
-    if dimension_too_large: scale = 0.990
+    if dimension_too_large: raise BFException(sender=ob, msg="Too large for desired resolution, split object!")
     # Recalc true voxel_size and return
     voxel_size = dimension / scale / 2 ** octree_depth
-    return octree_depth, scale, voxel_size, dimension_too_large
+    return octree_depth, scale, voxel_size
+
+def _apply_remesh_modifier(context, ob, octree_depth, scale):
+    """Apply remesh modifier for voxelization."""
+    mo = ob.modifiers.new('voxels_tmp','REMESH') # apply modifier
+    mo.mode, mo.use_remove_disconnected, mo.octree_depth, mo.scale = 'BLOCKS', False, octree_depth, scale
 
 def _apply_solidify_modifier(context, ob, thickness):
     """Apply solidify modifier with centered thickness."""
     mo = ob.modifiers.new('solid_tmp','SOLIDIFY') # apply modifier
     mo.thickness, mo.offset = thickness, thickness / 2. # Set centered thickness
 
-# Sort tessfaces by normal
+# Sort tessfaces by normal: collection of tessfaces normal to x, to y, to z
+# tessfaces created by the Remesh modifier in BLOCKS mode are perpendicular to a local axis
+# we used an absolute object, the trick is done.
 
 def _sort_tessfaces_by_normal(tessfaces):
     """Sort tessfaces: normal to x axis, y axis, z axis."""
@@ -111,42 +119,43 @@ def _sort_tessfaces_by_normal(tessfaces):
     x_tessfaces, y_tessfaces, z_tessfaces = list(), list(), list()
     for tessface in tessfaces:
         normal = tessface.normal
-        # Faces from Remesh modifier are perpendicular to axis, so not 0 is certainly 1. FIXME
         if   abs(normal[0]) > .9: x_tessfaces.append(tessface) # tessface is normal to x axis
-        elif abs(normal[1]) > .9: y_tessfaces.append(tessface) # tessface is normal to y axis
-        elif abs(normal[2]) > .9: z_tessfaces.append(tessface) # tessface is normal to z axis
+        elif abs(normal[1]) > .9: y_tessfaces.append(tessface) # ... to y axis
+        elif abs(normal[2]) > .9: z_tessfaces.append(tessface) # ... to z axis
         else: raise ValueError("BFDS: voxelize._sort_tessfaces_by_normal: abnormal face")
     return x_tessfaces, y_tessfaces, z_tessfaces
 
-# (ix, iy, iz) : absolute int coordinates of center of a tessface normal to an axis
-#   ix = round(center[0] / voxel_size)
-#   iy = round(center[1] / voxel_size)
-#   iz = round(center[2] / voxel_size)
-# the absolute origin point (0, 0, 0) is used as reference,
-# voxel_size is used as step.
+# First, we transform the absolute real world tessface center coordinates
+# in integer coordinates referred to origin point:
+# - voxel_size is used as step;
+# - origin is the first of tessface centers;
+# - (center[0] - origin[0]) / voxel_size is rounded from float to integers: ix, iy, iz
 
-# First, get x_tessfaces center coordinates in absolute int coordinates,
-# and classify them in list of floors for each location:
-# (iy, iz -> location int coordinates):
-#    (ix0, ix1, ... -> list of floors int coordinates, an even number for closed geometry)
-# Then create a list of minimal boxes from floors:
-# [(ix0, ix1, iy, iy, iz, iz -> int coordinates), (...), ...]"""
+# Then we pile integer heights of floors for each location:
+# (ix, iy -> location int coordinates):
+#    (iz0, iz1, ... -> list of floors int coordinates)
 
-# Use floor levels to detect solid volumes:
-# Eg. at location of int coordinates (ix, iy), at z floor izs[0] go into solid, at izs[1] go out of solid, at izs[2] go into solid, ...
+# Last we use this "floor levels" (eg. izs) to detect solid volumes.
+# Eg. at location (ix, iy) of int coordinates, at izs[0] floor go into solid,
+# at izs[1] go out of solid, at izs[2] go into solid, ...
+# z axis --> floor 0|==solid==1| void 2|==solid==3| void ...
 # If solid is manifold, len(izs) is an even number: go into solid at izs[0], get at last out of it at izs[-1].
-# --> z axis, izs: |==solid==| void |==solid==|
 
-def _x_tessfaces_to_boxes(x_tessfaces, voxel_size):
+# In fact this floors can be easily transformed in boxes:
+# (ix0, ix1, iy0, iy1, iz0, iz1)
+# boxes are very alike XBs, but in integer coordinates.
+
+def _x_tessfaces_to_boxes(x_tessfaces, voxel_size) -> "[(ix0, ix1, iy0, iy1, iz0, iz1), ...], origin":
     """Transform _x_tessfaces into minimal boxes."""
     if DEBUG: print("BFDS: _x_tessfaces_to_boxes:", len(x_tessfaces))
     # Create floors
+    origin = tuple(x_tessfaces[0].center) # First tessface center becomes origin
     floors = dict() # {(3,4):(3,4,15,25,), (3,5):(3,4,15,25), ...}
     for tessface in x_tessfaces:
-        center = tuple(tessface.center)        
-        ix = round(center[0] / voxel_size) # face index, round returns an int
-        iy = round(center[1] / voxel_size)
-        iz = round(center[2] / voxel_size)
+        center = tuple(tessface.center)
+        ix = round((center[0] - origin[0]) / voxel_size) # integer coordinates for this face (a floor)
+        iy = round((center[1] - origin[1]) / voxel_size)
+        iz = round((center[2] - origin[2]) / voxel_size)
         try: floors[(iy, iz)].append(ix) # append face ix to list of ixs
         except: floors[(iy, iz)] = [ix,] # or create new list of ixs from face ix
     # Create minimal boxes
@@ -158,25 +167,19 @@ def _x_tessfaces_to_boxes(x_tessfaces, voxel_size):
             ix1 = ixs.pop() # pop from top to bottom in -x direction
             ix0 = ixs.pop()
             boxes.append((ix0, ix1, iy, iy, iz, iz,))
-    return boxes
+    return boxes, origin
 
-
-#    """Classify centers of tessfaces normal to y axis in absolute int coordinates:
-#    (ix, iz -> location int coordinates):
-#    (iy0, iy1, ... -> list of floors int coordinates, an even number for closed geometry)"""
-#    """Create minimal boxes from y_floors:
-#    [(ix, ix, iy0, iy1, iz, iz -> int coordinates), (...), ...]"""
-
-def _y_tessfaces_to_boxes(y_tessfaces, voxel_size):
+def _y_tessfaces_to_boxes(y_tessfaces, voxel_size) -> "[(ix0, ix1, iy0, iy1, iz0, iz1), ...], origin":
     """Transform _y_tessfaces into minimal boxes."""
     if DEBUG: print("BFDS: _y_tessfaces_to_boxes:", len(y_tessfaces))
     # Create floors
+    origin = tuple(y_tessfaces[0].center) # First tessface center becomes origin
     floors = dict() # {(3,4):(3,4,15,25,), (3,5):(3,4,15,25), ...}
     for tessface in y_tessfaces:
         center = tuple(tessface.center)
-        ix = round(center[0] / voxel_size) # face index, round returns an int
-        iy = round(center[1] / voxel_size)
-        iz = round(center[2] / voxel_size)
+        ix = round((center[0] - origin[0]) / voxel_size) # integer coordinates for this face (a floor)
+        iy = round((center[1] - origin[1]) / voxel_size)
+        iz = round((center[2] - origin[2]) / voxel_size)
         try: floors[(ix, iz)].append(iy) # append face iy to existing list of iys
         except: floors[(ix, iz)] = [iy,] # or create new list of iys from face iy
     # Create minimal boxes
@@ -188,24 +191,19 @@ def _y_tessfaces_to_boxes(y_tessfaces, voxel_size):
             iy1 = iys.pop() # pop from top to bottom in -y direction
             iy0 = iys.pop()
             boxes.append((ix, ix, iy0, iy1, iz, iz,))
-    return boxes
+    return boxes, origin
 
-#    """Classify centers of tessfaces normal to z axis in absolute int coordinates:
-#    (ix, iy -> location int coordinates):
-#    (iz0, iz1, ... -> list of floors int coordinates, an even number for closed geometry)"""
-#    """Create minimal boxes from z_floors:
-#    [(ix, ix, iy, iy, iz0, iz1 -> int coordinates), (...), ...]"""
-
-def _z_tessfaces_to_boxes(z_tessfaces, voxel_size):
+def _z_tessfaces_to_boxes(z_tessfaces, voxel_size) -> "[(ix0, ix1, iy0, iy1, iz0, iz1), ...], origin":
     """Transform _z_tessfaces into minimal boxes."""
     if DEBUG: print("BFDS: _z_tessfaces_to_boxes:", len(z_tessfaces))
     # Create floors
+    origin = tuple(z_tessfaces[0].center) # First tessface center becomes origin
     floors = dict() # {(3,4):(3,4,15,25,), (3,5):(3,4,15,25), ...}
     for tessface in z_tessfaces:
         center = tuple(tessface.center)
-        ix = round(center[0] / voxel_size) # face index, round returns an int
-        iy = round(center[1] / voxel_size)
-        iz = round(center[2] / voxel_size)
+        ix = round((center[0] - origin[0]) / voxel_size) # integer coordinates for this face (a floor)
+        iy = round((center[1] - origin[1]) / voxel_size)
+        iz = round((center[2] - origin[2]) / voxel_size)
         try: floors[(ix, iy)].append(iz) # append face iz to existing list of izs
         except: floors[(ix, iy)] = [iz,] # or create new list of izs from face iz
     # Create minimal boxes  
@@ -217,13 +215,12 @@ def _z_tessfaces_to_boxes(z_tessfaces, voxel_size):
             iz1 = izs.pop() # pop from top to bottom in -z direction
             iz0 = izs.pop()
             boxes.append((ix, ix, iy, iy, iz0, iz1,))
-    return boxes
+    return boxes, origin
 
-# Try to merge each solid box with other available boxes in axis direction
+# Try to merge each minimal box with available neighbour boxes in axis direction
 
-def _grow_boxes_along_x(boxes):
-    """Grow boxes along x axis:
-    [(ix0, ix1, iy0, iy1, iz0, iz1 -> int coordinates), (...), ...]"""
+def _grow_boxes_along_x(boxes) -> "[(ix0, ix1, iy0, iy1, iz0, iz1), ...]":
+    """Grow boxes by merging neighbours along x axis."""
     if DEBUG: print("BFDS: _grow_boxes_along_x:", len(boxes))
     boxes_grown = list()
     while boxes:
@@ -241,9 +238,8 @@ def _grow_boxes_along_x(boxes):
         boxes_grown.append((ix0, ix1, iy0, iy1, iz0, iz1))
     return boxes_grown
 
-def _grow_boxes_along_y(boxes):
-    """Grow boxes along y axis:
-    [(ix0, ix1, iy0, iy1, iz0, iz1 -> int coordinates), (...), ...]"""
+def _grow_boxes_along_y(boxes) -> "[(ix0, ix1, iy0, iy1, iz0, iz1), ...]":
+    """Grow boxes by merging neighbours along y axis."""
     if DEBUG: print("BFDS: _grow_boxes_along_y:", len(boxes))
     boxes_grown = list()
     while boxes:
@@ -261,9 +257,8 @@ def _grow_boxes_along_y(boxes):
         boxes_grown.append((ix0, ix1, iy0, iy1, iz0, iz1))
     return boxes_grown
 
-def _grow_boxes_along_z(boxes):
-    """Grow boxes along z axis:
-    [(ix0, ix1, iy0, iy1, iz0, iz1 -> int coordinates), (...), ...]"""
+def _grow_boxes_along_z(boxes) -> "[(ix0, ix1, iy0, iy1, iz0, iz1), ...]":
+    """Grow boxes by merging neighbours along z axis."""
     if DEBUG: print("BFDS: _grow_boxes_along_z:", len(boxes))
     boxes_grown = list()
     while boxes:
@@ -281,63 +276,82 @@ def _grow_boxes_along_z(boxes):
         boxes_grown.append((ix0, ix1, iy0, iy1, iz0, iz1))
     return boxes_grown
 
-# Convert back int coordinates to real world coordinates
-# FIXME comments
+# Trasform boxes in int coordinates to xbs in real world absolute coordinates
 
-
-def _x_boxes_to_xbs(boxes, voxel_size):
+def _x_boxes_to_xbs(boxes, voxel_size, origin) -> "[(x0, x1, y0, y1, z0, z1), ...]":
+    """Trasform boxes (int coordinates) to xbs (real world absolute coordinates)."""
     if DEBUG: print("BFDS: _x_boxes_to_xbs:", len(boxes))
     xbs = list()
+    voxel_size_half = voxel_size / 2.
     while boxes:
         ix0, ix1, iy0, iy1, iz0, iz1 = boxes.pop()
-        x0, y0, z0 = ix0 * voxel_size, (iy0-.5) * voxel_size, (iz0-.5) * voxel_size
-        x1, y1, z1 = ix1 * voxel_size, (iy1+.5) * voxel_size, (iz1+.5) * voxel_size  
+        x0, y0, z0 = ( # origin + location + movement to lower left corner
+            origin[0] + ix0 * voxel_size, # this is already at floor level
+            origin[1] + iy0 * voxel_size - voxel_size_half,
+            origin[2] + iz0 * voxel_size - voxel_size_half,
+        )
+        x1, y1, z1 = ( # origin + location + movement to upper right corner
+            origin[0] + ix1 * voxel_size, # this is already at floor level
+            origin[1] + iy1 * voxel_size + voxel_size_half,
+            origin[2] + iz1 * voxel_size + voxel_size_half,
+        )
         xbs.append([x0, x1, y0, y1, z0, z1],)
     return xbs
 
-def _y_boxes_to_xbs(boxes, voxel_size):
+def _y_boxes_to_xbs(boxes, voxel_size, origin) -> "[(x0, x1, y0, y1, z0, z1), ...]":
+    """Trasform boxes (int coordinates) to xbs (real world absolute coordinates)."""
     if DEBUG: print("BFDS: _y_boxes_to_xbs:", len(boxes))
     xbs = list()
+    voxel_size_half = voxel_size / 2.
     while boxes:
         ix0, ix1, iy0, iy1, iz0, iz1 = boxes.pop()
-        x0, y0, z0 = (ix0-.5) * voxel_size, iy0 * voxel_size, (iz0-.5) * voxel_size
-        x1, y1, z1 = (ix1+.5) * voxel_size, iy1 * voxel_size, (iz1+.5) * voxel_size  
+        x0, y0, z0 = ( # origin + location + movement to lower left corner
+            origin[0] + ix0 * voxel_size - voxel_size_half,
+            origin[1] + iy0 * voxel_size, # this is already at floor level
+            origin[2] + iz0 * voxel_size - voxel_size_half,
+        )
+        x1, y1, z1 = ( # origin + location + movement to upper right corner
+            origin[0] + ix1 * voxel_size + voxel_size_half,
+            origin[1] + iy1 * voxel_size, # this is already at floor level
+            origin[2] + iz1 * voxel_size + voxel_size_half,
+        )
         xbs.append([x0, x1, y0, y1, z0, z1],)
     return xbs
 
-def _z_boxes_to_xbs(boxes, voxel_size):
+def _z_boxes_to_xbs(boxes, voxel_size, origin) -> "[(x0, x1, y0, y1, z0, z1), ...]":
+    """Trasform boxes (int coordinates) to xbs (real world absolute coordinates)."""
     if DEBUG: print("BFDS: _z_boxes_to_xbs:", len(boxes))
     xbs = list()
+    voxel_size_half = voxel_size / 2.
     while boxes:
         ix0, ix1, iy0, iy1, iz0, iz1 = boxes.pop()
-        x0, y0, z0 = (ix0-.5) * voxel_size, (iy0-.5) * voxel_size, iz0 * voxel_size
-        x1, y1, z1 = (ix1+.5) * voxel_size, (iy1+.5) * voxel_size, iz1 * voxel_size  
+        x0, y0, z0 = ( # origin + location + movement to lower left corner
+            origin[0] + ix0 * voxel_size - voxel_size_half,
+            origin[1] + iy0 * voxel_size - voxel_size_half,
+            origin[2] + iz0 * voxel_size, # this is already at floor level
+        )
+        x1, y1, z1 = ( # origin + location + movement to upper right corner
+            origin[0] + ix1 * voxel_size + voxel_size_half,
+            origin[1] + iy1 * voxel_size + voxel_size_half,
+            origin[2] + iz1 * voxel_size, # this is already at floor level
+        )
         xbs.append([x0, x1, y0, y1, z0, z1],)
     return xbs
 
+# Flatten xbs to obtain pixels
 
+def _x_flatten_xbs(xbs, location) -> "[(l0, l0, y0, y1, z0, z1), ...]":
+    """Flatten voxels to obtain pixels (normal to x axis) at location."""
+    if DEBUG: print("BFDS: _x_flatten_xbs:", len(xbs))
+    return [(location[0], location[0], xb[2], xb[3], xb[4], xb[5]) for xb in xbs]
+        
+def _y_flatten_xbs(xbs, location) -> "[(x0, x1, l0, l0, z0, z1), ...]":
+    """Flatten voxels to obtain pixels (normal to x axis) at location."""
+    if DEBUG: print("BFDS: _y_flatten_xbs:", len(xbs))
+    return [(xb[0], xb[1], location[1], location[1], xb[4], xb[5]) for xb in xbs]
 
-def _boxes_to_xbs(boxes, voxel_size, flat=False, normal="z", location=(0.,0.,0.)):
-    """Transform boxes in int absolute coordinates to xbs in true absolute coordinates:
-    [(x0, x1, y0, y1, z0, z1 -> true coordinates), (...), ...]"""
-    if DEBUG: print("BFDS: _boxes_to_xbs:", len(boxes))
-    xbs = list()
-    while boxes:
-        ix0, ix1, iy0, iy1, iz0, iz1 = boxes.pop()
-        # Absolute int coordinates refer to the absolute origin point (0, 0, 0).
-        # voxel_size is the step of int coordinates.
-        # -.5 and +.5 are used to reach box corner from tessface center.
-        x0, y0, z0 = (ix0 - .5) * voxel_size, (iy0 - .5) * voxel_size, (iz0 - .5) * voxel_size
-        x1, y1, z1 = (ix1 + .5) * voxel_size, (iy1 + .5) * voxel_size, (iz1 + .5) * voxel_size  
-        xbs.append([x0, x1, y0, y1, z0, z1],)
-        if flat:
-            # Flatten object to location, a flat object is required here!
-            if normal == "z":
-                for xb in xbs: xb[4] = xb[5] = location[2]
-            elif normal == "y":
-                for xb in xbs: xb[2] = xb[3] = location[1]
-            elif normal == "x":
-                for xb in xbs: xb[0] = xb[1] = location[0]
-            else: raise ValueError("BFDS: Unrecognized normal, problem in _boxes_to_xbs.")
-    return xbs
+def _z_flatten_xbs(xbs, location) -> "[(x0, x1, y0, y1, l0, l0), ...]":
+    """Flatten voxels to obtain pixels (normal to x axis) at location."""
+    if DEBUG: print("BFDS: _z_flatten_xbs:", len(xbs))
+    return [(xb[0], xb[1], xb[2], xb[3], location[2], location[2]) for xb in xbs]
 

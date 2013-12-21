@@ -1,4 +1,4 @@
-"""BlenderFDS, translate geometry from FDS notation to a Blender mesh"""
+"""BlenderFDS, translate geometry from FDS notation to a Blender mesh."""
 
 import bpy
 from time import time
@@ -6,12 +6,13 @@ from blenderfds.geometry.utilities import *
 
 ### from None
 
-def none_to_mesh(value=None, me=None):
+def none_to_mesh(value=None, me=None) -> "Mesh":
+    """Transform nothing to Blender mesh."""
     return me or bpy.data.meshes.new("none")
 
 ### from XB
 
-def xbs_edges_to_mesh(xbs, me=None):
+def xbs_edges_to_mesh(xbs, me=None) -> "Mesh":
     """Translate XB edges ((x0,x1,y0,y1,z0,z1,), ...) to Blender mesh."""
     if not me: me = bpy.data.meshes.new("xbs_edges")
     verts, edges, faces = list(), list(), list()
@@ -24,7 +25,7 @@ def xbs_edges_to_mesh(xbs, me=None):
     me.update(calc_edges=True)
     return me
 
-def xbs_faces_to_mesh(xbs, me=None):
+def xbs_faces_to_mesh(xbs, me=None) -> "Mesh":
     """Translate XB faces ((x0,x1,y0,y1,z0,z1,), ...) to Blender mesh."""
     if not me: me = bpy.data.meshes.new("xbs_faces")
     verts, edges, faces = list(), list(), list()
@@ -42,7 +43,7 @@ def xbs_faces_to_mesh(xbs, me=None):
     me.update(calc_edges=True)
     return me
 
-def xbs_bbox_to_mesh(xbs, me=None):
+def xbs_bbox_to_mesh(xbs, me=None) -> "Mesh":
     """Translate XB bbox ((x0,x1,y0,y1,z0,z1,), ...) to Blender mesh."""
     if not me: me = bpy.data.meshes.new("xbs_bbox")
     verts, edges, faces = list(), list(), list()
@@ -68,8 +69,8 @@ choose_from_xbs = {
     "EDGES"  : xbs_edges_to_mesh,
 }
 
-def xbs_to_ob(xbs, context, ob=None, bf_xb="NONE", name="xbs_to_ob", update_center=True):
-    """Geometry in FDS notation to Blender object"""
+def xbs_to_ob(xbs, context, ob=None, bf_xb="NONE", name="xbs_to_ob", update_center=True) -> "Mesh":
+    """Transform geometry in FDS notation to Blender object."""
     # Choose bf_xb
     if bf_xb == "NONE":
         x0, x1, y0, y1, z0, z1 = xbs[0]
@@ -85,7 +86,7 @@ def xbs_to_ob(xbs, context, ob=None, bf_xb="NONE", name="xbs_to_ob", update_cent
 
 ### from XYZ
 
-def xyzs_vertices_to_mesh(xyzs, me=None):
+def xyzs_vertices_to_mesh(xyzs, me=None) -> "Mesh":
     """Translate XYZ vertices ((x0,y0,z0,), ...) to Blender mesh."""
     if not me: me = bpy.data.meshes.new("xyzs_vertices")
     verts, edges, faces = xyzs, list(), list()
@@ -103,8 +104,8 @@ choose_from_xyzs = {
     "VERTICES" : xyzs_vertices_to_mesh,
 }
 
-def xyzs_to_ob(xyzs, context, ob=None, bf_xyz="NONE", name="xyzs_to_ob", update_center=True):
-    """Geometry in FDS notation to Blender object"""
+def xyzs_to_ob(xyzs, context, ob=None, bf_xyz="NONE", name="xyzs_to_ob", update_center=True) -> "Mesh":
+    """Transform geometry in FDS notation to Blender object."""
     # Choose bf_xyz
     if bf_xyz == "NONE": bf_xyz = "VERTICES"
     # Get mesh, set it, set properties and center position
@@ -117,7 +118,7 @@ def xyzs_to_ob(xyzs, context, ob=None, bf_xyz="NONE", name="xyzs_to_ob", update_
 
 ### from PB
 
-def pbs_planes_to_mesh(pbs, me=None):
+def pbs_planes_to_mesh(pbs, me=None) -> "Mesh":
     """Translate PB* planes (("X",x3,), ("X",x7,), ("Y",y9,), ...) to Blender mesh."""
     # Prepare xbs
     xbs = list()
@@ -140,8 +141,8 @@ choose_from_pbs = {
     "PLANES" : pbs_planes_to_mesh,
 }
 
-def pbs_to_ob(pbs, context, ob=None, bf_pb="NONE", name="pbs_to_ob", update_center=True):
-    """Geometry in FDS notation to Blender object."""
+def pbs_to_ob(pbs, context, ob=None, bf_pb="NONE", name="pbs_to_ob", update_center=True) -> "Mesh":
+    """Transform geometry in FDS notation to Blender object."""
     # Choose bf_pb
     if bf_pb == "NONE": bf_pb = "PLANES"
     # Get mesh, set it, set properties and center position
