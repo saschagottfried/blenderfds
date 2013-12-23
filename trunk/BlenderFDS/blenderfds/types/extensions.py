@@ -70,11 +70,9 @@ class BFObject(BFCommon):
     
     def to_fds(self, context=None) -> "str or None":
         """Export me in FDS notation, on error raise BFException."""
-        # Cursor
+        if not context: context = bpy.context
         w = context.window_manager.windows[0]
         w.cursor_modal_set("WAIT")
-        # Get
-        if not context: context = bpy.context
         res = self.get_res(context, self)
         if res: return res.value
         w.cursor_modal_restore()
@@ -216,16 +214,18 @@ class BFScene(BFObject):
         if ui: return None # No msg
         return BFResult(sender=self, value="&TAIL /\n") # closing namelist
 
-    def to_ge1(self, context):
+    def to_ge1(self, context=None):
         """Export my geometry in FDS GE1 notation, on error raise BFException."""
+        if not context: context = bpy.context
         return geometry.to_ge1.scene_to_ge1(context, self)
 
     # Import
 
-    def from_fds(self, context, value=None) -> "None":
+    def from_fds(self, context=None, value=None) -> "None":
         """Import a text in FDS notation into self. On error raise BFException.
         Value is any text in good FDS notation.
         """
+        if not context: context = bpy.context
         # Cursor
         w = context.window_manager.windows[0]
         w.cursor_modal_set("WAIT")
