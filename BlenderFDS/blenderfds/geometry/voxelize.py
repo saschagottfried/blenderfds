@@ -5,11 +5,11 @@ from time import time
 from blenderfds.geometry.utilities import *
 from blenderfds.types import BFException
 
-DEBUG = True
+DEBUG = False
 
 def voxelize(context, ob, flat=False) -> "(xbs, timing)":
     """Voxelize object."""
-    if DEBUG: print("BFDS: voxelize.voxelize:", ob.name)
+    print("BFDS: voxelize.voxelize:", ob.name)
     # Init
     t0 = time()
     ob_tmp = _get_absolute_tmp_object(context, ob)
@@ -115,7 +115,7 @@ def _apply_solidify_modifier(context, ob, thickness):
 
 def _sort_tessfaces_by_normal(tessfaces):
     """Sort tessfaces: normal to x axis, y axis, z axis."""
-    if DEBUG: print("BFDS: _sort_tessfaces_by_normal:", len(tessfaces))
+    print("BFDS: _sort_tessfaces_by_normal:", len(tessfaces))
     x_tessfaces, y_tessfaces, z_tessfaces = list(), list(), list()
     for tessface in tessfaces:
         normal = tessface.normal
@@ -147,7 +147,7 @@ def _sort_tessfaces_by_normal(tessfaces):
 
 def _x_tessfaces_to_boxes(x_tessfaces, voxel_size) -> "[(ix0, ix1, iy0, iy1, iz0, iz1), ...], origin":
     """Transform _x_tessfaces into minimal boxes."""
-    if DEBUG: print("BFDS: _x_tessfaces_to_boxes:", len(x_tessfaces))
+    print("BFDS: _x_tessfaces_to_boxes:", len(x_tessfaces))
     # Create floors
     origin = tuple(x_tessfaces[0].center) # First tessface center becomes origin
     floors = dict() # {(3,4):(3,4,15,25,), (3,5):(3,4,15,25), ...}
@@ -171,7 +171,7 @@ def _x_tessfaces_to_boxes(x_tessfaces, voxel_size) -> "[(ix0, ix1, iy0, iy1, iz0
 
 def _y_tessfaces_to_boxes(y_tessfaces, voxel_size) -> "[(ix0, ix1, iy0, iy1, iz0, iz1), ...], origin":
     """Transform _y_tessfaces into minimal boxes."""
-    if DEBUG: print("BFDS: _y_tessfaces_to_boxes:", len(y_tessfaces))
+    print("BFDS: _y_tessfaces_to_boxes:", len(y_tessfaces))
     # Create floors
     origin = tuple(y_tessfaces[0].center) # First tessface center becomes origin
     floors = dict() # {(3,4):(3,4,15,25,), (3,5):(3,4,15,25), ...}
@@ -195,7 +195,7 @@ def _y_tessfaces_to_boxes(y_tessfaces, voxel_size) -> "[(ix0, ix1, iy0, iy1, iz0
 
 def _z_tessfaces_to_boxes(z_tessfaces, voxel_size) -> "[(ix0, ix1, iy0, iy1, iz0, iz1), ...], origin":
     """Transform _z_tessfaces into minimal boxes."""
-    if DEBUG: print("BFDS: _z_tessfaces_to_boxes:", len(z_tessfaces))
+    print("BFDS: _z_tessfaces_to_boxes:", len(z_tessfaces))
     # Create floors
     origin = tuple(z_tessfaces[0].center) # First tessface center becomes origin
     floors = dict() # {(3,4):(3,4,15,25,), (3,5):(3,4,15,25), ...}
@@ -221,7 +221,7 @@ def _z_tessfaces_to_boxes(z_tessfaces, voxel_size) -> "[(ix0, ix1, iy0, iy1, iz0
 
 def _grow_boxes_along_x(boxes) -> "[(ix0, ix1, iy0, iy1, iz0, iz1), ...]":
     """Grow boxes by merging neighbours along x axis."""
-    if DEBUG: print("BFDS: _grow_boxes_along_x:", len(boxes))
+    print("BFDS: _grow_boxes_along_x:", len(boxes))
     boxes_grown = list()
     while boxes:
         ix0, ix1, iy0, iy1, iz0, iz1 = boxes.pop()
@@ -240,7 +240,7 @@ def _grow_boxes_along_x(boxes) -> "[(ix0, ix1, iy0, iy1, iz0, iz1), ...]":
 
 def _grow_boxes_along_y(boxes) -> "[(ix0, ix1, iy0, iy1, iz0, iz1), ...]":
     """Grow boxes by merging neighbours along y axis."""
-    if DEBUG: print("BFDS: _grow_boxes_along_y:", len(boxes))
+    print("BFDS: _grow_boxes_along_y:", len(boxes))
     boxes_grown = list()
     while boxes:
         ix0, ix1, iy0, iy1, iz0, iz1 = boxes.pop()
@@ -259,7 +259,7 @@ def _grow_boxes_along_y(boxes) -> "[(ix0, ix1, iy0, iy1, iz0, iz1), ...]":
 
 def _grow_boxes_along_z(boxes) -> "[(ix0, ix1, iy0, iy1, iz0, iz1), ...]":
     """Grow boxes by merging neighbours along z axis."""
-    if DEBUG: print("BFDS: _grow_boxes_along_z:", len(boxes))
+    print("BFDS: _grow_boxes_along_z:", len(boxes))
     boxes_grown = list()
     while boxes:
         ix0, ix1, iy0, iy1, iz0, iz1 = boxes.pop()
@@ -280,7 +280,7 @@ def _grow_boxes_along_z(boxes) -> "[(ix0, ix1, iy0, iy1, iz0, iz1), ...]":
 
 def _x_boxes_to_xbs(boxes, voxel_size, origin) -> "[(x0, x1, y0, y1, z0, z1), ...]":
     """Trasform boxes (int coordinates) to xbs (real world absolute coordinates)."""
-    if DEBUG: print("BFDS: _x_boxes_to_xbs:", len(boxes))
+    print("BFDS: _x_boxes_to_xbs:", len(boxes))
     xbs = list()
     voxel_size_half = voxel_size / 2.
     while boxes:
@@ -300,7 +300,7 @@ def _x_boxes_to_xbs(boxes, voxel_size, origin) -> "[(x0, x1, y0, y1, z0, z1), ..
 
 def _y_boxes_to_xbs(boxes, voxel_size, origin) -> "[(x0, x1, y0, y1, z0, z1), ...]":
     """Trasform boxes (int coordinates) to xbs (real world absolute coordinates)."""
-    if DEBUG: print("BFDS: _y_boxes_to_xbs:", len(boxes))
+    print("BFDS: _y_boxes_to_xbs:", len(boxes))
     xbs = list()
     voxel_size_half = voxel_size / 2.
     while boxes:
@@ -320,7 +320,7 @@ def _y_boxes_to_xbs(boxes, voxel_size, origin) -> "[(x0, x1, y0, y1, z0, z1), ..
 
 def _z_boxes_to_xbs(boxes, voxel_size, origin) -> "[(x0, x1, y0, y1, z0, z1), ...]":
     """Trasform boxes (int coordinates) to xbs (real world absolute coordinates)."""
-    if DEBUG: print("BFDS: _z_boxes_to_xbs:", len(boxes))
+    print("BFDS: _z_boxes_to_xbs:", len(boxes))
     xbs = list()
     voxel_size_half = voxel_size / 2.
     while boxes:
@@ -342,16 +342,16 @@ def _z_boxes_to_xbs(boxes, voxel_size, origin) -> "[(x0, x1, y0, y1, z0, z1), ..
 
 def _x_flatten_xbs(xbs, location) -> "[(l0, l0, y0, y1, z0, z1), ...]":
     """Flatten voxels to obtain pixels (normal to x axis) at location."""
-    if DEBUG: print("BFDS: _x_flatten_xbs:", len(xbs))
+    print("BFDS: _x_flatten_xbs:", len(xbs))
     return [(location[0], location[0], xb[2], xb[3], xb[4], xb[5]) for xb in xbs]
         
 def _y_flatten_xbs(xbs, location) -> "[(x0, x1, l0, l0, z0, z1), ...]":
     """Flatten voxels to obtain pixels (normal to x axis) at location."""
-    if DEBUG: print("BFDS: _y_flatten_xbs:", len(xbs))
+    print("BFDS: _y_flatten_xbs:", len(xbs))
     return [(xb[0], xb[1], location[1], location[1], xb[4], xb[5]) for xb in xbs]
 
 def _z_flatten_xbs(xbs, location) -> "[(x0, x1, y0, y1, l0, l0), ...]":
     """Flatten voxels to obtain pixels (normal to x axis) at location."""
-    if DEBUG: print("BFDS: _z_flatten_xbs:", len(xbs))
+    print("BFDS: _z_flatten_xbs:", len(xbs))
     return [(xb[0], xb[1], xb[2], xb[3], location[2], location[2]) for xb in xbs]
 

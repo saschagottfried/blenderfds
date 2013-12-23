@@ -5,7 +5,7 @@ import bpy, bmesh
 ### Constants
 
 epsilon = .0001
-DEBUG = True
+DEBUG = False
 
 ### Working on Blender objects
 

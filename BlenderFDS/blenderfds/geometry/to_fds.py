@@ -5,7 +5,7 @@ from time import time
 from blenderfds.geometry.utilities import *
 from blenderfds.geometry.voxelize import voxelize
 
-DEBUG = True
+DEBUG = False
 
 ### to None
 
