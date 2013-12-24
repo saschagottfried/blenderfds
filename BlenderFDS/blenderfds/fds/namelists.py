@@ -97,7 +97,7 @@ BFNamelist(
     enum_id = 1000,
     bpy_type = bpy.types.Object,
     bf_prop_export = "bf_export",
-    bf_props = ("bf_id", "bf_fyi", "bf_surf_id", "bf_xb_solid",),
+    bf_props = ("bf_id", "bf_fyi", "bf_surf_id", "bf_obst_thicken", "bf_xb_solid",),
     bf_prop_free = "bf_free",
     bf_other = {"show_transparent": True},
 )

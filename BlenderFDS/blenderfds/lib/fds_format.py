@@ -1,7 +1,7 @@
 """BlenderFDS, string formatting for FDS"""
 
 def to_comment(msgs) -> "str":
-    """Format FDS comments"""
+    """Format comments"""
     # Expected output:
     #   ! msg1
     #   ! msg2

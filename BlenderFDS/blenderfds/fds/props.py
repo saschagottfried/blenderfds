@@ -441,6 +441,16 @@ BFPropSURFID(
     bpy_idname = "active_material",
 )
 
+BFProp(
+    idname = "bf_obst_thicken",
+    label = "THICKEN",
+    description = "Prevent FDS from allowing thin sheet obstructions",
+    fds_label = "THICKEN",
+    bpy_idname = "bf_obst_thicken",
+    bpy_prop = bpy.props.BoolProperty,
+    default = True,
+)
+
 BFPropString(
     idname = "bf_quantity",
     label = "QUANTITY",
@@ -501,7 +511,7 @@ BFProp(
     fds_label = "VECTOR",
     bpy_idname = "bf_slcf_vector",
     bpy_prop = bpy.props.BoolProperty,
-    default = True,
+    default = False,
 )
 
 class BFPropIJK(BFProp):
@@ -555,7 +565,7 @@ class BFPropFreeNamelist(BFPropFree):
 BFPropFreeNamelist(
     idname = "bf_free_namelist",
     label = "Free Namelist",
-    description = "Free namelist and parameters, & and / not needed, use matched single quotes as string delimiters, eg OBST PROP1='example'",
+    description = "Free namelist and parameters, & and / not needed, use matched single quotes as string delimiters, eg ABCD PROP1='example'",
     bpy_idname = "bf_free", # system property
 )
 

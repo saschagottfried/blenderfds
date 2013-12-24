@@ -59,7 +59,7 @@ class BFObject(BFCommon):
     def get_my_res(self, context, element, ui=False) -> "BFResult or None": # 'element' kept for polymorphism
         """Get my BFResult. On error raise BFException."""
         if not self.get_exported(context, element): return None
-        if self.type == "EMPTY" and not ui: msg = "{}".format(self.bf_fyi or "group of namelists")
+        if self.type == "EMPTY" and not ui: msg = self.bf_fyi or " " # FIXME hackish
         else: msg = None
         return BFResult(sender=self, msg=msg)
 
