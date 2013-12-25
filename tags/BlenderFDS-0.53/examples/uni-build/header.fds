@@ -1,0 +1,21 @@
+!!! General configuration
+
+&TIME T_END=900.0 /
+
+&REAC ID='polyurethane', SOOT_YIELD=0.1875, CO_YIELD=0.02775,
+      C=1.0, H=1.75, O=0.25, N=0.065,
+      HEAT_OF_COMBUSTION=25300., IDEAL=.TRUE. /
+      Gas phase reaction: polyurethane flexible foam (means) from
+      Tewarson SFPE Handbook 3rd ed,
+      SFPE handbook table 3-4.14, p. 3-112.
+
+&MATL ID='Gypsum plaster', CONDUCTIVITY=0.48,
+      SPECIFIC_HEAT=0.84, DENSITY=1440. /
+      Thermo-physical properties of gypsum plaster.
+
+&PROP ID='acme smoke detector', QUANTITY='CHAMBER OBSCURATION',
+      LENGTH=1.8, ACTIVATION_OBSCURATION=3.28 /
+      
+&ISOF QUANTITY='TEMPERATURE', VALUE(1)=60. /
+&ISOF QUANTITY='VISIBILITY', VALUE(1)=10. /
+&BNDF QUANTITY='ADIABATIC SURFACE TEMPERATURE' /
