@@ -1,0 +1,16 @@
+&TIME T_END=0.0 /
+
+&REAC ID='0PE+0.25PU+0EX+0.75Wood',
+      SOOT_YIELD=0.058, CO_YIELD=0.01, C=1, H=1.805, O=0.614, N=0.016,
+      HEAT_OF_COMBUSTION=19175., IDEAL=.TRUE. /
+Chemical formula from http://www.chemindustry.com chemical info service
+Other data from Tewarson SFPE Handbook 3rd ed, SFPE handbook table 3-4.14, p. 3-112.
+See calculation table for all the details.
+
+&MATL ID='Gypsum plaster', CONDUCTIVITY=0.48,
+      SPECIFIC_HEAT=0.84, DENSITY=1440. /
+      Thermo-physical properties of gypsum plaster.
+      
+&ISOF QUANTITY='TEMPERATURE', VALUE(1)=50. /
+&ISOF QUANTITY='VISIBILITY', VALUE(1)=10. /
+_BNDF QUANTITY='ADIABATIC SURFACE TEMPERATURE' /
