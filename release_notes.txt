@@ -1,0 +1,14 @@
+
+BlenderFDS main site: http://code.google.com/p/blenderfds
+Consult user documentation at: http://code.google.com/p/blenderfds/wiki/Home?tm=6
+Suscribe to the discussion group: http://groups.google.com/group/blenderfds
+Report an issue at: http://code.google.com/p/blenderfds/issues/list
+
+---
+0.43 2010-04-28
+
+This is the first public release: the documentation is almost there, the software
+seems rather stable. There is a test case, too. Our Community deserves a release.
+Now we need testing, testing, testing.
+
+Let's wait a little more before the big announcement on the FDS discussion group.
