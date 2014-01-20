@@ -1,0 +1,7 @@
+#summary Uninstalling BlenderFDS
+
+<wiki:toc max_depth="2" />
+
+= Uninstalling BlenderFDS =
+
+To remove BlenderFDS from your Blender install, simply disable the BlenderFDS add-on in the `Add-Ons` panel of the `File > User Preferences` window. Then close the Blender executable and delete the `blenderfds` directory from the local `addons` directory.
