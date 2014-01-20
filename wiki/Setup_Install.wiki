@@ -1,10 +1,7 @@
-#summary Installing BlenderFDS
-
+#summary Install BlenderFDS
 <wiki:toc max_depth="2" />
 
-= First, install Blender =
-
-|| BlenderFDS shall be installed on the right Blender version, as specified in the release notes of the downloaded package. It does not work with older versions and it is not guaranteed to work with newer ones. ||
+= First, get Blender =
 
 Download the appropriate Blender package for your platform from [http://www.blender.org/] and install it on your computer:
 
@@ -14,9 +11,11 @@ Download the appropriate Blender package for your platform from [http://www.blen
 
 Launch Blender executable and check that it works correctly.
 
+|| BlenderFDS shall be installed on the right Blender version, as specified in the release notes of the downloaded package. It does not work with older versions and it is not guaranteed to work with newer ones. ||
+
 = Then, install BlenderFDS add-on into Blender =
 
-After installing Blender, download the latest BlenderFDS distribution package (eg: `BlenderFDS_2.0.0.zip`) from [http://www.blenderfds.org/] and unzip it in a comfortable location.
+[Setup_Download Download] the latest BlenderFDS distribution package and unzip it in a comfortable location.
 
 After launching the Blender executable, open the the Blender `Add-Ons` panel using the `File > User Preferences` menu and clicking on the `Add-Ons` tab (1). The following window tab opens up:
 

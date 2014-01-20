@@ -1,5 +1,4 @@
-#summary Uninstalling BlenderFDS
-
+#summary Uninstall BlenderFDS
 <wiki:toc max_depth="2" />
 
 = Uninstalling BlenderFDS =

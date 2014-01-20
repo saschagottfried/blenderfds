@@ -6,6 +6,7 @@
     * [Before_LearningFDS Learning FDS]
     * [Before_LearningBlender Learning Blender]
  * BlenderFDS Setup
-    * [Setup_Installing Installing]
-    * [Setup_Uninstalling Uninstalling]
-    * [Setup_Updating Updating]
+    * [Setup_Download Download]
+    * [Setup_Install Install]
+    * [Setup_Uninstall Uninstall]
+    * [Setup_Update Update]
