@@ -4,7 +4,9 @@
 
  * [Home Home]
  * Installation
-   * [InstallingBlenderFDS Installing BlenderFDS]
+   * [installation_installing Installing]
+   * [installation_uninstalling Uninstalling]
+   * [installation_updating Updating]
  * [LearningBlender Learning Blender]
  * [TheIdeaBehindBlenderFDS The idea behind BlenderFDS]
  * [BlenderFDS_UI BlenderFDS user interface]
