@@ -1,7 +1,7 @@
 #summary Home
 #labels Featured
 
-=Work in progress, preparing for BlenderFDS3=
+=Work in progress, preparing for BlenderFDS3, be patient!=
 
 <p align=center >
 <img src="http://blenderfds.googlecode.com/svn/wiki/images/logo/blenderfds_192.png" /><br/>
