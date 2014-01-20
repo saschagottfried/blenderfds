@@ -1,10 +1,6 @@
 #summary Download
 
-= Download BlenderFDS 2.0.1 [STABLE] =
-
-This version requires *Blender 2.64* 
-
-<table cellpadding="10">
+<table>
 <tr>
     <td align="center">
         [http://blenderfds.googlecode.com/svn/wiki/images/logo/logo-windows.png]
@@ -14,6 +10,11 @@ This version requires *Blender 2.64*
     <td>
         [http://blenderfds.googlecode.com/files/BlenderFDS_2.0.1.zip http://blenderfds.googlecode.com/svn/wiki/images/button/download.png]
     </td>
+    <td>
+        BlenderFDS 2.0.1 [STABLE]
+        <br/>to be installed along with *Blender 2.64*
+    </td>
+
 </tr>
 </table>
 
