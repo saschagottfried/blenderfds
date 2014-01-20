@@ -3,4 +3,4 @@
 <wiki:toc max_depth="2" />
 ----
 
-To update BlenderFDS, uninstall the previous BlenderFDS version, as explained in the previous paragraphs, and install the new version from scratch.
+To update BlenderFDS, [Setup_Uninstall uninstall] the previous BlenderFDS version, and [Setup_Install install] the new version from scratch.
