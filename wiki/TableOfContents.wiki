@@ -1,7 +1,8 @@
 #summary Table of Contents
 
  * [Home Home]
- * [InstallingBlenderFDS Installing BlenderFDS]
+ * Installation
+   * [InstallingBlenderFDS Installing BlenderFDS]
  * [LearningBlender Learning Blender]
  * [TheIdeaBehindBlenderFDS The idea behind BlenderFDS]
  * [BlenderFDS_UI BlenderFDS user interface]
@@ -11,6 +12,3 @@
  * [BlenderScenesToFDSCases Blender scenes to FDS cases]
  * [BlenderFDSSQA BlenderFDS software quality assurance]
  * [FDSSyntaxHighlighting FDS syntax highlighting]
-
-Link
- * [300/example.wiki Example test]
