@@ -1,12 +1,9 @@
 #summary Download
-=Download=
-----
-
 <table cellpadding="10">
 <tr>
     <td></td>
-    <td align="center">Current stable release</td>
-    <td align="center">Next unstable release</td>
+    <td align="center"><font face="calibri,helvetica,arial,sans-serif" size="6">Current stable release</font></td>
+    <td align="center"><font face="calibri,helvetica,arial,sans-serif" size="6">Next unstable release</font></td>
 </tr>
 <tr>
     <td align="center">
