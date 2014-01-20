@@ -2,20 +2,22 @@
 
 ==Work in progress for BlenderFDS3!==
 
-[Home Home]
+* [Home Home]
+* BlenderFDS Setup
+  * [Setup_Installing Installing]
+  * [Setup_Uninstalling Uninstalling]
+  * [Setup_Updating Updating]
+
+ * Another...
+
+==OLD==
+
 
 Before using BlenderFDS
  * [Before_LearningFDS How to become a proficient FDS user]
  * [Before_LearningBlender How to become a basic Blender user]
 
-BlenderFDS Setup
- * [Setup_Installing Installing]
- * [Setup_Uninstalling Uninstalling]
- * [Setup_Updating Updating]
 
- * Another...
-
-==OLD==
  * [LearningBlender Learning Blender]
  * [TheIdeaBehindBlenderFDS The idea behind BlenderFDS]
  * [BlenderFDS_UI BlenderFDS user interface]
