@@ -13,4 +13,4 @@
  * [FDSSyntaxHighlighting FDS syntax highlighting]
 
 Link
- * [http://blenderfds.googlecode.com/svn/wiki/300/example.wiki Example test]
+ * [300/example.wiki Example test]
