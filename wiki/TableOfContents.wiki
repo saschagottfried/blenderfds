@@ -1,21 +1,9 @@
 #summary Table of Contents
 
- * Before
-    * [Before_LearningFDS Become a proficient FDS user]
-    * [Before_LearningBlender Become a basic Blender user]
+ * Before BlenderFDS
+    * [Before_LearningFDS Learning FDS]
+    * [Before_LearningBlender Learning Blender]
  * BlenderFDS Setup
     * [Setup_Installing Installing]
     * [Setup_Uninstalling Uninstalling]
     * [Setup_Updating Updating]
- * Before using BlenderFDS
-    * [Before_LearningFDS Become a proficient FDS user]
-    * [Before_LearningBlender Become a basic Blender user]
- * User Resources
-    * [Downloads_Overview Download FDS-SMV]
-    * [Third_party_Tools Third-party Tools]
-    * [Color_Table Color Table]
-    * [Setting_Stack_Size Setting the Stack Size]
- * Installation Notes
-    * [Installation_Notes FDS-SMV Installation Notes]
-    * [Linux_Installation_Notes Linux Installation Notes]
-    * [Mac_Installation_Notes Mac Installation Notes]
