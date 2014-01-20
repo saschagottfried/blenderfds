@@ -15,7 +15,7 @@
 </table>
 
 <table>
-<tr>
+<tr valign="bottom">
     <td align="center">
         [http://blenderfds.googlecode.com/svn/wiki/images/logo/blenderfds_128.png]
     </td>
