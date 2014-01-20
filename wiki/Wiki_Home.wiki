@@ -1,10 +1,11 @@
 #summary Home
 #labels Featured
 <font face="calibri,helvetica,arial,sans-serif" size="12">
-<b>BlenderFDS</b>,
+<b>BlenderFDS Documentation</b>
 </font>
+<br/>
 <font face="calibri,helvetica,arial,sans-serif" size="6">
-Documentation
+The oper user interface for NIST FDS
 </font>
 
 These wiki pages contain the full BlenderFDS documentation.
