@@ -1,7 +1,7 @@
 #summary Home
 #labels Featured
 
-[logo/blenderfds_192.png]
+[http://blenderfds.googlecode.com/svn/wiki/logo/blenderfds_192.png]
 
 = BlenderFDS documentation =
 
