@@ -23,11 +23,9 @@
         <font face="calibri,helvetica,arial,sans-serif" size="18">
             <b>BlenderFDS</b>
         </font>
-        <br/>
         <font face="calibri,helvetica,arial,sans-serif" size="6">
             the open user interface for NIST FDS
         </font>
-        <br/>
     </td>
 </tr>
 </table>
