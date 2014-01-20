@@ -30,7 +30,7 @@
         == BlenderFDS 3.0.0RC1 ==
     </td>
     <td>
-        This is a release candidate for testing purposes only, *do not use it for production.*        
+        This is a release candidate for testing purposes only, *do not use it for production.*<br/>
         This version requires Blender 2.69.
     </td>
 </tr>
