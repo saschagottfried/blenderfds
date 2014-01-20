@@ -1,0 +1,18 @@
+#summary Home
+#labels Featured
+
+[http://blenderfds.googlecode.com/svn/wiki/images/logo/blenderfds_192.png]
+
+= BlenderFDS documentation =
+
+This wiki contains the full BlenderFDS documentation. Browse the articles using the table of contents on the left side. Please, consider that a wiki is always a work in progress.
+
+=== Prerequisites ===
+
+ * BlenderFDS is a powerful and flexible tool, but it does not teach you neither how to use FDS nor how to perform a CFD simulation. Using BlenderFDS, the user retains the full control over the exported FDS input file; thus a prerequisite is that the user _should know_ how to write by hand an FDS input file... If you need an help, visit [http://www.emanuelegissi.eu] and download the free and open _"Introduction to fire simulation with FDS and Smokeview"_ courseware.
+
+ * BlenderFDS is based on Blender. You do not need to be a Blender power user to use BlenderFDS, but it is much better if you are already familiar with its particular interface and able to build simple architectural models. See the list of resources provided in the [LearningBlender Learning Blender] page.
+
+=== Contributing is easy ===
+
+Please, help the Community! Send us a comment using the form at the bottom of the page, and help us clarify the examples, better describe BlenderFDS features, help other novice Blender users.
