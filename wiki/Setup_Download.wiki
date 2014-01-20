@@ -9,8 +9,7 @@
 [http://blenderfds.googlecode.com/svn/wiki/images/logo/logo-osx.png]
 [http://blenderfds.googlecode.com/svn/wiki/images/logo/logo-linux.png]
 </td><td>
-[http://dl.bintray.com/nist-fire-research/releases/FDS_6.0.1-SMV_6.1.5_win32.exe http://fds-smv.googlecode.com/svn/trunk/FDS/trunk/FDS-SMV_website/images/download_bundle_win_32.png]
-[http://dl.bintray.com/nist-fire-research/releases/FDS_6.0.1-SMV_6.1.5_win64.exe http://fds-smv.googlecode.com/svn/trunk/FDS/trunk/FDS-SMV_website/images/download_bundle_win_64.png]
+[http://dl.bintray.com/nist-fire-research/releases/FDS_6.0.1-SMV_6.1.5_win32.exe http://blenderfds.googlecode.com/svn/wiki/images/button/download.png]
 </td></tr>
 </table>
 
