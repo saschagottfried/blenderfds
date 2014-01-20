@@ -11,10 +11,8 @@
         [http://blenderfds.googlecode.com/files/BlenderFDS_2.0.1.zip http://blenderfds.googlecode.com/svn/wiki/images/button/download.png]
     </td>
     <td>
-        BlenderFDS 2.0.1 [STABLE]
-        <br/>to be installed along with *Blender 2.64*
+        == [STABLE] BlenderFDS 2.0.1 (requires Blender 2.64) ==
     </td>
-
 </tr>
 </table>
 
