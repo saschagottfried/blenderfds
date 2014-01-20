@@ -11,12 +11,12 @@
         [http://blenderfds.googlecode.com/files/BlenderFDS_2.0.1.zip http://blenderfds.googlecode.com/svn/wiki/images/button/download.png]
     </td>
     <td>
-        == BlenderFDS 2.0.1 (requires Blender 2.64) ==
+        == BlenderFDS 2.0.1 ==
+    </td>
+    <td>
+        This version requires Blender 2.64.
     </td>
 </tr>
-</table>
-This version requires Blender 2.64.
-<table>
 <tr>
     <td align="center">
         [http://blenderfds.googlecode.com/svn/wiki/images/logo/logo-windows.png]
@@ -27,7 +27,10 @@ This version requires Blender 2.64.
         [http://blenderfds.googlecode.com/files/BlenderFDS-3.0.0RC1.zip http://blenderfds.googlecode.com/svn/wiki/images/button/download.png]
     </td>
     <td>
-        == BlenderFDS 3.0.0RC1 (requires Blender 2.69) ==
+        == BlenderFDS 3.0.0RC1 ==
+    </td>
+    <td>
+        This version requires Blender 2.69.
     </td>
 </tr>
 </table>
