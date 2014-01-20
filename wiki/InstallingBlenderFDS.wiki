@@ -1,10 +1,6 @@
 #summary Installing BlenderFDS
 
-BlenderFDS is built as an add-on upon the [http://www.blender.org Blender] platform: first install Blender, then install BlenderFDS as an add-on.
-
 <wiki:toc max_depth="2" />
-
-----
 
 = Installing BlenderFDS =
 
