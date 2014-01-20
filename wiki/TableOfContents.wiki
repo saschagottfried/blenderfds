@@ -1,20 +1,15 @@
 #summary Table of Contents
 
- * Before using BlenderFDS
+ * Before
     * [Before_LearningFDS Become a proficient FDS user]
     * [Before_LearningBlender Become a basic Blender user]
-
  * BlenderFDS Setup
     * [Setup_Installing Installing]
     * [Setup_Uninstalling Uninstalling]
     * [Setup_Updating Updating]
-
  * Before using BlenderFDS
     * [Before_LearningFDS Become a proficient FDS user]
     * [Before_LearningBlender Become a basic Blender user]
-
-==OLD==
-
  * User Resources
     * [Downloads_Overview Download FDS-SMV]
     * [Third_party_Tools Third-party Tools]
@@ -24,14 +19,3 @@
     * [Installation_Notes FDS-SMV Installation Notes]
     * [Linux_Installation_Notes Linux Installation Notes]
     * [Mac_Installation_Notes Mac Installation Notes]
-
-
- * [LearningBlender Learning Blender]
- * [TheIdeaBehindBlenderFDS The idea behind BlenderFDS]
- * [BlenderFDS_UI BlenderFDS user interface]
- * [BlenderObjectsToFDSNamelistGroups Blender objects to FDS namelist groups]
- * [NonManifoldObjects Dealing with non-manifold objects]
- * [BlenderMaterialsToFDSSURFs Blender materials to FDS SURFs]
- * [BlenderScenesToFDSCases Blender scenes to FDS cases]
- * [BlenderFDSSQA BlenderFDS software quality assurance]
- * [FDSSyntaxHighlighting FDS syntax highlighting]
