@@ -14,6 +14,24 @@
 </tr>
 </table>
 
+<table>
+<tr>
+    <td align="center">
+        [http://blenderfds.googlecode.com/svn/wiki/images/logo/blenderfds_128.png]
+    </td>
+    <td align="left">
+        <font face="calibri,helvetica,arial,sans-serif" size="18">
+            <b>BlenderFDS</b>
+        </font>
+        <br/>
+        <font face="calibri,helvetica,arial,sans-serif" size="6">
+            the open user interface for NIST FDS
+        </font>
+        <br/>
+    </td>
+</tr>
+</table>
+
 These wiki pages contain the full BlenderFDS documentation.
 Browse the articles using the table of contents on the left side of the page.
 
