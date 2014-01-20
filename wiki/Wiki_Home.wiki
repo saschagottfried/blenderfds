@@ -20,7 +20,7 @@
         [http://blenderfds.googlecode.com/svn/wiki/images/logo/blenderfds_128.png]
     </td>
     <td align="left">
-        <p style="line-height:25px">
+        <p>
         <font face="calibri,helvetica,arial,sans-serif" size="18">
             <b>BlenderFDS</b>
         </font>
