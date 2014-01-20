@@ -10,9 +10,7 @@
  * [BlenderMaterialsToFDSSURFs Blender materials to FDS SURFs]
  * [BlenderScenesToFDSCases Blender scenes to FDS cases]
  * [BlenderFDSSQA BlenderFDS software quality assurance]
-<<<<<<< .mine
  * [FDSSyntaxHighlighting FDS syntax highlighting]
 
 Link
- * [300/example.wiki Example test]
-
+ * [http://blenderfds.googlecode.com/svn/wiki/300/example.wiki Example test]
