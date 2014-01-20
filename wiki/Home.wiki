@@ -1,7 +1,7 @@
 #summary Home
 #labels Featured
 
-<p align=center><img src="http://blenderfds.googlecode.com/svn/wiki/images/logo/blenderfds_192.png" /></p>
+<p><img src="http://blenderfds.googlecode.com/svn/wiki/images/logo/blenderfds_192.png" /></p>
 
 = BlenderFDS documentation =
 
