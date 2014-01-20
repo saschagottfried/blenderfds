@@ -6,6 +6,7 @@
 <br/>
 <font face="calibri,helvetica,arial,sans-serif" size="6">
 The open user interface for NIST FDS
+<b>Work in progress</b>, be patient, preparing for release 3
 </font>
 
 These wiki pages contain the full BlenderFDS documentation.
