@@ -1,7 +1,0 @@
-#summary Updating BlenderFDS
-
-<wiki:toc max_depth="2" />
-
-= Updating BlenderFDS =
-
-To update BlenderFDS, uninstall the previous BlenderFDS version, as explained in the previous paragraphs, and install the new version from scratch.
