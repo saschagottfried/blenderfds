@@ -5,13 +5,13 @@
 [Home Home]
 
   * Before using BlenderFDS
-    * [BeforeLearningFDS Become a proficient FDS user]
-    * [BeforeLearningBlender Become a basic Blender user]
+    [BeforeLearningFDS Become a proficient FDS user]
+    [BeforeLearningBlender Become a basic Blender user]
 
   * BlenderFDS Setup
-    * [SetupInstalling Installing]
-    * [SetupUninstalling Uninstalling]
-    * [SetupUpdating Updating]
+    [SetupInstalling Installing]
+    [SetupUninstalling Uninstalling]
+    [SetupUpdating Updating]
 
   * Before using BlenderFDS
     * [BeforeLearningFDS Become a proficient FDS user]
