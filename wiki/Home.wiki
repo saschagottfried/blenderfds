@@ -6,7 +6,7 @@
 <p align=center >
 <img src="http://blenderfds.googlecode.com/svn/wiki/images/logo/blenderfds_192.png" /><br/>
 <font face="calibri,helvetica,arial,sans-serif" size="6">
-BlenderFDS documentation<br/> 
+<b>BlenderFDS documentation</b><br/> 
 </font>
 </p>
 
