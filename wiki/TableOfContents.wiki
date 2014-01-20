@@ -1,6 +1,6 @@
 #summary Table of Contents
 
-[Documentation Home]
+[Home Wiki Home]
  * Before BlenderFDS
     * [Before_LearningFDS Learning FDS]
     * [Before_LearningBlender Learning Blender]
