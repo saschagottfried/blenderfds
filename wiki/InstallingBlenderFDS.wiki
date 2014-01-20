@@ -44,10 +44,10 @@ Finally, click on the `Save As Default` button (6) to complete the installing pr
 
 BlenderFDS is ready to use.
 
-== Uninstalling BlenderFDS ==
+= Uninstalling BlenderFDS =
 
 To remove BlenderFDS from your Blender install, simply disable the BlenderFDS add-on in the `Add-Ons` panel of the `File > User Preferences` window. Then close the Blender executable and delete the `blenderfds` directory from the local `addons` directory.
 
-== Updating BlenderFDS ==
+= Updating BlenderFDS =
 
 To update BlenderFDS, uninstall the previous BlenderFDS version, as explained in the previous paragraph, and install the new version from scratch.
