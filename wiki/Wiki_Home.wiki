@@ -5,7 +5,7 @@
 </font>
 <br/>
 <font face="calibri,helvetica,arial,sans-serif" size="6">
-The oper user interface for NIST FDS
+The open user interface for NIST FDS
 </font>
 
 These wiki pages contain the full BlenderFDS documentation.
