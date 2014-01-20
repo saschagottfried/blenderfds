@@ -1,7 +1,7 @@
 #summary Home
 #labels Featured
 
-<p align=center ><img src="http://blenderfds.googlecode.com/svn/wiki/images/logo/blenderfds_192.png" /><br/>BlenderFDS documentation </p>
+<p align=center ><img src="http://blenderfds.googlecode.com/svn/wiki/images/logo/blenderfds_192.png" /><br/><h1>BlenderFDS documentation</h1></p>
 
 This wiki contains the full BlenderFDS documentation. Browse the articles using the table of contents on the left side. Please, consider that a wiki is always a work in progress.
 
