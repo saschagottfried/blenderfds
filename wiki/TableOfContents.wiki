@@ -2,11 +2,11 @@
 
 ==Work in progress for BlenderFDS3!==
 
-* [Home Home]
-* BlenderFDS Setup
-  * [Setup_Installing Installing]
-  * [Setup_Uninstalling Uninstalling]
-  * [Setup_Updating Updating]
+  * [Home Home]
+  * BlenderFDS Setup
+    * [Setup_Installing Installing]
+    * [Setup_Uninstalling Uninstalling]
+    * [Setup_Updating Updating]
 
  * Another...
 
