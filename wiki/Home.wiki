@@ -1,12 +1,11 @@
 #summary Home
 #labels Featured
 
-=Work in progress, preparing for BlenderFDS3, be patient!=
-
 <p align=center >
 <img src="http://blenderfds.googlecode.com/svn/wiki/images/logo/blenderfds_192.png" /><br/>
 <font face="calibri,helvetica,arial,sans-serif" size="6">
-<b>BlenderFDS documentation</b><br/> 
+<b>BlenderFDS documentation</b><br/>
+Work in progress, preparing for version 3
 </font>
 </p>
 
