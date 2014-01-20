@@ -8,8 +8,7 @@
     </td>
     <td align="left">
         <font face="calibri,helvetica,arial,sans-serif" size="18">
-            <b>BlenderFDS</b> Documentation<br>
-            Work in progress, preparing for version 3
+            <b>BlenderFDS</b> Documentation
         </font>
     </td>
 </tr>
