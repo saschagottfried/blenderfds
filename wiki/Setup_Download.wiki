@@ -1,19 +1,25 @@
 #summary Download
 =Download=
-<wiki:toc max_depth="2" />
 ----
-==
-<table cellpadding="10">
 
-<tr><td></td><td>
-Current stable release
-</td></tr>
-<tr><td align="center">
-[http://blenderfds.googlecode.com/svn/wiki/images/logo/logo-windows.png]
-[http://blenderfds.googlecode.com/svn/wiki/images/logo/logo-osx.png]
-[http://blenderfds.googlecode.com/svn/wiki/images/logo/logo-linux.png]
-</td><td>
-[http://dl.bintray.com/nist-fire-research/releases/FDS_6.0.1-SMV_6.1.5_win32.exe http://blenderfds.googlecode.com/svn/wiki/images/button/download.png]
-</td></tr>
+<table cellpadding="10">
+<tr>
+    <td></td>
+    <td align="center">Current stable release</td>
+    <td align="center">Next unstable release</td>
+</tr>
+<tr>
+    <td align="center">
+        [http://blenderfds.googlecode.com/svn/wiki/images/logo/logo-windows.png]
+        [http://blenderfds.googlecode.com/svn/wiki/images/logo/logo-osx.png]
+        [http://blenderfds.googlecode.com/svn/wiki/images/logo/logo-linux.png]
+    </td>
+    <td>
+        [http://blenderfds.googlecode.com/files/BlenderFDS_2.0.1.zip http://blenderfds.googlecode.com/svn/wiki/images/button/download.png]
+    </td>
+    <td>
+        [http://blenderfds.googlecode.com/files/BlenderFDS-3.0.0RC1.zip http://blenderfds.googlecode.com/svn/wiki/images/button/download.png]
+    </td>
+</tr>
 </table>
 
