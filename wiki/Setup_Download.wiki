@@ -12,7 +12,7 @@
     </td>
     <td>
         === BlenderFDS 2.0.1 ===
-        This version requires Blender 2.64.
+        This version requires [http://download.blender.org/release/Blender2.64/ Blender 2.64].
     </td>
 </tr>
 <tr>
@@ -26,8 +26,10 @@
     </td>
     <td>
         === BlenderFDS 3.0.0RC1 ===
-        This version requires Blender 2.69. This is a release candidate for testing purposes only, *do not use it for production.*
+        This version requires [http://download.blender.org/release/Blender2.69/ Blender 2.69]. This version is a release candidate for testing purposes only, *do not use it for production!*
     </td>
 </tr>
 </table>
+
+
 
