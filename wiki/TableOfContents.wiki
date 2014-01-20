@@ -1,8 +1,7 @@
 #summary Table of Contents
 
-==Work in progress for BlenderFDS3==
+==Table of contents==
 
-[Home Wiki Home]
  * Before BlenderFDS
     * [Before_LearningFDS Learning FDS]
     * [Before_LearningBlender Learning Blender]
