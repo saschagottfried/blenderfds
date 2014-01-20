@@ -1,7 +1,7 @@
 #summary Home
 #labels Featured
 <font face="calibri,helvetica,arial,sans-serif" size="12">
-<b>BlenderFDS Documentation</b>
+<b>BlenderFDS</b> Documentation
 </font>
 <br/>
 <font face="calibri,helvetica,arial,sans-serif" size="6">
