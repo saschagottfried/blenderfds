@@ -14,6 +14,9 @@
         == BlenderFDS 2.0.1 (requires Blender 2.64) ==
     </td>
 </tr>
+</table>
+This version requires Blender 2.64.
+<table>
 <tr>
     <td align="center">
         [http://blenderfds.googlecode.com/svn/wiki/images/logo/logo-windows.png]
