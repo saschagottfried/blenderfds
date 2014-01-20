@@ -1,9 +1,13 @@
-#summary Download BlenderFDS
-=Download BlenderFDS=
+#summary Download
+=Download=
 <wiki:toc max_depth="2" />
 ----
-
+==
 <table cellpadding="10">
+
+<tr><td></td><td>
+Current stable release
+</td></tr>
 <tr><td align="center">
 [http://blenderfds.googlecode.com/svn/wiki/images/logo/logo-windows.png]
 [http://blenderfds.googlecode.com/svn/wiki/images/logo/logo-osx.png]
