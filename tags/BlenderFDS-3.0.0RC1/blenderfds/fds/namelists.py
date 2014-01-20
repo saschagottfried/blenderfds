@@ -213,7 +213,7 @@ class BFNamelistFree(BFNamelist):
 
 BFNamelistFree(
     idname = "bf_free",
-    label = "Free namelist",
+    label = "Free Namelist",
     description = None,
     fds_label = None,
     enum_id = 1007,

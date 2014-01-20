@@ -1,13 +1,11 @@
 #summary Home
 #labels Featured
 
-[http://lh5.ggpht.com/_iTIkwVoSUm0/S9L-T9fHCzI/AAAAAAAAAO8/rA6cMfvaLNQ/blenderfds_192.png]
+[logo/blenderfds_192.png]
 
-|| *Updated to 2.0* ||
+= BlenderFDS documentation =
 
-= BlenderFDS 2.0 documentation =
-
-This wiki contains all the BlenderFDS documentation. Browse the articles using the table of contents on the left side. Please, consider that a wiki is always a work in progress.
+This wiki contains the full BlenderFDS documentation. Browse the articles using the table of contents on the left side. Please, consider that a wiki is always a work in progress.
 
 === Prerequisites ===
 

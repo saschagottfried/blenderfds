@@ -1,6 +1,6 @@
 #summary Table of Contents
 
- * [Home]
+ * [Home Home]
  * [InstallingBlenderFDS Installing BlenderFDS]
  * [LearningBlender Learning Blender]
  * [TheIdeaBehindBlenderFDS The idea behind BlenderFDS]
