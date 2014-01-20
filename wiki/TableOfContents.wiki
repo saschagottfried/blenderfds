@@ -1,7 +1,6 @@
 #summary Table of Contents
 
-==Note==
-==Work in progress for BlenderFDS3==
+==Work in progress for BlenderFDS3!==
 
  * [Home Home]
  * Installation
