@@ -1,6 +1,7 @@
 #summary Install BlenderFDS
 =Install BlenderFDS=
 <wiki:toc max_depth="2" />
+----
 
 == First, get Blender ==
 
