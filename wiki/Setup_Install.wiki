@@ -5,7 +5,7 @@
 
 == First, get Blender ==
 
-Download the appropriate Blender package for your platform from [http://www.blender.org/] and install it on your computer:
+[http://www.blender.org/ Download] the appropriate Blender package for your platform and install it on your computer:
 
  * The _Microsoft Windows_ Blender package comes with an optional self-extracting installer.
 
