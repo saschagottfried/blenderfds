@@ -1,0 +1,18 @@
+#summary Error management
+=Error management=
+<wiki:toc max_depth="2" />
+----
+
+Whenever BlenderFDS encounters a problem in user data, an error message appears nearby the offending input:
+
+[http://blenderfds.googlecode.com/svn/wiki/images/panel/errors.png]
+
+Any error prevents the namelist from being fully exported to the FDS case file.
+
+Sometimes the errors cannot be immediately detected, often because an heavy calculation process is required to discover the problem. These kind of calculations are performed only during exporting and importing operations.
+
+If errors are discovered during such operations:
+ * on _file export_, a popup message warns the user and error messages are collected into the exported FDS case file.
+ * on _file import_, a popup message warns the user and error messages are collected into the [Guide_Common#Free_text_file free text file].
+
+FIXME SCREENSHOT

@@ -17,6 +17,7 @@
  * Tutorial (TODO)
  * Guide
    * [Guide_Common UI common rules]
+   * [Guide_Error Error management]
    * [Guide_SURF Blender Materials to SURFs]
  * Old articles being ported TODO
    * [BlenderFDS_UI]
