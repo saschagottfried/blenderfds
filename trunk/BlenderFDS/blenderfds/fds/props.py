@@ -184,7 +184,7 @@ class BFPropTimeSetupOnly(BFProp):
 
 BFPropTimeSetupOnly(
     idname = "bf_time_setup_only",
-    label = "Smokeview setup only",
+    label = "Smokeview Setup Only",
     description = "Perform Smokeview setup only",
     bpy_idname = "bf_time_setup_only",
     bpy_prop = bpy.props.BoolProperty,

@@ -25,7 +25,7 @@ class ExportFDS(bpy.types.Operator, ExportHelper):
     """Export FDS operator"""
     bl_label = "Export scene as FDS case"
     bl_idname = "export_scene.nist_fds"
-    bl_description = "Export current Blender Scene as an FDS file"
+    bl_description = "Export current Blender Scene as an FDS case file"
     filename_ext = ".fds"
     filter_glob = bpy.props.StringProperty(default="*.fds", options={'HIDDEN'})
 
@@ -40,9 +40,9 @@ def import_fds_menu(self, context):
 
 class ImportFDS(bpy.types.Operator, ImportHelper):
     """Import FDS operator"""
-    bl_label = "Import FDS case file"
+    bl_label = "Import FDS case"
     bl_idname = "import_scene.nist_fds"
-    bl_description = "Import FDS case file in a new Blender Scene of current file"
+    bl_description = "Import FDS case file into current Blender Scene"
     filename_ext = ".fds"
     filter_glob = bpy.props.StringProperty(default="*.fds", options={'HIDDEN'})
 
