@@ -28,7 +28,7 @@ Some parameters are not going to be exported:
  * `TRANSPARENCY`, that is set to fully opaque, thus omitted;
  * `MATL_ID`, that has the exporting flag unchecked.
 
-==`Assign to Selected Objects` button==
+==`<Assign to Selected Objects>` button==
 
 Clicking this button the displayed material is assigned to all currently selected objects.
 
