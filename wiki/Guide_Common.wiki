@@ -42,7 +42,14 @@ However BlenderFDS enforces the following rules to prevent the creation of a mal
 
 == Free text file ==
 
+A free text file is used when multiline namelists can be entered by the user. The free text file data field refers to a text that is included in the Blender file:
+
 [http://blenderfds.googlecode.com/svn/wiki/images/panel/free_text_file.png]
+
+and that can be directly edited in the Blender text editor:
 
 [http://blenderfds.googlecode.com/svn/wiki/images/panel/free_text_file_editor.png]
 
+The entered text is appended as it is to the parent namelist. BlenderFDS knows nothing about what the user adds to the free text file and does not check at all the validity of the input.
+
+|| Use this feature with care, because it is possible to create *malformed* FDS case files! ||
