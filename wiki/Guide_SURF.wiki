@@ -14,7 +14,7 @@ Here is an example `SURF properties panel`:
 
 [http://blenderfds.googlecode.com/svn/wiki/images/panel/ma/SURF.png]
 
-The displayed material is going to be exported as:
+The displayed Blender material is going to be exported as:
 
 {{{
 &SURF ID='Hot wall' FYI='A fixed temperature boundary condition' RGB=255,140,0 TMP_FRONT=200. /
@@ -34,14 +34,19 @@ Clicking this button the displayed material is assigned to all currently selecte
 
 This can be very useful when having to assign the same `SURF_ID` boundary condition to many objects.
 
-==An example of specialized `SURF` panel: burner==
+==An example of a specialized `SURF` panel==
 
 Here is an example of a specialized `SURF` panel:
 
 [http://blenderfds.googlecode.com/svn/wiki/images/panel/ma/SURF_burner.png]
 
+The displayed Blender material is going to be exported as:
 
+{{{
+&SURF ID='Burner' FYI='Est.d area...' HRRPUA=300.0 TAU_Q=-178.9 RGB=255,0,0 /
+}}}
 
-==`Set t^2 Ramp` button==
+By clicking the `<Set t^2 Ramp>` button, the user can calculate the appropriate `HRRPUA` and `TAU_Q` values for ramping up a burner:
 
 [http://blenderfds.googlecode.com/svn/wiki/images/panel/ma/SURF_burner_set_ramp.png]
+
