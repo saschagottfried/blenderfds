@@ -42,6 +42,7 @@ However BlenderFDS enforces the following rules to prevent the creation of a mal
 
 == Free text file ==
 
-FIXME SCREENSHOT
+[http://blenderfds.googlecode.com/svn/wiki/images/panel/free_text_file.png]
 
+[http://blenderfds.googlecode.com/svn/wiki/images/panel/free_text_file_editor.png]
 
