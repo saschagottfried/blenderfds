@@ -13,7 +13,6 @@
  * Inner workings
    * [Inner_Idea Idea]
    * Curved geometries to FDS (TODO)
-
  * Old articles being ported TODO
    * [BlenderFDSSQA]
    * [BlenderFDS_UI]
