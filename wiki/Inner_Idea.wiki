@@ -107,8 +107,8 @@ All use the parameters `PBX, PBY, PBZ` to specify the coordinate in the directio
 
 || *Blender* || *FDS* ||
 || Each file  || One or more FDS input files ||
-|| Each `scene`  || A case (one FDS input file) ||
-|| Each `object` || One or more namelist groups (`OBST, DEVC, VENT, HOLE, SLCF`...) ||
+|| Each `scene`  || A case (one FDS input file, with header namelists as `HEAD, TIME, MISC, DUMP, REAC,`...) ||
+|| Each `object` || One or more namelist groups (`OBST, DEVC, VENT, HOLE, SLCF, `...) ||
 || Each `material` || One `SURF` namelist group ||
 
 == Each Blender `scene` is an FDS case ==
