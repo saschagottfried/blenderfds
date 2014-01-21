@@ -29,15 +29,17 @@ BlenderFDS enforces the following rules to prevent the creation of a malformed F
 
 == `Free text` data field ==
 
-The free text data field is used to freely add any kind of FDS parameter to the parent namelist group. It can be recognized by the `notebook` icon. To add more parameters just separate them with spaces, eg.:
-
-{{{
-P1=3.14,2.11,2.34 P2='This is a string!' P3=.TRUE.
-}}}
+The free text data field is used to freely add any kind of FDS parameter to the parent namelist group. It can be recognized by the `notebook` icon.
 
 [http://blenderfds.googlecode.com/svn/wiki/images/panel/Free_Parameters.png]
 
 In this case the `DEVC_ID='glass door breaker'` parameter is appended verbatim to the parent namelist, but no check is performed on the existance of the referred `DEVC`.
+
+To add more parameters just separate them with spaces, eg.:
+
+{{{
+P1=3.14,2.11,2.34 P2='This is a string!' P3=.TRUE.
+}}}
 
 BlenderFDS knows nothing about what the user adds to free text data fields and does not check the validity of the input.
 
