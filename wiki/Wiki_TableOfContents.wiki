@@ -3,10 +3,13 @@
 ====Table of contents====
 
  * Before BlenderFDS
-    * [Before_LearningFDS Learning FDS]
-    * [Before_LearningBlender Learning Blender]
+   * [Before_LearningFDS Learning FDS]
+   * [Before_LearningBlender Learning Blender]
  * BlenderFDS Setup
-    * [Setup_Download Download]
-    * [Setup_Install Install]
-    * [Setup_Uninstall Uninstall]
-    * [Setup_Update Update]
+   * [Setup_Download Download]
+   * [Setup_Install Install]
+   * [Setup_Uninstall Uninstall]
+   * [Setup_Update Update]
+ * The basics
+ * Inner workings
+
