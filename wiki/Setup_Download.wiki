@@ -1,13 +1,7 @@
 #summary Download
-
-<font face="calibri,helvetica,arial,sans-serif" size="12">
-<b>BlenderFDS</b> Download
-</font>
-<br/>
-<font face="calibri,helvetica,arial,sans-serif" size="6">
-The open user interface for NIST FDS
-</font>
-
+=Download=
+<wiki:toc max_depth="2" />
+----
 <table>
 <tr>
     <td align="center">
