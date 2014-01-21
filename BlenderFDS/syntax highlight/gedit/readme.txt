@@ -8,9 +8,12 @@ Released under the terms of the GNU General Public License, `gedit` is free soft
 
 = How to install `gedit FDS syntax highlight plugin` =
 
-Extract the zipped file and copy its contents to the following directory: `~/.local/share/`.
-Run the `gedit` editor and enjoy FDS syntax highlighting.
+ # Copy the `fds.lang` file to the following locations:
+   * `~/.local/gtksourceview-2.0/language-specs/`
+   * `~/.local/gtksourceview-2.0/language-specs/`
+   * `~/.local/gtksourceview-1.0/language-specs/`
+ # Run the `gedit` editor and enjoy FDS syntax highlighting.
 
 = License = 
 
-This plugin is released under the GNU General Public License (GPL3) by Emanuele Gissi, http://www.blenderfds.org
+This plugin is released under the GNU General Public License (GPL) by Emanuele Gissi, http://www.blenderfds.org
