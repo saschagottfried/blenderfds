@@ -12,6 +12,7 @@
    * [Setup_Update Update]
  * Inner workings
    * [Inner_Idea Idea]
+   * [Inner_SQA Quality assurance]
    * Curved geometries to FDS (TODO)
  * Old articles being ported TODO
    * [BlenderFDSSQA]
