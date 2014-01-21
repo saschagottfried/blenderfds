@@ -1,0 +1,13 @@
+#summary Blender materials to FDS SURFs
+=Blender materials to FDS SURFs=
+<wiki:toc max_depth="2" />
+----
+
+Blender `materials` can be exported to FDS `SURFs` namelist groups.
+
+The FDS `SURF` parameters are set up in the following `material properties panel`:
+[http://blenderfds.googlecode.com/svn/wiki/images/panel/ma/SURF.png]
+
+[http://blenderfds.googlecode.com/svn/wiki/images/panel/ma/SURF_burner.png]
+
+[http://blenderfds.googlecode.com/svn/wiki/images/panel/ma/SURF_burner_set_ramp.png]
