@@ -3,9 +3,19 @@
 <wiki:toc max_depth="2" />
 ----
 
-== Information data fields ==
+== For Your Information data fields ==
+
+The FYI data field is used to comment the namelist group. It can be recognized by the info icon.
 
 [http://blenderfds.googlecode.com/svn/wiki/images/panel/FYI.png]
+
+The contents of the FYI data field are included in the parent namelist as this:
+
+{{{FYI='This is an example'}}}
+
+BlenderFDS enforces the following rules to prevent the creation of a malformed FDS case file:
+ # `&` and `/` characters are not allowed,
+ # no quote character is allowed.
 
 == Free text data fields ==
 
@@ -17,14 +27,28 @@ In this case the `DEVC_ID='glass door breaker'` parameter is appended verbatim t
 
 BlenderFDS knows nothing about what the user adds to free text data fields and does not check the validity of the input.
 
-To prevent the creation of an unreadable FDS case file, BlenderFDS enforces the following formal rules:
+However BlenderFDS enforces the following rules to prevent the creation of a malformed FDS case file:
  # `&` and `/` characters are not allowed,
  # only single quote characters are allowed as string delimiters (eg. `P1='Right'`, `P2="Wrong"`),
  # single quote characters shall be properly matched (eg. `P1='Right'`, `P2='Not'right'`).
 
+== Free text file ==
+
+FIXME
+
 == Error management ==
 
+Whenever BlenderFDS encounters an error in entered data, an error message appears nearby the offending input:
+
 [http://blenderfds.googlecode.com/svn/wiki/images/panel/errors.png]
+
+Any error prevents the namelist from being exported to the FDS case file.
+
+Sometimes the errors cannot be immediately detected, often because some heavy calculation is needed to discover the problem.
+
+If errors are discovered:
+ * during _file export_: a popup message warns the user that something raised an error and error messages are collected into the exported FDS case file.
+ * during _file import_: a popup message warns the user that something raised an error during import and error messages are collected into the [Guide_Common#Free_text_file free text file].
 
 == Export checkboxes == 
 
