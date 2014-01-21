@@ -62,4 +62,4 @@ and that can be directly edited in the Blender text editor:
 
 The entered text is appended as it is to the parent namelist. BlenderFDS knows nothing about what the user adds to the free text file and does not check at all the validity of the input.
 
-|| Use this feature with care, because it is possible to create *malformed* FDS case files! ||
+|| Handle this feature with care, as it is possible to create *malformed* FDS case files! ||
