@@ -10,7 +10,18 @@
    * [Setup_Install Install]
    * [Setup_Uninstall Uninstall]
    * [Setup_Update Update]
- * The basics
  * Inner workings
    * [Inner_Idea Idea]
+   * Curved geometries to FDS (TODO)
+
+ * Old articles being ported TODO
+   * [BlenderFDSSQA]
+   * [BlenderFDS_UI]
+   * [BlenderMaterialsToFDSSURFs]
+   * [BlenderObjectsToFDSNamelistGroups]
+   * [BlenderScenesToFDSCases]
+   * [FDSSyntaxHighlighting]
+   * [NonManifoldObjects]
+   * [PortingOldFiles]
+
 
