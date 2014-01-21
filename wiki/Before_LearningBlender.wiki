@@ -3,11 +3,11 @@
 <wiki:toc max_depth="2" />
 ----
 
-==Basic courseware==
-
 The Blender windowing system is a treat. It looks like some sort of space-ship control panel and you have never seen anything like it. The learning curve can be steep, and new users can be discouraged at first.
 
 Once you learn it, however, you'll wish all your programs worked this way. They say so...
+
+== Basic courseware ==
 
 The main source for Blender documentation is [http://www.blender.org/support/ Blender support page].
 There you can find tutorials, manuals, and videos.
@@ -25,7 +25,7 @@ There you can find tutorials, manuals, and videos.
  * [http://en.wikibooks.org/wiki/Blender_3D] Free wikibooks
  * [http://www.cdschools.org/Page/455 Free course book from Central Dauphin High School]
 
-==Architecture modeling==
+== Architecture modeling ==
 
 Here is a recent video tutorial:
 
@@ -36,7 +36,7 @@ Here are two blog entries from Yorik van Havre blog. These are general but step-
  * [http://yorik.uncreated.net/tutorials/architecture-blender.html]
  * [http://yorik.uncreated.net/tutorials/precisionmodelling-blender.html]
 
-==Other web resources==
+== Other web resources ==
 
  * [http://blenderartists.org/] Independent support forum
  * [http://www.blendercookie.com] Independent support forum

@@ -22,7 +22,7 @@ BlenderFDS is based on Blender. You do not need to be a Blender power user to us
 
 If you need an help, see the list of resources provided in [Before_LearningBlender this wiki page].
 
-== Where to go from there ==
+== Where to go from there? ==
 
 When you feel comfortable with both FDS and Blender, you can try BlenderFDS:
  * read this documentation,
