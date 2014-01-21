@@ -15,7 +15,7 @@ Users are warned that FDS is intended for use only by those competent in the fie
 
 =Who develops FDS?=
 
-|| To those that develop and release FDS in the public domain a great thank you! ||
+|| To those that develop and release FDS in the public domain a sincere _thank you_ ||
 
 The Fire Dynamics Simulator and Smokeview are the products of an international collaborative effort led by the National Institute of Standards and Technology (NIST) and VTT Technical Research Centre of Finland. Its developers and contributors are listed below:
 
