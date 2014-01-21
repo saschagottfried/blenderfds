@@ -35,7 +35,7 @@ It is also possible to create links between different Blender entities, so that 
 
 FDS input is a single text file. Input data is specified by namelist groups:
 
-[http://blenderfds.googlecode.com/svn/wiki/images/syntax/commented_command,png]
+[http://blenderfds.googlecode.com/svn/wiki/images/syntax/commented_command.png]
 
 Namelist groups are used to describe every aspect of the fire simulation: simulation name, duration, computational domain, geometry, boundary conditions, materials, output quantities, control logic...
 
