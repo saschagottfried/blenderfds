@@ -32,7 +32,7 @@ BlenderFDS enforces the following rules to prevent the creation of a malformed F
 The free text data field is used to freely add any kind of FDS parameter to the parent namelist group. It can be recognized by the `notebook` icon. To add more parameters just separate them with spaces, eg.:
 
 {{{
-`P1=3.14,2.11,2.34 P2='This is a string!' P3=.TRUE.`
+P1=3.14,2.11,2.34 P2='This is a string!' P3=.TRUE.
 }}}
 
 [http://blenderfds.googlecode.com/svn/wiki/images/panel/Free_Parameters.png]
