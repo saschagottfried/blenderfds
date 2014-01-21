@@ -3,7 +3,7 @@
 <wiki:toc max_depth="2" />
 ----
 
-== Export checkboxes == 
+== Export checkbox == 
 
 The user decides which namelists and parameters are exported to the FDS case file by thicking the relevant export checkboxes:
 
@@ -48,7 +48,7 @@ However BlenderFDS enforces the following rules to prevent the creation of a mal
  * only single quote characters are allowed as string delimiters (eg. `P1='Right'`, `P2="Wrong"`),
  * single quote characters shall be properly matched (eg. `P1='Right'`, `P2='Not'right'`).
 
-== `Free text file` ==
+== `Free text` file ==
 
 A free text file allows the user to freely enter multiline namelists. This is tipically used for namelist groups that have no geometric expression, eg. `ISOF, BNDF, PROP, MATL, ...`.
 
