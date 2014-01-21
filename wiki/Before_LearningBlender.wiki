@@ -27,8 +27,9 @@ There you can find tutorials, manuals, and videos.
 
 == Architecture modeling ==
 
-Here are some recent video tutorial:
+Here are some recent tutorials:
 
+ * [http://cg.tutsplus.com/tutorials/blender/create-a-3d-floor-plan-model-from-an-architectural-schematic-in-blender/ cgtut+ - Create a 3d floor plan model]
  * [http://www.blenderguru.com/the-complete-architecture-series/ Blender Guru - The complete architecture serie]
  * [http://www.umbertooldani.com/47/post/2013/12/3d-blender-architecture-we-create-the-building-walls.html Umberto Oldani - Building walls]
 
