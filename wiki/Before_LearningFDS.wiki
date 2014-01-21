@@ -20,18 +20,18 @@ Users are warned that FDS is intended for use only by those competent in the fie
 The Fire Dynamics Simulator and Smokeview are the products of an international collaborative effort led by the National Institute of Standards and Technology (NIST) and VTT Technical Research Centre of Finland. Its developers and contributors are listed below:
 
  * Principal Developers of FDS:
-   * Kevin McGrattan, NIST
-   * Simo Hostikka, VTT
-   * Randall McDermott, NIST
-   * Jason Floyd, Hughes Associates, Inc., Baltimore, Maryland, USA
-   * Craig Weinschenk, NIST
-   * Kristopher Overholt, NIST
+   * [http://www.nist.gov/el/fire_research/kmcgrattan.cfm Kevin McGrattan, NIST]
+   * [http://www.vtt.fi/research/technology/fire_safety_technology.jsp?lang=en Simo Hostikka, VTT]
+   * [http://www.nist.gov/el/fire_research/rmcdermott.cfm Randall McDermott, NIST]
+   * [http://www.haifire.com/ Jason Floyd, Hughes Associates, Inc., Baltimore, Maryland, USA]
+   * [http://www.nist.gov/el/fire_research/cweinschenk.cfm Craig Weinschenk, NIST]
+   * [http://www.nist.gov/el/fire_research/koverholt.cfm Kristopher Overholt, NIST]
 
  * Principal Developer of Smokeview
-   * Glenn Forney, NIST
+   * [http://www.nist.gov/el/fire_research/gforney.cfm Glenn Forney, NIST]
 
  * Principal Developer of FDS+Evac
-   * Timo Korhonen, VTT
+   * [http://www.vtt.fi/research/technology/fire_safety_technology.jsp?lang=en Timo Korhonen, VTT]
 
  * Contributors
    * Susan Kilian, hhpberlin, Germany
