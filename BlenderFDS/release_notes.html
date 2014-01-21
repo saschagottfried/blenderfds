@@ -9,6 +9,7 @@
     p.footer {margin-left: 20%; margin-right: 20%; text-align: center; font: 14.0px Helvetica; min-height: 14.0px}
     p.header {margin-left: 20%; margin-right: 20%; font: 16.0px Helvetica; font-weight:bold; border:dotted thin; text-align:center}
     p.body {margin-left: 20%; margin-right: 20%; font: 14.0px Helvetica}
+    p.warning {margin-left: 30%; margin-right: 30%; font: 14.0px Helvetica; border-style:solid; border-color:red; text-align:center}
     ul.a {list-style-type: square; margin-left: 20%; margin-right: 20%; font: 14.0px Helvetica}
     ol.a {list-style-type: lower-alpha; margin-left: 20%; margin-right: 20%; font: 14.0px Helvetica}
   </style>
@@ -17,14 +18,15 @@
 
 <p class="title">BlenderFDS Release Notes</p>
 <p class="body">
-Copyright (C) 2013 Emanuele Gissi, http://www.blenderfds.org<br>
+<i>Copyright (C) 2013 Emanuele Gissi, http://www.blenderfds.org</i><br>
 This program comes with ABSOLUTELY NO WARRANTY.<br>
 This is free software, and you are welcome to redistribute it
 under certain conditions; see included license file for details.
 </p>
 <p class="body"><br></p>
 
-<p class="header">2014-??-??: BlenderFDS 3.0.0<br>“Name???”</p>
+<p class="header">2013-12-26: BlenderFDS 3.0.0RC1 (UNSTABLE)</p>
+<p class="warning">This is a release candidate, <b>do not use it for production</b>.</p>
 <p class="body">A new BlenderFDS release is out. This BlenderFDS version shall be installed on <b>Blender 2.69</b>.<br>It does not work with older versions and it is not guaranteed to work with newer ones.</p>
 <p class="body">First of all, I would like to <i>sincerely thank</i> all the contributors that financially supported BlenderFDS development during the 2013 crowdfunding campaign.<br>A particular thank goes to our <b>Bronze Sponsors:</b></p>
 <ul class="a">
@@ -33,27 +35,28 @@ under certain conditions; see included license file for details.
 	<li>Kristopher Overholt;</li>
 	<li>Combustion Science & Engineering, Inc. (Stephen Olenick).</li>
 </ul>
-<p class="body">BlenderFDS 3.0.0 is the result of a huge effort: the codebase was complitely reviewed and restructured to make place for new features and guarantee future maintainability.</p>
+<p class="body">This version of BlenderFDS is the result of a huge effort: the codebase was complitely reviewed and restructured to make place for new features and guarantee future maintainability. The source code is now fully object oriented, fully commented, and much more readable (at least for me ;-).</p>
 <p class="body">New features for <b>users</b>:</p>
 <ul class="a">
-	<li>support for FDS6;</li>
-    <li>import of existing FDS files to BlenderFDS;</li>
-	<li>new geometric description "PIXELS" for flat faces, normal to axis, of any form (eg. round VENTs!);</li>
-	<li>new namelist grouping and sorting by Blender empties;</li>
-	<li>new tool for FDS MESH alignment;</li>
-	<li>new tool for calculating FDS SURF HRRPUA and TAU_Q according to EU and US standards;</li>
-	<li>improved user interface;</li>
-	<li>improved exporting to FDS;</li>
-	<li>support for scale and units;</li>
-	<li>creation of GE1 cad description file;</li>
-	<li>faster and more precise voxelization algorithm;</li>
-	<li>more information to the user when exporting;</li>
-	<li>detailed debug mode timing;</li>
+	<li>New exporting target is the recent <b>FDS version 6</b> (File > Export > FDS case).</li>
+    <li>BlenderFDS can <b>import existing FDS case files</b> to BlenderFDS scenes (File > Import > FDS case).</li>
+	<li>Creation of <b>GE1 cad description file</b> (Scene Panel > DUMP Panel), that allows realistic visualization in Smokeview6.</li>
+	<li>Full support for Blender drawing scaling and units (Scene Panel > Units).</li>
+	<li>New geometric description <b>PIXELS</b> for flat faces (Object Panel > OBST Panel > XB, for namelists that support faces). Faces of any shape, normal to any axis, can be exported to FDS (eg. round VENTs!).</li>
+	<li>Namelist grouping and sorting by Blender empties (Add Blender Menu > Empty). Parent your namelists under a Blender Empty, and discover them <b>properly sorted and grouped</b> in the FDS case file.</li>
+	<li>New tool for FDS MESH creation (Object Panel > MESH Panel > IJK): <b>set cell sizes and align</b> them to the global reference system, for easier mutual alignment of MESHes.</li>
+	<li>New tool for calculating FDS SURF <b>HRRPUA and TAU_Q</b> according to EU and US standards (Material Panel > SURF Panel > TAU_Q).</li>
+	<li>Improved user interface (Eg. geometry visualization tools are now readily available in the user interface).</li>
+	<li>Faster and <b>more precise</b> voxelization algorithm.</li>
+	<li>Free FDS text file is now fully integrated into Blender interface, config.fds external file is not needed any more.</li>
+	<li>"Show geometry" button visualizes the geometry as it is going to be exported to FDS. This allows the user to check it visually.</li>
+	<li>Multiple geometries can now have a <b>suffix added to their IDs</b> (Object Panel > Any namelist panel > ID), eg. add z coordinate to thermocouples ID values: <i>tc+1.20, tc+1.30, tc+1.40, ...</i></li>
+	<li><b>FIXME</b> add missing new features</li>
 </ul>
 <p class="body">New features for <b>developers</b>:</p>
 <ul class="a">
-	<li>simple programming API: <i>object.to_fds(), object.from_fds()</i></li>
-	<li></li>
+	<li>New <b>programming API</b> <i>scene/object.to_fds(), scene/object.from_fds()</i>. Build or modify your geometry using Python!</li>
+	<li>New debug mode and timing.</li>
 </ul>
 <p class="body"><br></p>
 
