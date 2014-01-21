@@ -7,10 +7,10 @@ The Blender windowing system is a treat. It looks like some sort of space-ship c
 
 Once you learn it, however, you'll wish all your programs worked this way. They say so...
 
-== Basic courseware ==
+== Blender support ==
 
 The main source for Blender documentation is [http://www.blender.org/support/ Blender support page].
-There you can find tutorials, manuals, and videos.
+There you can find tutorials, manuals, videos, and help from the Community.
 
 == Good books ==
 

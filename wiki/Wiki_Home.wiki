@@ -40,4 +40,12 @@ If you encounter an issue:
 [http://groups.google.com/group/blenderfds http://blenderfds.googlecode.com/svn/wiki/images/button/group.png]
 [http://code.google.com/p/blenderfds/issues/list http://blenderfds.googlecode.com/svn/wiki/images/button/tracker.png]
 
+=== Then contribute back to our Community ===
+
+When you become a BlenderFDS power user, start contributing back:
+ * send your comments,
+ * contribute simple example cases,
+ * write better documentation,
+ * help new users on the discussion group,
+ * code new features! 
 
