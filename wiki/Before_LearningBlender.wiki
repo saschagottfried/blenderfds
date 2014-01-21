@@ -5,6 +5,8 @@
 
 The Blender windowing system is a treat. It looks like some sort of space-ship control panel and you have never seen anything like it. The learning curve can be steep, and new users can be discouraged at first.
 
+[http://blenderfds.googlecode.com/svn/wiki/images/screen/blender.jpg]
+
 Once you learn it, however, you'll wish all your programs worked this way. They say so...
 
 == Blender support ==
