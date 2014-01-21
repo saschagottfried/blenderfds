@@ -12,4 +12,5 @@
    * [Setup_Update Update]
  * The basics
  * Inner workings
+   * [Inner_Idea Idea]
 
