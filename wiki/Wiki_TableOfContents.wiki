@@ -15,7 +15,6 @@
    * [Inner_SQA Quality assurance]
    * Curved geometries to FDS (TODO)
  * Old articles being ported TODO
-   * [BlenderFDSSQA]
    * [BlenderFDS_UI]
    * [BlenderMaterialsToFDSSURFs]
    * [BlenderObjectsToFDSNamelistGroups]
