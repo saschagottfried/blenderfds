@@ -20,6 +20,8 @@ The displayed material is going to be exported as:
 &SURF ID='Hot wall' FYI='A fixed temperature boundary condition' RGB=255,140,0 TMP_FRONT=200. /
 }}}
 
+The dark orange color is translated to its RGB counterpart. 
+
 Some parameters are not going to be exported:
  * `TRANSPARENCY` is set to fully opaque, thus omitted;
  * `MATL_ID` has the exporting flag unchecked.
