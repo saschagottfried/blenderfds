@@ -50,6 +50,8 @@ If errors are discovered:
  * during _file export_: a popup message warns the user that something raised an error and error messages are collected into the exported FDS case file.
  * during _file import_: a popup message warns the user that something raised an error during import and error messages are collected into the [Guide_Common#Free_text_file free text file].
 
+FIXME SCREENSHOT
+
 == Export checkboxes == 
 
 [http://blenderfds.googlecode.com/svn/wiki/images/panel/export_namelist.png]
