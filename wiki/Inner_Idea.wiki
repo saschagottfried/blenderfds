@@ -123,13 +123,13 @@ Each Blender `object` is linked to one or more FDS namelist groups. The exported
 
 For example:
 
-[http://lh6.ggpht.com/_iTIkwVoSUm0/S9R7_ruTD_I/AAAAAAAAAQE/E_oWFHJSzTk/testcase_obj2obst.png]
+[http://blenderfds.googlecode.com/svn/wiki/images/screen/idea_1.png]
 
 That yellow Blender _Wall_ `object` is exported as many `OBST` namelist groups that describe the round and carved geometry of the wall.
 
 The Blender material linked to the _Wall_ `object` is named _Gypsum wall_ and rendered in yellow color. The _Gypsum wall_ Blender material is exported as an FDS `SURF` namelist containing all the user entered parameters:
 
-[http://lh4.ggpht.com/_iTIkwVoSUm0/S9R7_q6tBJI/AAAAAAAAAQI/tOy0t1Wc7DA/testcase_obj2surf.png]
+[http://blenderfds.googlecode.com/svn/wiki/images/screen/idea_2.png]
 
 In particular, the Blender _Wall_ `object`, and its _Gypsum wall_ `material` are exported to the FDS input file as an obstacle, and its boundary condition:
 
@@ -151,4 +151,4 @@ In particular, the Blender _Wall_ `object`, and its _Gypsum wall_ `material` are
 
 These entities are visualized in Smokeview as a yellow round obstacle:
 
-[http://lh4.ggpht.com/_iTIkwVoSUm0/S9R_xKCnf3I/AAAAAAAAAQo/XU0L6qWHEMI/test_case_s0000.png]
+[http://blenderfds.googlecode.com/svn/wiki/images/screen/idea_3.png]
