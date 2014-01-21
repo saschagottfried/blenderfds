@@ -27,9 +27,10 @@ There you can find tutorials, manuals, and videos.
 
 == Architecture modeling ==
 
-Here is a recent video tutorial:
+Here are some recent video tutorial:
 
  * [http://www.blenderguru.com/the-complete-architecture-series/ Blender Guru - The complete architecture serie]
+ * [http://www.umbertooldani.com/47/post/2013/12/3d-blender-architecture-we-create-the-building-walls.html Umberto Oldani - Building walls]
 
 Here are two blog entries from Yorik van Havre blog. These are general but step-by-step introductions to quick architecture modeling with Blender.
 
