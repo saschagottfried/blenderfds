@@ -12,13 +12,17 @@ The open user interface for NIST FDS
 
 These wiki pages contain the full BlenderFDS documentation, browse the articles using the `Table of Contents` menu on the left side of the page.
 
-== BlenderFDS does not teach FDS ==
+== Learn FDS and Blender before using BlenderFDS ==
 
 BlenderFDS is a powerful and flexible tool, but it does not teach you neither how to use FDS nor how to perform a CFD simulation. Using BlenderFDS, the user retains the full control over the exported FDS input file; thus a prerequisite is that the user _should know_ how to write by hand an FDS input file...
 
 If you need an help, visit [Before_LearningFDS this wiki page].
 
-== BlenderFDS does not teach Blender ==
+BlenderFDS is based on Blender. You do not need to be a Blender power user to use BlenderFDS, but it is much better if you are already familiar with its particular interface and able to build simple architectural models.
 
-BlenderFDS is based on Blender. You do not need to be a Blender power user to use BlenderFDS, but it is much better if you are already familiar with its particular interface and able to build simple architectural models. See the list of resources provided in [Before_LearningBlender this wiki page].
+If you need an help, see the list of resources provided in [Before_LearningBlender this wiki page].
+
+== Where to go from there ==
+
+When you feel comfortable with both FDS and Blender, you can try BlenderFDS: read this documentation, start with the simple examples, then try your cases.
 
