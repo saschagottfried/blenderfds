@@ -11,6 +11,17 @@
 
 [http://blenderfds.googlecode.com/svn/wiki/images/panel/Free_Parameters.png]
 
+The free text data field can contain any king of parameter.
+
+In this case `DEVC_ID='glass door breaker'` is appended verbatim to the parent namelist. The free text input box can be used to freely describe any kind of present or future FDS parameter.
+
+If you want to add more than a parameter just separate them with spaces, eg. `P1=3.14,2.11,2.34 P2='This is a string!' P3=.TRUE.`
+
+BlenderFDS does not check the validity of the input, except for applying the following syntax rules:
+ # `&` and `/` characters are not allowed,
+ # only single quote characters are allowed as string delimiter,
+ # single quote characters shall be properly matched.
+
 == Error management ==
 
 [http://blenderfds.googlecode.com/svn/wiki/images/panel/errors.png]
