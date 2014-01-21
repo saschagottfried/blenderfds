@@ -25,20 +25,19 @@ If you need an help, see the list of resources provided in [Before_LearningBlend
 == Where to go from there ==
 
 When you feel comfortable with both FDS and Blender, you can try BlenderFDS:
- * read this [http://code.google.com/p/blenderfds/wiki/Wiki_Home http://blenderfds.googlecode.com/svn/wiki/images/button/documentation.png],
- * [http://code.google.com/p/blenderfds/wiki/Setup_Download http://blenderfds.googlecode.com/svn/wiki/images/button/download.png]
- and [Setup_Install install] BlenderFDS,
+ * read this documentation,
+ * [Setup_Download download] and [Setup_Install install] BlenderFDS,
  * start with the simple examples included in the package,
  * then try your own cases.
 
 If you need help:
-get in contact with the [http://groups.google.com/group/blenderfds http://blenderfds.googlecode.com/svn/wiki/images/button/group.png].
-If you encounter an issue, notify developers using the [http://code.google.com/p/blenderfds/issues/list http://blenderfds.googlecode.com/svn/wiki/images/button/tracker.png].
+ * get in contact with the [http://groups.google.com/group/blenderfds discussion group].
+If you encounter an issue:
+ * notify the developers using the [http://code.google.com/p/blenderfds/issues/list issue tracker].
 
-
-
-
-
-
+[http://code.google.com/p/blenderfds/wiki/Setup_Download http://blenderfds.googlecode.com/svn/wiki/images/button/download.png]
+[http://code.google.com/p/blenderfds/wiki/Wiki_Home http://blenderfds.googlecode.com/svn/wiki/images/button/documentation.png]
+[http://groups.google.com/group/blenderfds http://blenderfds.googlecode.com/svn/wiki/images/button/group.png]
+[http://code.google.com/p/blenderfds/issues/list http://blenderfds.googlecode.com/svn/wiki/images/button/tracker.png]
 
 
