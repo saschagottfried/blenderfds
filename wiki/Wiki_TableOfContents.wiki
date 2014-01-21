@@ -2,8 +2,7 @@
 
 ====Table of contents====
 
-||Work in progress||
-||Preparing for 3...||
+||Work in progress for BlenderFDS 3||
 
  * Before BlenderFDS
    * [Before_LearningFDS Learning FDS]
