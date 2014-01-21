@@ -20,6 +20,8 @@
  * Guide
    * [Guide_Common Common aspects]
    * [Guide_Error  Error management]
+   * [Guide_Geometry Geometry]
+   * [Guide_OBST   OBST namelist] TODO
    * [Guide_SURF   SURF namelist]
  * Old articles being ported TODO
    * [BlenderFDS_UI]
