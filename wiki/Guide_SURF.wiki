@@ -20,7 +20,9 @@ The displayed material is going to be exported as:
 &SURF ID='Hot wall' FYI='A fixed temperature boundary condition' RGB=255,140,0 TMP_FRONT=200. /
 }}}
 
-The dark orange color is translated to its RGB counterpart. 
+The dark orange color is being translated to its RGB counterpart.
+
+The free text parameter 'TMP_FRONT=200.' is being appended verbatim to the namelist. The free text input box can be used to freely describe any kind of present or future FDS `SURF`. The usual [Guide_General syntax rules] FIXME apply.
 
 Some parameters are not going to be exported:
  * `TRANSPARENCY` is set to fully opaque, thus omitted;
@@ -28,8 +30,16 @@ Some parameters are not going to be exported:
 
 ==`Assign to Selected Objects` button==
 
-==Specialized `SURF` panel: burner==
+Clicking this button the displayed material is assigned to all currently selected objects.
+
+This can be very useful when assigning the same `SURF_ID` boundary condition to many objects.
+
+==An example of specialized `SURF` panel: burner==
+
+
 
 [http://blenderfds.googlecode.com/svn/wiki/images/panel/ma/SURF_burner.png]
+
+==`Set t^2 Ramp` button==
 
 [http://blenderfds.googlecode.com/svn/wiki/images/panel/ma/SURF_burner_set_ramp.png]

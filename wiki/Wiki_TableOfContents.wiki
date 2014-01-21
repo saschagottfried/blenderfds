@@ -16,6 +16,7 @@
    * Curved geometries to FDS (TODO)
  * Tutorial (TODO)
  * Guide
+   * [Guide_Common UI common rules]
    * [Guide_SURF Blender Materials to SURFs]
  * Old articles being ported TODO
    * [BlenderFDS_UI]

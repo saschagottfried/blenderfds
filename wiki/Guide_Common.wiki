@@ -1,0 +1,21 @@
+#summary UI Common Rules
+=User interface common rules=
+<wiki:toc max_depth="2" />
+----
+
+== Information data fields ==
+
+[http://blenderfds.googlecode.com/svn/wiki/images/panel/FYI.png]
+
+== Free text data fields ==
+
+[http://blenderfds.googlecode.com/svn/wiki/images/panel/Free_Parameters.png]
+
+== Error management ==
+
+[http://blenderfds.googlecode.com/svn/wiki/images/panel/errors.png]
+
+== `Export` checkboxes == 
+
+[http://blenderfds.googlecode.com/svn/wiki/images/panel/export_namelist.png]
+
