@@ -56,7 +56,11 @@ The burner area is estimated by summing the area of all the surfaces currently l
 
 || That burner area value shall be *double checked* by the savy user! ||
 
-BlenderFDS cannot be exactly sure of where the fuel gas is going to be injected into the domain during the FDS simulation: if a surface is obstructed by another solid object, FDS is not going to inject fuel gas from there...
+In fact BlenderFDS cannot be exactly sure of where the fuel gas is going to be injected into the domain during the FDS simulation: if a surface is obstructed by another solid object, FDS is not going to inject fuel gas from there...
 
-|| If geometries are further modified and burner area changes, the `HRRPUA` and `TAU_Q` values *are not automatically updated*. ||
+|| If geometries are further modified and burner area changes, the calculated `HRRPUA` and `TAU_Q` values *are not automatically updated*. ||
+
+== Predefined `SURFs` ==
+
+When starting a new project, BlenderFDS automatically creates the following FDS predefined `SURF` namelists: `OPEN, INERT, MIRROR`. Obviously these namelists are not exported to the FDS case file.
 
