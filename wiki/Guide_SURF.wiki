@@ -5,8 +5,28 @@
 
 Blender `materials` can be exported to FDS `SURFs` namelist groups.
 
-The FDS `SURF` parameters are set up in the following `material properties panel`:
+==Default `SURF` panel==
+
+Generic `SURF` parameters can be reached by clicking on the right button of the `property editor`:
+[http://blenderfds.googlecode.com/svn/wiki/images/panel/ma/get_ma.png]
+
+Here is an example `SURF properties panel`:
+
 [http://blenderfds.googlecode.com/svn/wiki/images/panel/ma/SURF.png]
+
+The displayed material is going to be exported as:
+
+{{{
+&SURF ID='Hot wall' FYI='A fixed temperature boundary condition' RGB=255,140,0 TMP_FRONT=200. /
+}}}
+
+Some parameters are not going to be exported:
+ * `TRANSPARENCY` is set to fully opaque, thus omitted;
+ * `MATL_ID` has the exporting flag unchecked.
+
+==`Assign to Selected Objects` button==
+
+==Specialized `SURF` panel: burner==
 
 [http://blenderfds.googlecode.com/svn/wiki/images/panel/ma/SURF_burner.png]
 
