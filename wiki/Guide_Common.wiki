@@ -15,7 +15,7 @@
 
 [http://blenderfds.googlecode.com/svn/wiki/images/panel/errors.png]
 
-== `Export` checkboxes == 
+== Export checkboxes == 
 
 [http://blenderfds.googlecode.com/svn/wiki/images/panel/export_namelist.png]
 

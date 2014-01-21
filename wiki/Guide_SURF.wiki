@@ -22,7 +22,7 @@ The displayed material is going to be exported as:
 
 The dark orange color is being translated to its RGB counterpart.
 
-The free text parameter 'TMP_FRONT=200.' is being appended verbatim to the namelist. The free text input box can be used to freely describe any kind of present or future FDS `SURF`. The usual [Guide_General syntax rules] FIXME apply.
+The free text parameter 'TMP_FRONT=200.' is being appended verbatim to the namelist. The free text input box can be used to freely describe any kind of present or future FDS `SURF`. The usual [Guide_Common#Free_text_data_fields syntax rules] FIXME apply.
 
 Some parameters are not going to be exported:
  * `TRANSPARENCY` is set to fully opaque, thus omitted;
