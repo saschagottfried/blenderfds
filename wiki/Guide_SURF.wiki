@@ -43,7 +43,7 @@ The displayed Blender material is going to be exported as:
 &SURF ID='Burner' FYI='Est.d area...' HRRPUA=300.0 TAU_Q=-178.9 RGB=255,0,0 /
 }}}
 
-==`<Set t^2 Ramp>` button==
+==`<Set t^2^ Ramp>` button==
 
 By clicking this button, the user can calculate the appropriate `HRRPUA` and `TAU_Q` values for setting up the desired ramping up burner. The input values required for this calculation are:
  * the maximum total heat release rate (HRR) value, 
