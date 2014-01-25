@@ -39,7 +39,7 @@ FDS input is a single text file. Input data is specified by namelist groups:
 
 Namelist groups are used to describe every aspect of the fire simulation: simulation name, duration, computational domain, geometry, boundary conditions, materials, output quantities, control logic...
 
-== Namelist groups can extend their action to geometric entities ==
+== Geometric entities ==
 
 Many namelist groups extend their action in the computational space to volumes, faces, segments, points, or planes:
 
@@ -49,13 +49,9 @@ The simulated-ambient geometric description is entered line by line; the geometr
 
 FDS uses an absolute global reference coordinate system, that conforms to the right hand rule. By default, the z axis is considered the vertical. FDS employs the units of measurement from the International System (SI). Lengths are expressed in _m_.
 
-A *volume* is always represented by a single right parallelepiped with edges parallel to the axis. Its position and dimensions are described by the coordinates of two opposite vertices: if point A=(xA, yA, zA) and point B=(xB, yB, zB) are the opposite vertices, its coordinates are entered as xA, xB, yA, yB, zA, zB. For example,
 
-{{{
-&OBST XB=0.5,1.5,2.0,3.5,-2.0,0., SURF_ID='wall' /
-}}}
 
-uses the parameter `XB` to define a solid obstacle that spans the volume starting at the origin (0.5,2.0,-2.0) and extending 1 m in the positive x direction, 1.5 m in the positive y direction, and 2 m in the positive z direction.
+=== Faces ===
 
 A *face* is represented by a right plane face with edges parallel to the axis. Its position and dimensions are described by the coordinates of two opposite vertices, that must lie on the same plane. For example:
 
@@ -65,6 +61,8 @@ A *face* is represented by a right plane face with edges parallel to the axis. I
 
 uses the parameter `XB` to define a flat face perpendicular to the z axis imposing a particular boundary condition over a solid. Two of the six coordinates are the same, denoting a flat face as opposed to a solid.
 
+=== Segments ===
+
 A *segment* is bounded by two end points. If point A=(xA, yA, zA) and point B=(xB, yB, zB) are the end points, its coordinates are entered following the same convention valid for volumes. For example,
 
 {{{
@@ -73,6 +71,8 @@ A *segment* is bounded by two end points. If point A=(xA, yA, zA) and point B=(x
 
 is a beam smoke detector between (0.5,2.0,-2.0) and (1.5,3.5,0.) end points.
 
+=== Points ===
+
 A *point* is simply identified by its 3 coordinates. For example, the line:
 
 {{{
@@ -80,6 +80,8 @@ A *point* is simply identified by its 3 coordinates. For example, the line:
 }}}
 
 uses the parameter `XYZ` to insert a thermocouple at the point of coordinates (2.,3.,4.).
+
+=== Planes ===
 
 A *plane* is represented by a right plane perpendicular to one of the reference axis. For example, these lines:
 
@@ -103,7 +105,7 @@ is a plane perpendicular to the z axis and intersecting its point (0.,0.,-.5).
 
 All use the parameters `PBX, PBY, PBZ` to specify the coordinate in the direction of the perpendicular axis.
 
-= BlenderFDS links Blender entities to FDS namelist groups =
+== BlenderFDS links Blender entities to FDS namelist groups ==
 
 || *Blender* || *FDS* ||
 || Each file  || One or more FDS input files ||
