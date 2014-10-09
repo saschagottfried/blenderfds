@@ -7,13 +7,20 @@ from blenderfds.types import BFException
 
 DEBUG = False
 
-def voxelize(context, ob, flat=False) -> "(xbs, timing)":
+def voxelize(context, ob, flat=False) -> "(xbs, voxel_size, timing)":
     """Voxelize object."""
     print("BFDS: voxelize.voxelize:", ob.name)
     # Init
     t0 = time()
     ob_tmp = _get_absolute_tmp_object(context, ob)
     if not ob_tmp.data.vertices: raise BFException(sender=ob, msg="Empty object!")
+    # Get voxel size and voxel grid snapping
+    if ob.bf_xb_custom_voxel:
+        voxel_size_requested = voxel_size = ob.bf_xb_voxel_size
+        snap_voxels = ob.bf_xb_snap_voxels
+    else:
+        voxel_size_requested = voxel_size = context.scene.bf_default_voxel_size
+        snap_voxels = True
     # If flat, check flatness and solidify
     if flat:
         # Set location (any vertices)
@@ -24,9 +31,9 @@ def voxelize(context, ob, flat=False) -> "(xbs, timing)":
         elif ob_tmp.dimensions[2] < epsilon: choose_flatten = _z_flatten_xbs # ... to z axis
         else: raise BFException(sender=ob, msg="Not flat and normal to axis, cannot create pixels.")
         # Solidify
-        _apply_solidify_modifier(context, ob_tmp, thickness=ob.bf_xb_voxel_size/3.)
+        _apply_solidify_modifier(context, ob_tmp, thickness=voxel_size/3.)
     # Apply remesh modifier, update voxel_size (can be a little different from desired)
-    octree_depth, scale, voxel_size = _calc_remesh_modifier(context, ob.dimensions, ob.bf_xb_voxel_size)
+    octree_depth, scale, voxel_size = _calc_remesh_modifier(context, ob.dimensions, voxel_size)
     _apply_remesh_modifier(context, ob_tmp, octree_depth, scale)
     # Get absolute tessfaces
     me_tmp = get_global_mesh(context, ob_tmp)
@@ -53,9 +60,9 @@ def voxelize(context, ob, flat=False) -> "(xbs, timing)":
     # Grow boxes along 3rd axis
     t5 = time()
     boxes = choose[2][3](boxes) # eg. _grow_boxes_along_z(boxes)
-    # Prepare XBs, if flat flatten
+    # Prepare XBs
     t6 = time()
-    xbs = choose[0][4](boxes, voxel_size, origin) # eg. _x_boxes_to_xbs(boxes, ...)
+    xbs = choose[0][4](boxes, voxel_size_requested, origin, snap_voxels) # eg. _x_boxes_to_xbs(boxes, ...)
     # If flat, flatten xbs at location
     if flat: xbs = choose_flatten(xbs, location)
     # Clean unneeded tmp object and tmp mesh, then return
@@ -64,7 +71,7 @@ def voxelize(context, ob, flat=False) -> "(xbs, timing)":
         # del tmp object
         bpy.data.objects.remove(ob_tmp)
         bpy.data.meshes.remove(me_tmp)
-    return xbs, (t2-t1, t4-t3, t5-t4, t6-t5) # this is timing: sort, 1b, 2g, 3g 
+    return xbs, voxel_size_requested, (t2-t1, t4-t3, t5-t4, t6-t5) # this is timing: sort, 1b, 2g, 3g 
 
 def _get_absolute_tmp_object(context, ob):
     """Get absolute tmp object of ob: modifiers, rotation, location and scale are applied."""
@@ -278,11 +285,19 @@ def _grow_boxes_along_z(boxes) -> "[(ix0, ix1, iy0, iy1, iz0, iz1), ...]":
 
 # Trasform boxes in int coordinates to xbs in real world absolute coordinates
 
-def _x_boxes_to_xbs(boxes, voxel_size, origin) -> "[(x0, x1, y0, y1, z0, z1), ...]":
+def _x_boxes_to_xbs(boxes, voxel_size, origin, snap_voxels) -> "[(x0, x1, y0, y1, z0, z1), ...]":
     """Trasform boxes (int coordinates) to xbs (real world absolute coordinates)."""
+    # Init
     print("BFDS: _x_boxes_to_xbs:", len(boxes))
     xbs = list()
     voxel_size_half = voxel_size / 2.
+    # Snap to grid
+    if snap_voxels:
+        origin = (
+            round(origin[0]/voxel_size)*voxel_size, # this is already at floor level
+            round((origin[1]-voxel_size_half)/voxel_size)*voxel_size+voxel_size_half,
+            round((origin[2]-voxel_size_half)/voxel_size)*voxel_size+voxel_size_half,
+        )
     while boxes:
         ix0, ix1, iy0, iy1, iz0, iz1 = boxes.pop()
         x0, y0, z0 = ( # origin + location + movement to lower left corner
@@ -298,11 +313,20 @@ def _x_boxes_to_xbs(boxes, voxel_size, origin) -> "[(x0, x1, y0, y1, z0, z1), ..
         xbs.append([x0, x1, y0, y1, z0, z1],)
     return xbs
 
-def _y_boxes_to_xbs(boxes, voxel_size, origin) -> "[(x0, x1, y0, y1, z0, z1), ...]":
+def _y_boxes_to_xbs(boxes, voxel_size, origin, snap_voxels) -> "[(x0, x1, y0, y1, z0, z1), ...]":
     """Trasform boxes (int coordinates) to xbs (real world absolute coordinates)."""
     print("BFDS: _y_boxes_to_xbs:", len(boxes))
+    # Init
     xbs = list()
     voxel_size_half = voxel_size / 2.
+    # Snap to grid
+    if snap_voxels:
+        origin = (
+            round((origin[0]-voxel_size_half)/voxel_size)*voxel_size+voxel_size_half,
+            round(origin[1]/voxel_size)*voxel_size, # this is already at floor level
+            round((origin[2]-voxel_size_half)/voxel_size)*voxel_size+voxel_size_half,
+        )
+    # Build xbs
     while boxes:
         ix0, ix1, iy0, iy1, iz0, iz1 = boxes.pop()
         x0, y0, z0 = ( # origin + location + movement to lower left corner
@@ -318,11 +342,20 @@ def _y_boxes_to_xbs(boxes, voxel_size, origin) -> "[(x0, x1, y0, y1, z0, z1), ..
         xbs.append([x0, x1, y0, y1, z0, z1],)
     return xbs
 
-def _z_boxes_to_xbs(boxes, voxel_size, origin) -> "[(x0, x1, y0, y1, z0, z1), ...]":
+def _z_boxes_to_xbs(boxes, voxel_size, origin, snap_voxels) -> "[(x0, x1, y0, y1, z0, z1), ...]":
     """Trasform boxes (int coordinates) to xbs (real world absolute coordinates)."""
+    # Init
     print("BFDS: _z_boxes_to_xbs:", len(boxes))
     xbs = list()
     voxel_size_half = voxel_size / 2.
+    # Snap to grid
+    if snap_voxels:
+        origin = (
+            round((origin[0]-voxel_size_half)/voxel_size)*voxel_size+voxel_size_half,
+            round((origin[1]-voxel_size_half)/voxel_size)*voxel_size+voxel_size_half,
+            round(origin[2]/voxel_size)*voxel_size, # this is already at floor level
+        )
+    # Build xbs
     while boxes:
         ix0, ix1, iy0, iy1, iz0, iz1 = boxes.pop()
         x0, y0, z0 = ( # origin + location + movement to lower left corner

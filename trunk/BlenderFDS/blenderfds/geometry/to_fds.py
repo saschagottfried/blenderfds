@@ -18,9 +18,9 @@ def ob_to_xbs_voxels(context, ob) -> "((x0,x1,y0,y1,z0,z1,), ...), 'Message'":
     """Transform ob solid geometry in XBs notation (voxelization)."""
     print("BFDS: geometry.ob_to_xbs_voxels:", ob.name)
     t0 = time()
-    xbs, timing = voxelize(context, ob)
+    xbs, voxel_size, timing = voxelize(context, ob)
     if not xbs: return None, "No voxel created"
-    msg = "{0} voxels, resolution {1:.3f} m, in {2:.0f} s".format(len(xbs), ob.bf_xb_voxel_size, time()-t0)
+    msg = "{0} voxels, resolution {1:.3f} m, in {2:.0f} s".format(len(xbs), voxel_size, time()-t0)
     if DEBUG: msg += " (s:{0[0]:.0f} 1f:{0[1]:.0f}, 2g:{0[2]:.0f}, 3g:{0[3]:.0f})".format(timing)
     return xbs, msg
 
@@ -28,9 +28,9 @@ def ob_to_xbs_pixels(context, ob) -> "((x0,x1,y0,y1,z0,z0,), ...), 'Message'":
     """Transform ob flat geometry in XBs notation (flat voxelization)."""
     print("BFDS: geometry.ob_to_xbs_pixels:", ob.name)
     t0 = time()
-    xbs, timing = voxelize(context, ob, flat=True)
+    xbs, voxel_size, timing = voxelize(context, ob, flat=True)
     if not xbs: return None, "No pixel created"
-    msg = "{0} pixels, resolution {1:.3f} m, in {2:.0f} s".format(len(xbs), ob.bf_xb_voxel_size, time()-t0)
+    msg = "{0} pixels, resolution {1:.3f} m, in {2:.0f} s".format(len(xbs), voxel_size, time()-t0)
     if DEBUG: msg += " (s:{0[0]:.0f} 1f:{0[1]:.0f}, 2g:{0[2]:.0f}, 3g:{0[3]:.0f})".format(timing)
     return xbs, msg
 

@@ -26,7 +26,7 @@ bl_info = {
     "name": "BlenderFDS",
     "author": "Emanuele Gissi",
     "version": (3, 0, 0),
-    "blender": (2, 6, 9),
+    "blender": (2, 7, 2),
     "api": 35622,
     "location": "File > Export > FDS Case (.fds)",
     "description": "BlenderFDS, an open graphical editor for the NIST Fire Dynamics Simulator",
@@ -76,7 +76,7 @@ def unregister():
     bpy.types.INFO_MT_file_import.remove(ui.menus.import_fds_menu)
     # Unregister handlers
     bpy.app.handlers.load_post.remove(ui.handlers.load_post)
-    bpy.app.handlers.save_post.remove(ui.handlers.save_pre)    
+    bpy.app.handlers.save_pre.remove(ui.handlers.save_pre)    
 
 if __name__ == "__main__":
     register()

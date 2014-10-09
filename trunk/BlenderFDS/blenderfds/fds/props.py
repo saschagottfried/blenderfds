@@ -30,11 +30,11 @@ class BFPropString(BFProp):
         
 ### General BFProp
 
-BFProp( # System property
+BFProp(
     idname = "bf_export",
     label = "Export",
     description = "Export element to FDS",
-    bpy_idname = "bf_export",
+    bpy_idname = "bf_export", # system property, see extensions.py
 )
 
 class BFPropFYI(BFPropString):
@@ -47,7 +47,7 @@ BFPropFYI(
     label = "FYI",
     description = "Object description",
     fds_label = "FYI",
-    bpy_idname = "bf_fyi", # BFDS system bpy property
+    bpy_idname = "bf_fyi", # system property, see extensions.py
 )
 
 class BFPropFree(BFProp):
@@ -73,7 +73,7 @@ BFPropFree(
     idname = "bf_free",
     label = "Free Parameters",
     description = "Free parameters, use matched single quotes as string delimiters, eg ABC='example'",
-    bpy_idname = "bf_free", # system property
+    bpy_idname = "bf_free", # system property, see extensions.py
 )
 
 ### Scene
