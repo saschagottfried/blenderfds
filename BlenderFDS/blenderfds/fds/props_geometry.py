@@ -39,10 +39,16 @@ class BFPropGeometry(BFProp):
 class BFPropXB(BFPropGeometry):
     items = "NONE", "BBOX", "VOXELS", "FACES", "PIXELS", "EDGES",
 
+    # Generate VOXELS, PIXELS props UI
     def _draw_extra(self, layout, context, element):
-        if element.bf_xb in ("VOXELS", "PIXELS") :
+        if element.bf_xb in ("VOXELS", "PIXELS"):
             row = layout.row()
+            layout_export, layout_custom = row.column(), row.column()
+            layout_export.prop(element, "bf_xb_custom_voxel", text="")
+            row = layout_custom.row(align=True)
             row.prop(element, "bf_xb_voxel_size")
+            row.prop(element, "bf_xb_snap_voxels", text="", icon="SNAP_INCREMENT")
+            layout_custom.active = element.bf_xb_custom_voxel
     
     # Format single value
     def _format_value(self, context, element, value):
@@ -120,11 +126,49 @@ def update_bf_xb_voxel_size(self, context):
     if self.bf_has_tmp: geometry.tmp.del_all_tmp_objects(context)
 
 BFProp(
+    idname = "bf_xb_custom_voxel",
+    label = "Use custom settings",
+    description = "Use custom settings for object voxelization/pixelization",
+    flags = NOEXPORT | ACTIVEUI,
+    bpy_idname = "bf_xb_custom_voxel",
+    bpy_prop = bpy.props.BoolProperty,
+    default = False,
+    update = update_bf_xb_voxel_size,
+)
+
+BFProp(
+    idname = "bf_xb_snap_voxels",
+    label = "Snap to grid",
+    description = "Snap voxels/pixels to grid",
+    flags = NOEXPORT | ACTIVEUI,
+    bpy_idname = "bf_xb_snap_voxels",
+    bpy_prop = bpy.props.BoolProperty,
+    default = True,
+    update = update_bf_xb_voxel_size,
+)
+
+BFProp(
     idname = "bf_xb_voxel_size",
     label = "Resolution",
-    description = "Minimum resolution for object voxelization",
-    flags = NOEXPORT,
+    description = "Resolution for object voxelization/pixelization",
+    flags = NOEXPORT | ACTIVEUI,
     bpy_idname = "bf_xb_voxel_size",
+    bpy_prop = bpy.props.FloatProperty,
+    # unit = "LENGTH", # correction for scale_length needed before exporting!
+    step = 1,
+    precision = 3,
+    min = .001,
+    max = 20.,
+    default = .10,
+    update = update_bf_xb_voxel_size,
+)
+
+BFProp(
+    idname = "bf_default_voxel_size",
+    label = "Default Resolution",
+    description = "Default resolution for object voxelization/pixelization",
+    flags = NOEXPORT | ACTIVEUI,
+    bpy_idname = "bf_default_voxel_size",
     bpy_prop = bpy.props.FloatProperty,
     # unit = "LENGTH", # correction for scale_length needed before exporting!
     step = 1,
@@ -149,7 +193,7 @@ BFPropXB(
     label = "XB",
     description = "XB",
     fds_label = "XB",
-    bf_props = ("bf_xb_voxel_size", ),
+    bf_props = ("bf_xb_custom_voxel", "bf_xb_voxel_size", "bf_xb_snap_voxels", ),
     bpy_idname = "bf_xb",
     bpy_prop = bpy.props.EnumProperty,
     items = (
