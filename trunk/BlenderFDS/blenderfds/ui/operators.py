@@ -76,9 +76,9 @@ class OBJECT_OT_bf_set_cell_size(bpy.types.Operator):
         name="Desired Cell Sizes [m]", description="Desired MESH cell sizes",
         default=(.2, .2, .2), min=.001, step=1000, precision=3, size=3
     )
-    bf_align_to_origin = bpy.props.BoolProperty(
-        name="Align To Global Origin",
-        description="Align this MESH to global axis origin",
+    bf_snap_to_origin = bpy.props.BoolProperty(
+        name="Snap To Global Origin",
+        description="Snap this MESH to global origin",
         default=True,
     )
     bf_poisson_restriction = bpy.props.BoolProperty(
@@ -93,13 +93,13 @@ class OBJECT_OT_bf_set_cell_size(bpy.types.Operator):
         row = layout.row()
         row.prop(self, "bf_cell_sizes")
         row = layout.row()
-        row.prop(self, "bf_align_to_origin")
+        row.prop(self, "bf_snap_to_origin")
         row = layout.row()
         row.prop(self, "bf_poisson_restriction")
         
     def execute(self, context):
         ob = context.active_object
-        fds_mesh.set_cell_sizes(context, ob, self.bf_cell_sizes, self.bf_align_to_origin, self.bf_poisson_restriction)
+        fds_mesh.set_cell_sizes(context, ob, self.bf_cell_sizes, self.bf_snap_to_origin, self.bf_poisson_restriction)
         self.report({"INFO"}, "MESH cell size set")
         return {'FINISHED'}
 

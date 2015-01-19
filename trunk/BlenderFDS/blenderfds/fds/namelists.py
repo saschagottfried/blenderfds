@@ -29,8 +29,8 @@ BFNamelistHead(
     fds_label = "HEAD",
     enum_id = 1001,
     bpy_type = bpy.types.Scene,
-    bf_props = ("bf_head_chid", "bf_head_title", "bf_head_directory", "bf_head_free_text", "bf_default_voxel_size"),
-) # FIXME
+    bf_props = ("bf_head_chid", "bf_head_title", "bf_head_directory", "bf_head_free_text", "bf_default_voxel_size", "bf_default_snap_voxels"),
+)
 
 BFNamelist(
     idname = "bf_time",

@@ -14,13 +14,13 @@ def voxelize(context, ob, flat=False) -> "(xbs, voxel_size, timing)":
     t0 = time()
     ob_tmp = _get_absolute_tmp_object(context, ob)
     if not ob_tmp.data.vertices: raise BFException(sender=ob, msg="Empty object!")
-    # Get voxel size and voxel grid snapping
+    # Get voxel size and voxel snapping to global origin
     if ob.bf_xb_custom_voxel:
         voxel_size_requested = voxel_size = ob.bf_xb_voxel_size
         snap_voxels = ob.bf_xb_snap_voxels
     else:
         voxel_size_requested = voxel_size = context.scene.bf_default_voxel_size
-        snap_voxels = True
+        snap_voxels = context.scene.bf_default_snap_voxels
     # If flat, check flatness and solidify
     if flat:
         # Set location (any vertices)
@@ -43,7 +43,7 @@ def voxelize(context, ob, flat=False) -> "(xbs, voxel_size, timing)":
     t1 = time()
     x_tessfaces, y_tessfaces, z_tessfaces = _sort_tessfaces_by_normal(tessfaces)
     # Choose fastest procedure: less tessfaces => less time required
-    # Better use the smallest collection!
+    # Better use the smallest collection first!
     t2 = time()
     choose = [
         (len(x_tessfaces), x_tessfaces, _x_tessfaces_to_boxes, _grow_boxes_along_x, _x_boxes_to_xbs),
@@ -291,7 +291,7 @@ def _x_boxes_to_xbs(boxes, voxel_size, origin, snap_voxels) -> "[(x0, x1, y0, y1
     print("BFDS: _x_boxes_to_xbs:", len(boxes))
     xbs = list()
     voxel_size_half = voxel_size / 2.
-    # Snap to grid
+    # Snap voxels/pixels to global origin
     if snap_voxels:
         origin = (
             round(origin[0]/voxel_size)*voxel_size, # this is already at floor level
@@ -319,7 +319,7 @@ def _y_boxes_to_xbs(boxes, voxel_size, origin, snap_voxels) -> "[(x0, x1, y0, y1
     # Init
     xbs = list()
     voxel_size_half = voxel_size / 2.
-    # Snap to grid
+    # Snap to global origin
     if snap_voxels:
         origin = (
             round((origin[0]-voxel_size_half)/voxel_size)*voxel_size+voxel_size_half,
@@ -348,7 +348,7 @@ def _z_boxes_to_xbs(boxes, voxel_size, origin, snap_voxels) -> "[(x0, x1, y0, y1
     print("BFDS: _z_boxes_to_xbs:", len(boxes))
     xbs = list()
     voxel_size_half = voxel_size / 2.
-    # Snap to grid
+    # Snap to global origin
     if snap_voxels:
         origin = (
             round((origin[0]-voxel_size_half)/voxel_size)*voxel_size+voxel_size_half,

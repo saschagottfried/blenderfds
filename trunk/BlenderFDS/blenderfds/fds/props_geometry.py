@@ -137,17 +137,6 @@ BFProp(
 )
 
 BFProp(
-    idname = "bf_xb_snap_voxels",
-    label = "Snap to grid",
-    description = "Snap voxels/pixels to grid",
-    flags = NOEXPORT | ACTIVEUI,
-    bpy_idname = "bf_xb_snap_voxels",
-    bpy_prop = bpy.props.BoolProperty,
-    default = True,
-    update = update_bf_xb_voxel_size,
-)
-
-BFProp(
     idname = "bf_xb_voxel_size",
     label = "Resolution",
     description = "Resolution for object voxelization/pixelization",
@@ -164,6 +153,23 @@ BFProp(
 )
 
 BFProp(
+    idname = "bf_xb_snap_voxels",
+    label = "Snap To Global Origin",
+    description = "Snap voxels/pixels to global origin",
+    flags = NOEXPORT | ACTIVEUI,
+    bpy_idname = "bf_xb_snap_voxels",
+    bpy_prop = bpy.props.BoolProperty,
+    default = True,
+    update = update_bf_xb_voxel_size,
+)
+
+class BFPropDefaultVoxelSize(BFProp): # FIXME
+    def _draw_body(self, layout, context, element):
+        row = layout.row(align=True)
+        row.prop(element, "bf_default_voxel_size")
+        row.prop(element, "bf_default_snap_voxels", text="", icon="SNAP_INCREMENT")
+
+BFPropDefaultVoxelSize(
     idname = "bf_default_voxel_size",
     label = "Default Resolution",
     description = "Default resolution for object voxelization/pixelization",
@@ -176,6 +182,17 @@ BFProp(
     min = .001,
     max = 20.,
     default = .10,
+    update = update_bf_xb_voxel_size,
+)
+
+BFProp(
+    idname = "bf_default_snap_voxels",
+    label = "Snap To Global Origin",
+    description = "Snap voxels/pixels to global origin by default",
+    flags = NOEXPORT | NOUI,
+    bpy_idname = "bf_default_snap_voxels",
+    bpy_prop = bpy.props.BoolProperty,
+    default = True,
     update = update_bf_xb_voxel_size,
 )
 
