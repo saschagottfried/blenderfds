@@ -475,10 +475,11 @@ class BFNamelist(BFCommon):
                     break # end the search for descendants
             # Check if import was succesful
             if not is_token_imported:
-                # The token could not be imported because of a raised exception or corresponding descendant not found,
+                # The token could not be imported because of
+                # a raised exception or corresponding descendant not found,
                 # so pile the original token into free_texts.
+                if DEBUG: print("BFDS: BFNamelist.from_fds: to free param:\n ", fds_original) 
                 free_texts.append(fds_original)
-                print("BFDS: BFNamelist.from_fds: to free param:\n ", fds_original) 
         # Set final bf_prop_free. If no self.bf_prop_free, then the saved fds_origins are lost
         if free_texts and self.bf_prop_free:
             self.bf_prop_free.set_value(context, element, " ".join(free_texts)) # Set new value

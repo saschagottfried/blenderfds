@@ -134,7 +134,7 @@ class BFPropText(BFProp):
 BFPropText(
     idname = "bf_head_free_text",
     label = "Free Text File",
-    description = "Name of free text file inserted into the exported FDS case",
+    description = "Name of the free text file appended to the HEAD namelist",
     flags = NOEXPORT | ACTIVEUI,
     bpy_idname = "bf_head_free_text",
     bpy_prop = bpy.props.StringProperty,

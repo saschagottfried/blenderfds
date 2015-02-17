@@ -49,7 +49,6 @@ class WM_OT_bf_dialog(bpy.types.Operator):
                 row.label(description)
 
 ### Set default homefile
-# FUTURE: this can be used on Blender 2.70
 
 import sys
 
@@ -258,7 +257,7 @@ class OBJECT_OT_bf_show_fds_geometries(bpy.types.Operator):
         except BFException as err: err_msgs.extend(err.labels)
         if msg: msgs.append(msg)
         if xbs:
-            ob_tmp = geometry.from_fds.xbs_to_ob(xbs, context, bf_xb=ob.bf_xb)
+            ob_tmp = geometry.from_fds.xbs_to_ob(xbs, context, bf_xb=ob.bf_xb, name="Shown {} XBs".format(ob.name))
             geometry.tmp.set_tmp_object(context, ob, ob_tmp)
         # Manage XYZ: get coordinates, show them in a tmp object, prepare msg
         xyzs = None
@@ -267,7 +266,7 @@ class OBJECT_OT_bf_show_fds_geometries(bpy.types.Operator):
         except BFException as err: err_msgs.extend(err.labels)
         if msg: msgs.append(msg)
         if xyzs:
-            ob_tmp = geometry.from_fds.xyzs_to_ob(xyzs, context, bf_xyz=ob.bf_xyz)
+            ob_tmp = geometry.from_fds.xyzs_to_ob(xyzs, context, bf_xyz=ob.bf_xyz, name="Shown {} XYZs".format(ob.name))
             geometry.tmp.set_tmp_object(context, ob, ob_tmp)
         # Manage PB*: get coordinates, show them in a tmp object, prepare msg
         pbs  = None
@@ -276,7 +275,7 @@ class OBJECT_OT_bf_show_fds_geometries(bpy.types.Operator):
         except BFException as err: err_msgs.extend(err.labels)
         if msg: msgs.append(msg)
         if pbs:
-            ob_tmp = geometry.from_fds.pbs_to_ob(pbs, context, bf_pb=ob.bf_pb)
+            ob_tmp = geometry.from_fds.pbs_to_ob(pbs, context, bf_pb=ob.bf_pb, name="Shown {} PBs".format(ob.name))
             geometry.tmp.set_tmp_object(context, ob, ob_tmp)
         # Set report
         if err_msgs: report = {"ERROR"}, "; ".join(err_msgs)
@@ -308,18 +307,10 @@ def _open_text_in_editor(context, text_name):
             if 'TEXT_EDITOR' == area.type:
                 area_te = area
                 break
-    # If Text Editor is not displayed, display it
-    if not area_te:
-        bpy.ops.screen.area_dupli('INVOKE_DEFAULT')
-        area_te = context.window_manager.windows[-1].screen.areas[0]
-        area_te.type = 'TEXT_EDITOR'
-    # Setup details
-    area_te.spaces[0].show_syntax_highlight = True
-    area_te.spaces[0].show_line_numbers = True
-    # Show requested text
-    if text_name in bpy.data.texts:
-        area_te.spaces[0].text = bpy.data.texts[text_name]
-    # FUTURE: Move cursor to first line
+    # If Text Editor is displayed, show requested text
+    if area_te:
+        if text_name in bpy.data.texts:
+            area_te.spaces[0].text = bpy.data.texts[text_name]
     
 class SCENE_OT_bf_edit_head_free_text(bpy.types.Operator):
     bl_label = "Edit"
@@ -329,15 +320,14 @@ class SCENE_OT_bf_edit_head_free_text(bpy.types.Operator):
     def execute(self, context):
         sc = context.scene
         # Check
-        if not sc.bf_head_free_text:
-            sc.bf_head_free_text = "Free text"
+        if not sc.bf_head_free_text: # Empty field?
+            sc.bf_head_free_text = "HEAD free text"
+        if sc.bf_head_free_text not in bpy.data.texts: # No linked file?
             bpy.data.texts.new(sc.bf_head_free_text)
-        if not sc.bf_head_free_text in bpy.data.texts:
-            self.report({"ERROR"}, "'{}' text not existing".format(sc.bf_head_free_text))
-            return{'CANCELLED'}
-        # Edit
+        # Open
         _open_text_in_editor(context, sc.bf_head_free_text)
-        self.report({"INFO"}, "Text Editor open")
+        # Return
+        self.report({"INFO"}, "See '{}' in the text editor".format(sc.bf_head_free_text))
         return {'FINISHED'}
 
 ### Set TAU_Q ramp according to norms

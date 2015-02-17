@@ -63,7 +63,12 @@ def register():
     bpy.types.INFO_MT_file_import.append(ui.menus.import_fds_menu)
     # Register handlers
     bpy.app.handlers.load_post.append(ui.handlers.load_post)
-    bpy.app.handlers.save_pre.append(ui.handlers.save_pre)    
+    bpy.app.handlers.save_pre.append(ui.handlers.save_pre)
+    # Simplify Blender UI
+    if bpy.context.user_preferences.addons["blenderfds"].preferences.bf_pref_simplify_ui:
+        ui.simplify_bl.less_space_properties()
+        ui.simplify_bl.unregister_unused_classes()
+        ui.simplify_bl.rewrite_some_panels()
     
 def unregister():
     """Unregister Blender types"""
