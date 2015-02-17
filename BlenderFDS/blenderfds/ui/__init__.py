@@ -1,3 +1,3 @@
 """BlenderFDS, Blender UI"""
 
-from . import handlers, preferences, menus, operators, panels
+from . import handlers, preferences, menus, operators, panels, simplify_bl

@@ -11,6 +11,10 @@ from blenderfds.types.flags import *
 class BFNamelistHead(BFNamelist):
     def get_my_res(self, context, element, ui=False):
         # Export free text file
+        """
+
+        :type element: object
+        """
         if element.bf_head_free_text:
             if not element.bf_head_free_text in bpy.data.texts:
                 raise BFException(sender=self, msg="Free text file not existing")
@@ -29,7 +33,7 @@ BFNamelistHead(
     fds_label = "HEAD",
     enum_id = 1001,
     bpy_type = bpy.types.Scene,
-    bf_props = ("bf_head_chid", "bf_head_title", "bf_head_directory", "bf_head_free_text", "bf_default_voxel_size", "bf_default_snap_voxels"),
+    bf_props = ("bf_head_chid", "bf_head_title", "bf_head_directory", "bf_head_free_text", "bf_default_voxel_size"),
 )
 
 BFNamelist(

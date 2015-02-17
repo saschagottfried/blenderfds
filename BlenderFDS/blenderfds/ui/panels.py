@@ -79,7 +79,7 @@ class OBJECT_PT_BF(bpy.types.Panel):
         # Header for EMPTY object
         elif element.type == "EMPTY":
             layout.prop(element, "bf_export", text="")
-            self.bl_label = "BlenderFDS Empty (Group of namelists)"
+            self.bl_label = "BlenderFDS Empty (Section of namelists)"
         # Header for MESH object
         else: self.bl_label = element.bf_namelist.draw_header(layout, context, element)
 

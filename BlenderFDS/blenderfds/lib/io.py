@@ -51,7 +51,7 @@ def scene_to_fds(operator, context, filepath=""):
         w.cursor_modal_restore()
         operator.report({"ERROR"}, "FDS file not writable, cannot export")
         return {'CANCELLED'}
-        
+
     # Prepare GE1 filepath (always export!)
     print("BFDS: io.scene_to_fds: Exporting current scene to GE1 render file: {}".format(sc.name))
     filepath = filepath[:-4] + '.GE1'
@@ -95,19 +95,23 @@ def scene_from_fds(operator, context, filepath=""):
     # Init
     w = context.window_manager.windows[0]
     w.cursor_modal_set("WAIT")
-    sc = context.scene
 
-    # Read file to Text Editor
+    # Create new scene and switch to it
+    sc = bpy.data.scenes.new("Imported")
+    bpy.context.screen.scene = sc
+
+    # Read file
     print("BFDS: io.scene_from_fds: Importing:", filepath)
-    try: bpy.data.texts.load(filepath, internal=True)
-    except:
+    try:
+        with open (filepath, "r") as infile:
+            imported_value = infile.read()
+    except EnvironmentError:
         w.cursor_modal_restore()
         operator.report({"ERROR"}, "FDS file not readable, cannot import")
         return {'CANCELLED'}
-    bpy.data.texts[-1].name = "Original FDS file"
 
     # Import to current scene
-    try: sc.from_fds(context=context, value=bpy.data.texts[-1].as_string())
+    try: sc.from_fds(context=context, value=imported_value)
     except BFException as err:
         w.cursor_modal_restore()
         operator.report({"ERROR"}, "Errors reported, check free text file")

@@ -225,6 +225,7 @@ class BFScene(BFObject):
         """Import a text in FDS notation into self. On error raise BFException.
         Value is any text in good FDS notation.
         """
+        # Init
         if not context: context = bpy.context
         # Cursor
         w = context.window_manager.windows[0]
@@ -283,7 +284,7 @@ class BFScene(BFObject):
                 free_texts.append(fds_original + "\n")
         # Write free text
         if free_texts:
-            self.bf_head_free_text = "Imported text"
+            self.bf_head_free_text = "HEAD free text ({})".format(self.name)
             bpy.data.texts.new(self.bf_head_free_text)
             bpy.data.texts[self.bf_head_free_text].from_string("".join(free_texts))
         # Report error

@@ -47,7 +47,6 @@ class BFPropXB(BFPropGeometry):
             layout_export.prop(element, "bf_xb_custom_voxel", text="")
             row = layout_custom.row(align=True)
             row.prop(element, "bf_xb_voxel_size")
-            row.prop(element, "bf_xb_snap_voxels", text="", icon="SNAP_INCREMENT")
             layout_custom.active = element.bf_xb_custom_voxel
     
     # Format single value
@@ -123,7 +122,8 @@ class BFPropXB(BFPropGeometry):
 def update_bf_xb_voxel_size(self, context):
     """Update function for bf_xb_voxel_size"""
     # Del all tmp_objects, if self has one
-    if self.bf_has_tmp: geometry.tmp.del_all_tmp_objects(context)
+    # if self.bf_has_tmp: geometry.tmp.del_all_tmp_objects(context)
+    geometry.tmp.del_all_tmp_objects(context) # FIXME fixed?
 
 BFProp(
     idname = "bf_xb_custom_voxel",
@@ -152,22 +152,10 @@ BFProp(
     update = update_bf_xb_voxel_size,
 )
 
-BFProp(
-    idname = "bf_xb_snap_voxels",
-    label = "Snap To Global Origin",
-    description = "Snap voxels/pixels to global origin",
-    flags = NOEXPORT | ACTIVEUI,
-    bpy_idname = "bf_xb_snap_voxels",
-    bpy_prop = bpy.props.BoolProperty,
-    default = True,
-    update = update_bf_xb_voxel_size,
-)
-
-class BFPropDefaultVoxelSize(BFProp): # FIXME
+class BFPropDefaultVoxelSize(BFProp):
     def _draw_body(self, layout, context, element):
         row = layout.row(align=True)
         row.prop(element, "bf_default_voxel_size")
-        row.prop(element, "bf_default_snap_voxels", text="", icon="SNAP_INCREMENT")
 
 BFPropDefaultVoxelSize(
     idname = "bf_default_voxel_size",
@@ -185,17 +173,6 @@ BFPropDefaultVoxelSize(
     update = update_bf_xb_voxel_size,
 )
 
-BFProp(
-    idname = "bf_default_snap_voxels",
-    label = "Snap To Global Origin",
-    description = "Snap voxels/pixels to global origin by default",
-    flags = NOEXPORT | NOUI,
-    bpy_idname = "bf_default_snap_voxels",
-    bpy_prop = bpy.props.BoolProperty,
-    default = True,
-    update = update_bf_xb_voxel_size,
-)
-
 def update_bf_xb(self, context):
     """Update function for bf_xb"""
     # Del all tmp_objects, if self has one
@@ -210,7 +187,7 @@ BFPropXB(
     label = "XB",
     description = "XB",
     fds_label = "XB",
-    bf_props = ("bf_xb_custom_voxel", "bf_xb_voxel_size", "bf_xb_snap_voxels", ),
+    bf_props = ("bf_xb_custom_voxel", "bf_xb_voxel_size", ),
     bpy_idname = "bf_xb",
     bpy_prop = bpy.props.EnumProperty,
     items = (
