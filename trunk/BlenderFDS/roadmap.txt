@@ -12,7 +12,7 @@ recognize old file OK
 cursor modal set OK
 
 FUTURE
-preferences
+preferences OK
 set default file
 xml for comment formatting
 cache geometry, use cached if not modified (rot, loc, scale, data)

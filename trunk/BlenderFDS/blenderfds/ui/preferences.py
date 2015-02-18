@@ -17,8 +17,8 @@ class BFPreferences(bpy.types.AddonPreferences):
     def draw(self, context):
         layout = self.layout
         row = layout.row()
-        row.prop(self, "bf_pref_simplify_ui")
+        row.operator("wm.bf_set_environment")
         row = layout.row()
-        row.operator("wm.bf_set_bf_homefile")
-        row.label(" ")
+        row.prop(self, "bf_pref_simplify_ui")
+
 

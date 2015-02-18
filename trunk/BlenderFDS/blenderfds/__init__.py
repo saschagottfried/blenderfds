@@ -26,7 +26,7 @@ bl_info = {
     "name": "BlenderFDS",
     "author": "Emanuele Gissi",
     "version": (3, 0, 0),
-    "blender": (2, 7, 2),
+    "blender": (2, 7, 3),
     "api": 35622,
     "location": "File > Export > FDS Case (.fds)",
     "description": "BlenderFDS, an open graphical editor for the NIST Fire Dynamics Simulator",
@@ -68,7 +68,6 @@ def register():
     if bpy.context.user_preferences.addons["blenderfds"].preferences.bf_pref_simplify_ui:
         ui.simplify_bl.less_space_properties()
         ui.simplify_bl.unregister_unused_classes()
-        ui.simplify_bl.rewrite_some_panels()
     
 def unregister():
     """Unregister Blender types"""

@@ -121,9 +121,7 @@ class BFPropXB(BFPropGeometry):
 
 def update_bf_xb_voxel_size(self, context):
     """Update function for bf_xb_voxel_size"""
-    # Del all tmp_objects, if self has one
-    # if self.bf_has_tmp: geometry.tmp.del_all_tmp_objects(context)
-    geometry.tmp.del_all_tmp_objects(context) # FIXME fixed?
+    geometry.tmp.del_all_tmp_objects(context)
 
 BFProp(
     idname = "bf_xb_custom_voxel",
