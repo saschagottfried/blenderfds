@@ -81,7 +81,8 @@ BFPropFree(
 class BFPropCHID(BFPropString):
     def _draw_body(self, layout, context, element):
         row = layout.row()
-        row.prop(element, "name", text="", icon="COPY_ID")
+        row.template_ID(context.screen, "scene", new="scene.new", unlink="scene.delete")
+        # row.prop(element, "name", text="", icon="COPY_ID") FIXME
 
     def get_value(self, context, element):
         value = super().get_value(context, element)
@@ -408,10 +409,8 @@ BFProp(
 
 class BFPropID(BFPropString):
     def _draw_body(self, layout, context, element):
-        row = layout.row(align=True)
-        row.prop(element, "show_name", text="", icon="COPY_ID")
-        row = row.split(.8, align=True)
-        row.prop(element, "name", text="")
+        row = layout.split(.8, align=True)
+        row.template_ID(context.scene.objects, "active")
         row.prop(element, "bf_id_suffix", text="")
 
 BFPropID(
@@ -574,7 +573,7 @@ BFPropFreeNamelist(
 class BFPropIDMaterial(BFPropString):
     def _draw_body(self, layout, context, element):
         row = layout.row()
-        row.prop(element, "name", text="", icon="COPY_ID")
+        row.template_ID(context.object, "active_material", new="material.new")
 
 BFPropIDMaterial(
     idname = "bf_id_ma",

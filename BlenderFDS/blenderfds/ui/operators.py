@@ -52,16 +52,19 @@ class WM_OT_bf_dialog(bpy.types.Operator):
 
 import sys
 
-class WM_OT_bf_set_bf_homefile(bpy.types.Operator):
-    bl_label = "Set Default User Settings"
-    bl_idname = "wm.bf_set_bf_homefile"
-    bl_description = "Set default user settings for BlenderFDS"
+class WM_OT_bf_set_environment(bpy.types.Operator):
+    bl_label = "Set Default BlenderFDS Environment"
+    bl_idname = "wm.bf_set_environment"
+    bl_description = "Set default BlenderFDS environment"
 
     def execute(self, context):
-        bf_default_filepath = sys.path[0] + "/blenderfds/bf_default.blend"
-        bpy.ops.wm.open_mainfile(filepath=bf_default_filepath, load_ui=True, use_scripts=True)
+        # Save user preferences
+        bpy.ops.wm.save_userpref()
+        # Set default startup.blend        
+        filepath = sys.path[0] + "/blenderfds/default/bf_startup.blend"
+        bpy.ops.wm.open_mainfile(filepath=filepath, load_ui=True, use_scripts=True)
         bpy.ops.wm.save_homefile()
-        self.report({"INFO"}, "Default user settings loaded")
+        self.report({"INFO"}, "Default BlenderFDS environment loaded")
         return {'FINISHED'}
 
 ### MESH and IJK
